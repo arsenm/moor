@@ -56,13 +56,8 @@ static bool testDoesNotExist()
     }
 }
 
-int main()
+static bool testArchiveWrite(const std::string& path)
 {
-  if (testDoesNotExist())
-  {
-      return 1;
-  }
-
   try
   {
     std::vector<unsigned char> lout;
@@ -79,21 +74,25 @@ int main()
     compressor.addFile("vector_a.txt", v.begin(), v.end());
 
     compressor.close();
-    std::ofstream of("test2.tar.gz", std::ios::binary);
+    std::ofstream of(path, std::ios::binary);
     for (auto a = lout.begin(); a != lout.end(); a++)
         of << *a;
     of.close();
+    return false;
   }
   catch (const std::runtime_error& ex)
   {
     std::cerr << "Error writing archive: " << ex.what() << '\n';
-    return 1;
+    return true;
   }
+}
 
+static bool testArchiveRead(const std::string& path)
+{
   try
   {
-    ArchiveReader reader1("test2.tar.gz");
-    std::ifstream iff ("test2.tar.gz", std::ios::binary);
+    ArchiveReader reader1(path);
+    std::ifstream iff (path, std::ios::binary);
     iff.seekg(0, std::ios::end);
     auto size = iff.tellg();
     iff.seekg(0, std::ios::beg);
@@ -102,23 +101,45 @@ int main()
     while(iff.good())
       iff.read((char*)&*ff.begin(), size);
     ArchiveReader reader(std::move(ff));
+
     auto data = reader.extractNext();
     while (data.first.length() > 0)
     {
         std::cout << data.first << " : " << data.second.size()<< std::endl;
         data = reader.extractNext();
     }
+
     data = reader1.extractNext();
-    while(data.first.length() > 0)
+    while (data.first.length() > 0)
     {
       std::cout << data.first << " : " << data.second.size()<< std::endl;
       data = reader1.extractNext();
     }
+
+    return false;
   }
   catch (const std::runtime_error& ex)
   {
     std::cerr << "Error reading archive: " << ex.what() << '\n';
+    return true;
+  }
+}
+
+int main()
+{
+  if (testDoesNotExist())
+  {
     return 1;
+  }
+
+  if (testArchiveWrite("test2.tar.gz"))
+  {
+    return 1;
+  }
+
+  if (testArchiveRead("test2.tar.gz"))
+  {
+      return 1;
   }
 
   return 0;
