@@ -54,6 +54,7 @@ namespace moor
     void checkError(const int err_code,
                     const bool close_before_throw = false);
     void close();
+    static int copyData(archive* ar, archive* aw);
 
     const std::string m_archive_file_name;
     std::vector<unsigned char> m_in_buffer;

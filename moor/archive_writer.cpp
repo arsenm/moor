@@ -97,7 +97,6 @@ void ArchiveWriter::checkError(const int err_code,
   }
 }
 
-
 ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
                              const Format& format_,
                              const Filter& filter_)

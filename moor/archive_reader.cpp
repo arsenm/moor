@@ -119,7 +119,7 @@ ArchiveReader::~ArchiveReader()
   close();
 }
 
-static int copy_data(archive* ar, archive* aw)
+int ArchiveReader::copyData(archive* ar, archive* aw)
 {
   while (true)
   {
@@ -159,7 +159,7 @@ bool ArchiveReader::extractNext(const std::string& root_path_)
       archive_entry_pathname(entry)).string().c_str());
   checkError(archive_write_header(a, entry));
   if (archive_entry_size(entry) > 0)
-    checkError(copy_data(m_archive, a));
+    checkError(copyData(m_archive, a));
 
   return true;
 }
