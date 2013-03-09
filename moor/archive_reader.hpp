@@ -39,20 +39,20 @@ namespace moor
   class MOOR_API ArchiveReader
   {
   public:
-    ArchiveReader(const std::string& _archive_file_name);
-    ArchiveReader(unsigned char*_in_buffer, const size_t _size);
-    ArchiveReader(std::vector<unsigned char>&& _in_buffer);
+    ArchiveReader(const std::string& archive_file_name);
+    ArchiveReader(unsigned char* in_buffer, const size_t size);
+    ArchiveReader(std::vector<unsigned char>&& in_buffer);
     ~ArchiveReader();
 
     //returns FALSE at EOF
-    bool extractNext(const std::string& _root_path);
+    bool extractNext(const std::string& root_path);
     //retuns empty filename at EOF
     std::pair<std::string, std::vector<unsigned char>> extractNext();
 
   private:
     void init();
-    void checkError(const int _err_code,
-                    const bool _close_before_throw = false);
+    void checkError(const int err_code,
+                    const bool close_before_throw = false);
     void close();
 
     archive* m_archive;

@@ -40,41 +40,42 @@ namespace moor
   class MOOR_API ArchiveWriter
   {
   public:
-    ArchiveWriter(const std::string& _archive_file_name,
-                  const Format& _format,
-                  const Filter& _compression);
-    ArchiveWriter(std::vector<unsigned char>& _out_buffer,
-                  const Format& _format,
-                  const Filter& _compression);
-    ArchiveWriter(unsigned char* _out_buffer,
-                  size_t* _size,
-                  const Format& _format,
-                  const Filter& _compression);
+    ArchiveWriter(const std::string& archive_file_name,
+                  const Format& format,
+                  const Filter& compression);
+    ArchiveWriter(std::vector<unsigned char>& out_buffer,
+                  const Format& format,
+                  const Filter& compression);
+    ArchiveWriter(unsigned char* out_buffer,
+                  size_t* size,
+                  const Format& format,
+                  const Filter& compression);
     ~ArchiveWriter();
 
-    void addFile(const std::string& _file_path);
+    void addFile(const std::string& file_path);
 
     template <class Iter>
-    void addFile(const std::string& _entry_name,
-                 const Iter _entry_contents_begin,
-                 const Iter _entry_contents_end,
-                 long long _size = -1);
-    void addFile(const std::string& _entry_name,
-                 const unsigned char * _data,
-                 const unsigned long long _size);
-    void addDirectory(const std::string& _directory_name);
+    void addFile(const std::string& entry_name,
+                 const Iter entry_contents_begin,
+                 const Iter entry_contents_end,
+                 long long size = -1);
+    void addFile(const std::string& entry_name,
+                 const unsigned char* data,
+                 const unsigned long long size);
+    void addDirectory(const std::string& directory_name);
     void close();
 
   private:
-    void checkError(const int _err_code,
-                    const bool _close_before_throw = false);
-    void addHeader(const std::string& _entry_name,
-                   const FileType _entry_type,
-                   const long long _size = 0,
-                   const int _permission = 0644);
-    void addHeader(const std::string& _file_path);
-    void addContent(const char _byte);
-    void addContent(const char* _bytes, const unsigned long long _size);
+    void checkError(const int err_code,
+                    const bool close_before_throw = false);
+    void addHeader(const std::string& entry_name,
+                   const FileType entry_type,
+                   const long long size = 0,
+                   const int permission = 0644);
+    void addHeader(const std::string& file_path);
+    void addContent(const char byte);
+    void addContent(const char* bytes,
+                    const unsigned long long size);
     void addFinish();
 
     bool m_open;
@@ -87,16 +88,16 @@ namespace moor
   };
 
   template <class Iter>
-  void ArchiveWriter::addFile(const std::string& _entry_name,
-                              const Iter _entry_contents_begin,
-                              const Iter _entry_contents_end,
-                              long long _size)
+  void ArchiveWriter::addFile(const std::string& entry_name,
+                              const Iter entry_contents_begin,
+                              const Iter entry_contents_end,
+                              long long size)
   {
-    long long size = _size > -1
-                   ? _size
-                   : std::distance(_entry_contents_begin, _entry_contents_end);
-    addHeader(_entry_name, FileType::Regular, size);
-    for (Iter it = _entry_contents_begin; it != _entry_contents_end; it++)
+    size = size > -1
+         ? size
+         : std::distance(entry_contents_begin, entry_contents_end);
+    addHeader(entry_name, FileType::Regular, size);
+    for (Iter it = entry_contents_begin; it != entry_contents_end; ++it)
     {
       addContent(*it);
     }

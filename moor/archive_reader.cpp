@@ -72,8 +72,8 @@ namespace
 }
 
 
-ArchiveReader::ArchiveReader(const std::string& _archive_file_name)
-  : m_archive_file_name(_archive_file_name),
+ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
+  : m_archive_file_name(archive_file_name_),
     m_archive(archive_read_new()),
     m_open(true)
 {
@@ -84,20 +84,20 @@ ArchiveReader::ArchiveReader(const std::string& _archive_file_name)
   checkError(ec, true);
 }
 
-ArchiveReader::ArchiveReader(unsigned char* _in_buffer, const size_t _size)
+ArchiveReader::ArchiveReader(unsigned char* in_buffer_, const size_t size_)
   : m_archive_file_name(""),
     m_archive(archive_read_new()),
     m_open(true)
 {
   init();
-  checkError(archive_read_open_memory(m_archive, _in_buffer, _size), true);
+  checkError(archive_read_open_memory(m_archive, in_buffer_, size_), true);
 }
 
-ArchiveReader::ArchiveReader(std::vector<unsigned char>&& _in_buffer)
-  :m_archive_file_name(""),
-   m_in_buffer(std::move(_in_buffer)),
-   m_archive(archive_read_new()),
-   m_open(true)
+ArchiveReader::ArchiveReader(std::vector<unsigned char>&& in_buffer_)
+  : m_archive_file_name(""),
+    m_in_buffer(std::move(in_buffer_)),
+    m_archive(archive_read_new()),
+    m_open(true)
 {
   init();
   int ec = archive_read_open_memory(m_archive,
@@ -117,10 +117,10 @@ ArchiveReader::~ArchiveReader()
   close();
 }
 
-static int copy_data(struct archive *ar, struct archive *aw)
+static int copy_data(archive* ar, archive* aw)
 {
   int r;
-  const void *buff;
+  const void* buff;
   size_t size;
   __LA_INT64_T offset;
 
@@ -137,7 +137,7 @@ static int copy_data(struct archive *ar, struct archive *aw)
   }
 }
 
-bool ArchiveReader::extractNext(const std::string& _root_path)
+bool ArchiveReader::extractNext(const std::string& root_path_)
 {
   /* Select which attributes we want to restore. */
   const int flags = ARCHIVE_EXTRACT_TIME
@@ -154,7 +154,7 @@ bool ArchiveReader::extractNext(const std::string& _root_path)
   checkError(r);
 
   archive_entry_set_pathname(entry,
-      (boost::filesystem::path(_root_path) /
+      (boost::filesystem::path(root_path_) /
       archive_entry_pathname(entry)).string().c_str());
   checkError(archive_write_header(a, entry));
   if (archive_entry_size(entry) > 0)
@@ -165,7 +165,7 @@ bool ArchiveReader::extractNext(const std::string& _root_path)
 
 std::pair<std::string, std::vector<unsigned char>> ArchiveReader::extractNext()
 {
-  auto result = std::make_pair(std::string(""), std::vector<unsigned char>());
+  auto result = std::make_pair(std::string(), std::vector<unsigned char>());
 
   struct archive_entry* entry;
   auto r = archive_read_next_header(m_archive, &entry);
@@ -183,8 +183,9 @@ std::pair<std::string, std::vector<unsigned char>> ArchiveReader::extractNext()
     result.second.resize(entry_size);
     for (;;)
     {
-      r = archive_read_data(m_archive, &result.second[read_index]
-        , result.second.size() - read_index);
+      r = archive_read_data(m_archive,
+                            &result.second[read_index],
+                            result.second.size() - read_index);
       if (r == 0)
         break;
       if (r < ARCHIVE_OK)
