@@ -36,24 +36,22 @@ using namespace moor;
 
 static bool testDoesNotExist()
 {
-    try
+  try
+  {
+    ArchiveReader badReader("xxxx_does_not_exist");
+    return true; // Failure, we expect an exception
+  }
+  catch (const std::system_error& ex)
+  {
+    std::cerr << "Expected exception reading non-existent file: " << ex.what() << '\n';
+    if (ex.code() != std::errc::no_such_file_or_directory)
     {
-        ArchiveReader badReader("xxxx_does_not_exist");
-
-        return true; // Failure, we expect an exception
+      std::cerr << "Unexpected error code for non-existent file\n";
+      return true;
     }
-    catch (const std::system_error& ex)
-    {
-        std::cerr << "Expected exception reading non-existent file: " << ex.what() << '\n';
 
-        if (ex.code() != std::errc::no_such_file_or_directory)
-        {
-            std::cerr << "Unexpected error code for non-existent file\n";
-            return true;
-        }
-
-        return false;
-    }
+    return false;
+  }
 }
 
 static bool testArchiveWrite(const std::string& path)
@@ -65,7 +63,7 @@ static bool testArchiveWrite(const std::string& path)
     ArchiveWriter compressor(lout, Format::PAX, Filter::Gzip);
     compressor.addFile("test_data_dir/bar.txt");
     compressor.addDirectory("test_data_dir/foo_dir");
-    char a[] = {64, 65, 66, 67, 68};
+    char a[] = { 64, 65, 66, 67, 68 };
     std::vector<char> l(10, 'A');
     std::vector<char> v(10, 'B');
 
@@ -92,7 +90,7 @@ static bool testArchiveRead(const std::string& path)
   try
   {
     ArchiveReader reader1(path);
-    std::ifstream iff (path, std::ios::binary);
+    std::ifstream iff(path, std::ios::binary);
     iff.seekg(0, std::ios::end);
     auto size = iff.tellg();
     iff.seekg(0, std::ios::beg);
@@ -141,7 +139,7 @@ int main()
 
   if (testArchiveRead("test2.tar.gz"))
   {
-      return 1;
+    return 1;
   }
 
   return 0;
