@@ -30,26 +30,39 @@
 
 namespace moor
 {
-  enum Formats
+  enum class Format
   {
-    Format_pax = ARCHIVE_FORMAT_TAR_PAX_RESTRICTED,
-    Format_tar = ARCHIVE_FORMAT_TAR_GNUTAR,
-    Format_ZIP = ARCHIVE_FORMAT_ZIP,
-    Format_7Zip = ARCHIVE_FORMAT_7ZIP
+    CPIO = ARCHIVE_FORMAT_CPIO,
+    PAX = ARCHIVE_FORMAT_TAR_PAX_RESTRICTED,
+    Tar = ARCHIVE_FORMAT_TAR_GNUTAR,
+    ISO9660 = ARCHIVE_FORMAT_ISO9660,
+    Zip = ARCHIVE_FORMAT_ZIP,
+    Empty = ARCHIVE_FORMAT_EMPTY,
+    Ar = ARCHIVE_FORMAT_AR,
+    CAB = ARCHIVE_FORMAT_CAB,
+    RAR = ARCHIVE_FORMAT_RAR,
+    Zip7 = ARCHIVE_FORMAT_7ZIP
   };
 
-  enum Filters
+  enum class Filter
   {
-      Filter_None = ARCHIVE_FILTER_NONE,
-      Filter_Gzip = ARCHIVE_FILTER_GZIP,
-      Filter_Bzip2 = ARCHIVE_FILTER_BZIP2,
-      Filter_LZMA = ARCHIVE_FILTER_LZMA,
-      Filter_Xz = ARCHIVE_FILTER_XZ
+    None = ARCHIVE_FILTER_NONE,
+    Gzip = ARCHIVE_FILTER_GZIP,
+    Bzip2 = ARCHIVE_FILTER_BZIP2,
+    Compress = ARCHIVE_FILTER_COMPRESS,
+    LZMA = ARCHIVE_FILTER_LZMA,
+    Xz = ARCHIVE_FILTER_XZ,
+    UU = ARCHIVE_FILTER_UU,
+    RPM = ARCHIVE_FILTER_RPM,
+    LZip = ARCHIVE_FILTER_LZIP,
+    LRZip = ARCHIVE_FILTER_LRZIP,
+    LZOP = ARCHIVE_FILTER_LZOP,
+    GRZip = ARCHIVE_FILTER_GRZIP
   };
 
-  enum FileTypes
+  enum class FileType
   {
-    FileType_Regular = AE_IFREG,
-    FileType_Directory = AE_IFDIR
+    Regular = AE_IFREG,
+    Directory = AE_IFDIR
   };
 }

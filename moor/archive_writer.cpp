@@ -50,7 +50,7 @@ void ArchiveWriter::checkError(const int _err_code
 
 
 ArchiveWriter::ArchiveWriter(const std::string& _archive_file_name
-    , const Formats& _format, const Filters& _filter)
+    , const Format& _format, const Filter& _filter)
   : m_open (true), m_archive (archive_write_new()), m_entry (archive_entry_new())
   , m_archive_file_name (_archive_file_name)
    , m_format(_format), m_filter(_filter)
@@ -64,7 +64,7 @@ ArchiveWriter::ArchiveWriter(const std::string& _archive_file_name
 }
 
 ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& _out_buffer
-    , const Formats& _format, const Filters& _filter)
+    , const Format& _format, const Filter& _filter)
   : m_open(true), m_archive(archive_write_new()), m_entry (archive_entry_new())
   , m_archive_file_name (""), m_format(_format)
   , m_filter(_filter)
@@ -77,7 +77,7 @@ ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& _out_buffer
 }
 
 ArchiveWriter::ArchiveWriter(unsigned char* _out_buffer, size_t* _size
-    , const Formats& _format, const Filters& _filter)
+    , const Format& _format, const Filter& _filter)
   : m_open(true), m_archive(archive_write_new()), m_entry (archive_entry_new())
   , m_archive_file_name (""), m_format(_format)
   , m_filter(_filter)
@@ -96,7 +96,7 @@ ArchiveWriter::~ArchiveWriter()
 }
 
 void ArchiveWriter::addHeader(const std::string& _entry_name
-  , const FileTypes _entry_type, const long long _size, const int _permission)
+  , const FileType _entry_type, const long long _size, const int _permission)
 {
   m_entry = archive_entry_clear(m_entry);
   archive_entry_set_pathname(m_entry, _entry_name.c_str());
@@ -174,14 +174,14 @@ void ArchiveWriter::AddFile (const std::string& _file_path)
 void ArchiveWriter::AddFile (const std::string& _entry_name
   , const unsigned char * _data , const unsigned long long _size)
 {
-  addHeader(_entry_name, FileType_Regular, _size);
+  addHeader(_entry_name, FileType::Regular, _size);
   addContent((char*)_data, _size);
   addFinish();
 }
 
 void ArchiveWriter::AddDirectory(const std::string& _directory_name)
 {
-  addHeader(_directory_name, FileType_Directory, 0777);
+  addHeader(_directory_name, FileType::Directory, 0777);
   addFinish();
 }
 
