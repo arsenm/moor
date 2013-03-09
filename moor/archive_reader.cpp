@@ -176,9 +176,10 @@ void ArchiveReader::checkError(const int _err_code
     close();
   if (_err_code != ARCHIVE_OK && _err_code != ARCHIVE_WARN)
   {
+    const char* errStr = archive_error_string(m_archive);
     throw std::system_error(archive_errno(m_archive),
                             std::generic_category(),
-                            archive_error_string(m_archive));
+                            errStr ? errStr : "");
   }
 }
 
