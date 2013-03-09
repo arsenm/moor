@@ -38,23 +38,7 @@ struct write_memory_data
   std::vector<unsigned char> * buff;
 };
 
-static int moor_memory_write_close(struct archive *, void *);
-static int moor_memory_write_open(struct archive *, void *);
-static ssize_t moor_memory_write(struct archive *, void *, const void *buff
-  , size_t);
-
-int moor::write_open_memory(struct archive *a, std::vector<unsigned char> * _buff)
-{
-  struct write_memory_data *mine = new write_memory_data;
-
-  mine->buff = _buff;
-  //mine->size = buffSize;
-  //mine->client_size = used;
-  return (archive_write_open(a, mine, moor_memory_write_open, moor_memory_write
-    , moor_memory_write_close));
-}
-
-int moor_memory_write_open(struct archive *a, void *client_data)
+static int moor_memory_write_open(struct archive *a, void *client_data)
 { /*struct write_memory_data *mine;
     mine = client_data; mine->used = 0;
     if (mine->client_size != NULL)
@@ -64,11 +48,10 @@ int moor_memory_write_open(struct archive *a, void *client_data)
     archive_write_set_bytes_in_last_block(a, 1);
   return (ARCHIVE_OK);
 }
-ssize_t moor_memory_write(struct archive *a, void *client_data,
+static ssize_t moor_memory_write(struct archive *a, void *client_data,
   const void *buff , size_t length)
 {
-  struct write_memory_data *mine;
-  mine = (write_memory_data*)client_data;
+  struct write_memory_data *mine = static_cast<write_memory_data*>(client_data);
 
   /*if (mine->used + length > mine->size)
   {
@@ -84,11 +67,22 @@ ssize_t moor_memory_write(struct archive *a, void *client_data,
   return (length);
 }
 
-int moor_memory_write_close(struct archive *a, void *client_data)
+static int moor_memory_write_close(struct archive *a, void *client_data)
 {
-  struct write_memory_data *mine;
+  struct write_memory_data *mine = static_cast<write_memory_data*>(client_data);
   (void)a; /* UNUSED */
-  mine = (write_memory_data*)client_data;
   delete mine;
   return (ARCHIVE_OK);
 }
+
+int moor::write_open_memory(struct archive *a, std::vector<unsigned char> * _buff)
+{
+  struct write_memory_data *mine = new write_memory_data;
+
+  mine->buff = _buff;
+  //mine->size = buffSize;
+  //mine->client_size = used;
+  return (archive_write_open(a, mine, moor_memory_write_open, moor_memory_write
+    , moor_memory_write_close));
+}
+
