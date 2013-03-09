@@ -35,29 +35,37 @@
 using namespace moor;
 
 ArchiveReader::ArchiveReader(const std::string& _archive_file_name)
-  :m_archive_file_name(_archive_file_name), m_archive(archive_read_new())
-   , m_open(true)
+  : m_archive_file_name(_archive_file_name),
+    m_archive(archive_read_new()),
+    m_open(true)
 {
   init();
-  checkError(archive_read_open_filename(m_archive, m_archive_file_name.c_str()
-    , 10240), true);
-
+  int ec = archive_read_open_filename(m_archive,
+                                      m_archive_file_name.c_str(),
+                                      10240);
+  checkError(ec, true);
 }
 
 ArchiveReader::ArchiveReader(unsigned char* _in_buffer, const size_t _size)
-  :m_archive_file_name(""), m_archive(archive_read_new()) , m_open(true)
+  : m_archive_file_name(""),
+    m_archive(archive_read_new()),
+    m_open(true)
 {
   init();
   checkError(archive_read_open_memory(m_archive, _in_buffer, _size), true);
 }
 
 ArchiveReader::ArchiveReader(std::vector<unsigned char>&& _in_buffer)
-  :m_archive_file_name(""), m_in_buffer(std::move(_in_buffer))
-   , m_archive(archive_read_new()), m_open(true)
+  :m_archive_file_name(""),
+   m_in_buffer(std::move(_in_buffer)),
+   m_archive(archive_read_new()),
+   m_open(true)
 {
   init();
-  checkError(archive_read_open_memory(m_archive, &*m_in_buffer.begin()
-    , m_in_buffer.size()), true);
+  int ec = archive_read_open_memory(m_archive,
+                                    &*m_in_buffer.begin(),
+                                    m_in_buffer.size());
+  checkError(ec, true);
 }
 
 void ArchiveReader::init()
@@ -91,9 +99,9 @@ static int copy_data(struct archive *ar, struct archive *aw)
   }
 }
 
-bool ArchiveReader::ExtractNext (const std::string& _root_path)
+bool ArchiveReader::ExtractNext(const std::string& _root_path)
 {
-    /* Select which attributes we want to restore. */
+  /* Select which attributes we want to restore. */
   const int flags = ARCHIVE_EXTRACT_TIME
                   | ARCHIVE_EXTRACT_PERM
                   | ARCHIVE_EXTRACT_ACL
@@ -166,8 +174,8 @@ std::pair<std::string, std::vector<unsigned char>> ArchiveReader::ExtractNext()
   return result;
 }
 
-void ArchiveReader::checkError(const int _err_code
-  , const bool _close_before_throw)
+void ArchiveReader::checkError(const int _err_code,
+                               const bool _close_before_throw)
 {
   int archiveErrno = 0;
   const char* errStr = nullptr;

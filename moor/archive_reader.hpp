@@ -51,7 +51,8 @@ namespace moor
 
   private:
     void init();
-    void checkError(const int _err_code, const bool _close_before_throw=false);
+    void checkError(const int _err_code,
+                    const bool _close_before_throw = false);
     void close();
 
     archive* m_archive;
