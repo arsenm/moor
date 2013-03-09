@@ -119,14 +119,13 @@ ArchiveReader::~ArchiveReader()
 
 static int copy_data(archive* ar, archive* aw)
 {
-  int r;
-  const void* buff;
-  size_t size;
-  __LA_INT64_T offset;
-
-  for (;;)
+  while (true)
   {
-    r = archive_read_data_block(ar, &buff, &size, &offset);
+    const void* buff;
+    size_t size;
+    __LA_INT64_T offset;
+
+    int r = archive_read_data_block(ar, &buff, &size, &offset);
     if (r == ARCHIVE_EOF)
       return ARCHIVE_OK;
     if (r != ARCHIVE_OK)
