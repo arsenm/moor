@@ -96,13 +96,11 @@ int copy_data(struct archive *ar, struct archive *aw)
 
 bool ArchiveReader::ExtractNext (const std::string& _root_path)
 {
-  int flags;
-
-  /* Select which attributes we want to restore. */
-  flags = ARCHIVE_EXTRACT_TIME;
-  flags |= ARCHIVE_EXTRACT_PERM;
-  flags |= ARCHIVE_EXTRACT_ACL;
-  flags |= ARCHIVE_EXTRACT_FFLAGS;
+    /* Select which attributes we want to restore. */
+  const int flags = ARCHIVE_EXTRACT_TIME
+                  | ARCHIVE_EXTRACT_PERM
+                  | ARCHIVE_EXTRACT_ACL
+                  | ARCHIVE_EXTRACT_FFLAGS;
 
   struct archive* a = archive_write_disk_new();
   archive_write_disk_set_options(a, flags);
