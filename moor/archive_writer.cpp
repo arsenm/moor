@@ -149,7 +149,7 @@ void ArchiveWriter::AddFile (const std::string& _file_path)
 {
   if (!boost::filesystem::exists(_file_path))
   {
-      throw std::errc::no_such_file_or_directory;
+      throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
   }
 
   boost::filesystem::file_status file_stat
@@ -161,7 +161,7 @@ void ArchiveWriter::AddFile (const std::string& _file_path)
 
   if (!boost::filesystem::is_regular_file(file_stat))
   {
-    throw std::errc::not_supported;
+    throw std::system_error(std::make_error_code(std::errc::not_supported));
   }
 
   std::fstream entry_file(_file_path.c_str(), std::ios::in);

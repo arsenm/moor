@@ -39,7 +39,7 @@ ArchiveReader::ArchiveReader(const std::string& _archive_file_name)
    , m_open(true)
 {
   if (!boost::filesystem::exists(m_archive_file_name))
-    throw std::errc::no_such_file_or_directory;
+    throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
 
   init();
   checkError(archive_read_open_filename(m_archive, m_archive_file_name.c_str()
