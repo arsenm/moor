@@ -155,9 +155,10 @@ bool ArchiveReader::extractNext(const std::string& root_path_)
   checkError(r);
 
   archive_entry_set_pathname(entry,
-      (boost::filesystem::path(root_path_) /
-      archive_entry_pathname(entry)).string().c_str());
+    (boost::filesystem::path(root_path_)
+      / archive_entry_pathname(entry)).string().c_str());
   checkError(archive_write_header(a, entry));
+
   if (archive_entry_size(entry) > 0)
     checkError(copyData(m_archive, a));
 
@@ -190,13 +191,13 @@ std::pair<std::string, std::vector<unsigned char>> ArchiveReader::extractNext()
                                   &result.second[read_index],
                                   result.second.size() - read_index);
     if (r == 0)
-        break;
+      break;
     if (r < ARCHIVE_OK)
-        checkError(r);
+      checkError(r);
 
     read_index += r;
     if (read_index == entry_size)
-        break;
+      break;
   }
 
   return result;
