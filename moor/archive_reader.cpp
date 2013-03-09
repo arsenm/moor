@@ -99,7 +99,7 @@ static int copy_data(struct archive *ar, struct archive *aw)
   }
 }
 
-bool ArchiveReader::ExtractNext(const std::string& _root_path)
+bool ArchiveReader::extractNext(const std::string& _root_path)
 {
   /* Select which attributes we want to restore. */
   const int flags = ARCHIVE_EXTRACT_TIME
@@ -138,7 +138,7 @@ bool ArchiveReader::ExtractNext(const std::string& _root_path)
   return true;
 }
 
-std::pair<std::string, std::vector<unsigned char>> ArchiveReader::ExtractNext()
+std::pair<std::string, std::vector<unsigned char>> ArchiveReader::extractNext()
 {
   auto result = std::make_pair(std::string(""), std::vector<unsigned char>());
 

@@ -68,15 +68,15 @@ int main()
     std::vector<unsigned char> lout;
     //ArchiveWriter compressor("test1.tar.gz", Format::PAX, Filter::Gzip);
     ArchiveWriter compressor(lout, Format::PAX, Filter::Gzip);
-    compressor.AddFile("test_data_dir/bar.txt");
-    compressor.AddDirectory("test_data_dir/foo_dir");
+    compressor.addFile("test_data_dir/bar.txt");
+    compressor.addDirectory("test_data_dir/foo_dir");
     char a[] = {64, 65, 66, 67, 68};
     std::vector<char> l(10, 'A');
     std::vector<char> v(10, 'B');
 
-    compressor.AddFile("a_array.txt", a, a+10);
-    compressor.AddFile("b_list.txt", l.begin(), l.end());
-    compressor.AddFile("vector_a.txt", v.begin(), v.end());
+    compressor.addFile("a_array.txt", a, a+10);
+    compressor.addFile("b_list.txt", l.begin(), l.end());
+    compressor.addFile("vector_a.txt", v.begin(), v.end());
 
     compressor.close();
     std::ofstream of("test2.tar.gz", std::ios::binary);
@@ -102,17 +102,17 @@ int main()
     while(iff.good())
       iff.read((char*)&*ff.begin(), size);
     ArchiveReader reader(std::move(ff));
-    auto data = reader.ExtractNext();
-    while(data.first.length() > 0)
+    auto data = reader.extractNext();
+    while (data.first.length() > 0)
     {
         std::cout << data.first << " : " << data.second.size()<< std::endl;
-        data = reader.ExtractNext();
+        data = reader.extractNext();
     }
-    data = reader1.ExtractNext();
+    data = reader1.extractNext();
     while(data.first.length() > 0)
     {
       std::cout << data.first << " : " << data.second.size()<< std::endl;
-      data = reader1.ExtractNext();
+      data = reader1.extractNext();
     }
   }
   catch (const std::runtime_error& ex)

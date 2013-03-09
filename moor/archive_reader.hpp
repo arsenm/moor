@@ -45,9 +45,9 @@ namespace moor
     ~ArchiveReader();
 
     //returns FALSE at EOF
-    bool ExtractNext (const std::string& _root_path);
+    bool extractNext(const std::string& _root_path);
     //retuns empty filename at EOF
-    std::pair<std::string, std::vector<unsigned char>> ExtractNext();
+    std::pair<std::string, std::vector<unsigned char>> extractNext();
 
   private:
     void init();

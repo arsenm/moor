@@ -52,17 +52,17 @@ namespace moor
                   const Filter& _compression);
     ~ArchiveWriter();
 
-    void AddFile(const std::string& _file_path);
+    void addFile(const std::string& _file_path);
 
     template <class Iter>
-    void AddFile(const std::string& _entry_name,
+    void addFile(const std::string& _entry_name,
                  const Iter _entry_contents_begin,
                  const Iter _entry_contents_end,
                  long long _size = -1);
-    void AddFile(const std::string& _entry_name,
+    void addFile(const std::string& _entry_name,
                  const unsigned char * _data,
                  const unsigned long long _size);
-    void AddDirectory(const std::string& _directory_name);
+    void addDirectory(const std::string& _directory_name);
     void close();
 
   private:
@@ -87,7 +87,7 @@ namespace moor
   };
 
   template <class Iter>
-  void ArchiveWriter::AddFile(const std::string& _entry_name,
+  void ArchiveWriter::addFile(const std::string& _entry_name,
                               const Iter _entry_contents_begin,
                               const Iter _entry_contents_end,
                               long long _size)
@@ -100,6 +100,7 @@ namespace moor
     {
       addContent(*it);
     }
+
     addFinish();
   }
 }

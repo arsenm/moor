@@ -170,7 +170,7 @@ void ArchiveWriter::addFinish()
   archive_write_finish_entry(m_archive);
 }
 
-void ArchiveWriter::AddFile(const std::string& _file_path)
+void ArchiveWriter::addFile(const std::string& _file_path)
 {
   boost::filesystem::file_status file_stat
     = boost::filesystem::status(_file_path);
@@ -199,7 +199,7 @@ void ArchiveWriter::AddFile(const std::string& _file_path)
 
   addFinish();
 }
-void ArchiveWriter::AddFile(const std::string& _entry_name,
+void ArchiveWriter::addFile(const std::string& _entry_name,
                             const unsigned char* _data,
                             unsigned long long _size)
 {
@@ -208,7 +208,7 @@ void ArchiveWriter::AddFile(const std::string& _entry_name,
   addFinish();
 }
 
-void ArchiveWriter::AddDirectory(const std::string& _directory_name)
+void ArchiveWriter::addDirectory(const std::string& _directory_name)
 {
   addHeader(_directory_name, FileType::Directory, 0777);
   addFinish();
