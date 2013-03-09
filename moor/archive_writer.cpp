@@ -148,13 +148,12 @@ void ArchiveWriter::addFinish()
 
 void ArchiveWriter::AddFile (const std::string& _file_path)
 {
-  if (!boost::filesystem::exists(_file_path))
-  {
-      throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
-  }
-
   boost::filesystem::file_status file_stat
     = boost::filesystem::status(_file_path);
+  if (!boost::filesystem::exists(file_stat))
+  {
+    throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
+  }
   boost::filesystem::perms perm = file_stat.permissions();
   long long file_size = boost::filesystem::file_size(_file_path);
 
