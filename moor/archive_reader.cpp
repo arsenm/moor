@@ -172,12 +172,24 @@ std::pair<std::string, std::vector<unsigned char>> ArchiveReader::ExtractNext()
 void ArchiveReader::checkError(const int _err_code
   , const bool _close_before_throw)
 {
-  if (_close_before_throw && _err_code == ARCHIVE_FATAL)
-    close();
+  int archiveErrno = 0;
+  const char* errStr = nullptr;
+
+  if (_err_code == ARCHIVE_FATAL)
+  {
+    // Close might clear the archive errno, so get it first
+    archiveErrno = archive_errno(m_archive);
+    errStr = archive_error_string(m_archive);
+
+    if (_close_before_throw)
+    {
+      close();
+    }
+  }
+
   if (_err_code != ARCHIVE_OK && _err_code != ARCHIVE_WARN)
   {
-    const char* errStr = archive_error_string(m_archive);
-    throw std::system_error(archive_errno(m_archive),
+    throw std::system_error(archiveErrno,
                             std::generic_category(),
                             errStr ? errStr : "");
   }
