@@ -58,7 +58,7 @@ int main()
   }
   catch (const std::runtime_error& ex)
   {
-    std::cerr << "Error writing archive: " << ex.what();
+    std::cerr << "Error writing archive: " << ex.what() << '\n';
     return 1;
   }
 
@@ -89,7 +89,7 @@ int main()
   }
   catch (const std::runtime_error& ex)
   {
-    std::cerr << "Error reading archive: " << ex.what();
+    std::cerr << "Error reading archive: " << ex.what() << '\n';
     return 1;
   }
 
