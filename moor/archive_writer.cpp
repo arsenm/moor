@@ -29,7 +29,6 @@
 #include <archive_entry.h>
 
 #include <boost/filesystem.hpp>
-#include <boost/scope_exit.hpp>
 
 #include <fstream>
 #include <stdexcept>
@@ -39,6 +38,40 @@
 
 using namespace moor;
 
+namespace
+{
+  class ScopedReadDisk
+  {
+  private:
+    archive* m_archive;
+
+  public:
+    ScopedReadDisk(const std::string& path)
+      : m_archive(archive_read_disk_new())
+    {
+        if (!m_archive)
+        {
+            throw std::bad_alloc();
+        }
+    }
+
+    ~ScopedReadDisk()
+    {
+      archive_read_close(m_archive);
+      archive_read_free(m_archive);
+    }
+
+    operator archive*()
+    {
+      return m_archive;
+    }
+
+    operator const archive*() const
+    {
+      return m_archive;
+    }
+  };
+}
 
 
 void ArchiveWriter::checkError(const int _err_code,
@@ -138,16 +171,7 @@ void ArchiveWriter::addHeader(const std::string& _entry_name,
 
 void ArchiveWriter::addHeader(const std::string& _file_path)
 {
-  struct archive* a = archive_read_disk_new();
-  BOOST_SCOPE_EXIT (&a)
-  {
-    if(a != NULL)
-    {
-      archive_read_close(a);
-      archive_read_free(a);
-    }
-  }
-  BOOST_SCOPE_EXIT_END
+  ScopedReadDisk a(_file_path);
 
   m_entry = archive_entry_clear(m_entry);
   archive_entry_set_pathname(m_entry, _file_path.c_str());

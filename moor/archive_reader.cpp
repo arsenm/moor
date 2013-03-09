@@ -30,9 +30,47 @@
 #include <system_error>
 
 #include <boost/filesystem.hpp>
-#include <boost/scope_exit.hpp>
 
 using namespace moor;
+
+namespace
+{
+  class ScopedWriteDisk
+  {
+  private:
+    archive* m_archive;
+
+  public:
+    ScopedWriteDisk(int flags)
+      : m_archive(archive_write_disk_new())
+    {
+        if (!m_archive)
+        {
+            throw std::bad_alloc();
+        }
+
+        archive_write_disk_set_options(m_archive, flags);
+        archive_write_disk_set_standard_lookup(m_archive);
+    }
+
+    ~ScopedWriteDisk()
+    {
+      archive_write_close(m_archive);
+      archive_write_free(m_archive);
+    }
+
+    operator archive*()
+    {
+      return m_archive;
+    }
+
+    operator const archive*() const
+    {
+      return m_archive;
+    }
+  };
+}
+
 
 ArchiveReader::ArchiveReader(const std::string& _archive_file_name)
   : m_archive_file_name(_archive_file_name),
@@ -106,22 +144,10 @@ bool ArchiveReader::extractNext(const std::string& _root_path)
                   | ARCHIVE_EXTRACT_PERM
                   | ARCHIVE_EXTRACT_ACL
                   | ARCHIVE_EXTRACT_FFLAGS;
-
-  struct archive* a = archive_write_disk_new();
-  archive_write_disk_set_options(a, flags);
-  archive_write_disk_set_standard_lookup(a);
+  ScopedWriteDisk a(flags);
 
   struct archive_entry* entry;
   auto r = archive_read_next_header(m_archive, &entry);
-  BOOST_SCOPE_EXIT (&a)
-  {
-    if(a != NULL)
-    {
-      archive_write_close(a);
-      archive_write_free(a);
-    }
-  }
-  BOOST_SCOPE_EXIT_END
   if (r == ARCHIVE_EOF)
     return false;
 
