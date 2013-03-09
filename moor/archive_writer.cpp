@@ -184,7 +184,7 @@ void ArchiveWriter::addContent(const char b)
   archive_write_data(m_archive, &b, 1);
 }
 
-void ArchiveWriter::addContent(const char* data, const unsigned long long size)
+void ArchiveWriter::addContent(const void* data, const unsigned long long size)
 {
   archive_write_data(m_archive, data, size);
 }
@@ -222,11 +222,11 @@ void ArchiveWriter::addFile(const std::string& file_path)
   addFinish();
 }
 void ArchiveWriter::addFile(const std::string& entry_name,
-                            const unsigned char* data,
+                            const void* data,
                             unsigned long long size)
 {
   addHeader(entry_name, FileType::Regular, size);
-  addContent((const char*) data, size);
+  addContent(data, size);
   addFinish();
 }
 

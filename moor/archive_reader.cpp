@@ -85,7 +85,7 @@ ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
   checkError(ec, true);
 }
 
-ArchiveReader::ArchiveReader(unsigned char* in_buffer_, const size_t size_)
+ArchiveReader::ArchiveReader(void* in_buffer_, const size_t size_)
   : m_archive_file_name(),
     m_in_buffer(),
     m_archive(archive_read_new()),

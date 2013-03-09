@@ -60,7 +60,7 @@ namespace moor
                  const Iter entry_contents_end,
                  long long size = -1);
     void addFile(const std::string& entry_name,
-                 const unsigned char* data,
+                 const void* data,
                  const unsigned long long size);
     void addDirectory(const std::string& directory_name);
     void close();
@@ -74,7 +74,7 @@ namespace moor
                    const int permission = 0644);
     void addHeader(const std::string& file_path);
     void addContent(const char byte);
-    void addContent(const char* bytes,
+    void addContent(const void* bytes,
                     const unsigned long long size);
     void addFinish();
 
