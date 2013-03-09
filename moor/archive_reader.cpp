@@ -120,8 +120,8 @@ bool ArchiveReader::ExtractNext (const std::string& _root_path)
   BOOST_SCOPE_EXIT_END
   if (r == ARCHIVE_EOF)
     return false;
-  else
-    checkError(r);
+
+  checkError(r);
 
   archive_entry_set_pathname(entry,
       (boost::filesystem::path(_root_path) /
@@ -141,8 +141,8 @@ std::pair<std::string, std::vector<unsigned char>> ArchiveReader::ExtractNext()
   auto r = archive_read_next_header(m_archive, &entry);
   if (r == ARCHIVE_EOF)
     return result;
-  else
-    checkError(r);
+
+  checkError(r);
 
   result.first = archive_entry_pathname(entry);
   auto entry_size = archive_entry_size(entry);
