@@ -31,8 +31,8 @@
 #include <boost/filesystem.hpp>
 #include <boost/scope_exit.hpp>
 
-#include <stdexcept>
 #include <fstream>
+#include <stdexcept>
 
 #include <sys/stat.h>
 

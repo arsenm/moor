@@ -23,9 +23,10 @@
  */
 
 #pragma once
+
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 #include "moor_build_config.hpp"
 #include "types.hpp"

@@ -24,12 +24,13 @@
 
 #pragma once
 
-#include <string>
-#include <iterator>
-#include <vector>
-
 #include "moor_build_config.hpp"
 #include "types.hpp"
+
+#include <iterator>
+#include <string>
+#include <vector>
+
 
 struct archive;
 struct archive_entry;
@@ -87,5 +88,4 @@ namespace moor
       addContent(*it);
     addFinish();
   }
-
 }

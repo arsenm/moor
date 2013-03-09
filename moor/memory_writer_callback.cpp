@@ -25,8 +25,9 @@
 #include "memory_writer_callback.hpp"
 
 #include <archive.h>
-#include <stdexcept>
+
 #include <iterator>
+#include <stdexcept>
 
 using namespace moor;
 
