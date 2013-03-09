@@ -78,13 +78,12 @@ namespace moor
                     const unsigned long long size);
     void addFinish();
 
-    bool m_open;
+    const std::string m_archive_file_name;
     archive* m_archive;
     archive_entry* m_entry;
-
-    const std::string m_archive_file_name;
     const Format m_format;
     const Filter m_filter;
+    bool m_open;
   };
 
   template <class Iter>

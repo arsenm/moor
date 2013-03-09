@@ -40,7 +40,8 @@ struct write_memory_data
 };
 
 static int moor_memory_write_open(struct archive *a, void *client_data)
-{ /*struct write_memory_data *mine;
+{
+  /*struct write_memory_data *mine;
     mine = client_data; mine->used = 0;
     if (mine->client_size != NULL)
      *mine->client_size = mine->used;*/

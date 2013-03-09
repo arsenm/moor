@@ -74,6 +74,7 @@ namespace
 
 ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
   : m_archive_file_name(archive_file_name_),
+    m_in_buffer(),
     m_archive(archive_read_new()),
     m_open(true)
 {
@@ -85,7 +86,8 @@ ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
 }
 
 ArchiveReader::ArchiveReader(unsigned char* in_buffer_, const size_t size_)
-  : m_archive_file_name(""),
+  : m_archive_file_name(),
+    m_in_buffer(),
     m_archive(archive_read_new()),
     m_open(true)
 {
@@ -94,7 +96,7 @@ ArchiveReader::ArchiveReader(unsigned char* in_buffer_, const size_t size_)
 }
 
 ArchiveReader::ArchiveReader(std::vector<unsigned char>&& in_buffer_)
-  : m_archive_file_name(""),
+  : m_archive_file_name(),
     m_in_buffer(std::move(in_buffer_)),
     m_archive(archive_read_new()),
     m_open(true)
