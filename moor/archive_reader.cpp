@@ -63,7 +63,7 @@ ArchiveReader::ArchiveReader(std::vector<unsigned char>&& _in_buffer)
 {
   init();
   int ec = archive_read_open_memory(m_archive,
-                                    &*m_in_buffer.begin(),
+                                    m_in_buffer.data(),
                                     m_in_buffer.size());
   checkError(ec, true);
 }
