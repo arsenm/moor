@@ -47,16 +47,13 @@ int moor::write_open_memory(struct archive *a, std::vector<unsigned char> * _buf
 {
   struct write_memory_data *mine = new write_memory_data;
 
-  //mine = (struct write_memory_data *)malloc(sizeof(*mine));
-  if (mine == NULL)
-    throw std::runtime_error("no memory");
-
   mine->buff = _buff;
   //mine->size = buffSize;
   //mine->client_size = used;
   return (archive_write_open(a, mine, moor_memory_write_open, moor_memory_write
     , moor_memory_write_close));
 }
+
 int moor_memory_write_open(struct archive *a, void *client_data)
 { /*struct write_memory_data *mine;
     mine = client_data; mine->used = 0;
