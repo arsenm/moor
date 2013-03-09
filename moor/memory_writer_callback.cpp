@@ -65,9 +65,10 @@ static ssize_t moor_memory_write(struct archive* a,
   mine->used += length;
   if (mine->client_size != 0)
     *mine->client_size = mine->used;*/
-  std::copy((unsigned char*)buff,
-            (unsigned char*)buff + length,
-            std::back_inserter(*(mine->buff)));
+  const unsigned char* p = reinterpret_cast<const unsigned char*>(buff);
+  std::copy(p,
+            p + length,
+            std::back_inserter(*mine->buff));
   return length;
 }
 
