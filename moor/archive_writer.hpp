@@ -26,7 +26,7 @@
 
 #include <string>
 #include <iterator>
-#include <list>
+#include <vector>
 
 #include "moor_build_config.hpp"
 #include "types.hpp"
@@ -41,7 +41,7 @@ namespace moor
   public:
     ArchiveWriter(const std::string& _archive_file_name, const Formats& _format,
                   const Compressions& _compression);
-    ArchiveWriter(std::list<unsigned char>& _out_buffer, const Formats& _format,
+    ArchiveWriter(std::vector<unsigned char>& _out_buffer, const Formats& _format,
         const Compressions& _compression);
     ArchiveWriter(unsigned char * _out_buffer, size_t* _size
       , const Formats& _format, const Compressions& _compression);
@@ -71,7 +71,6 @@ namespace moor
     archive_entry* m_entry;
 
     const std::string m_archive_file_name;
-    //std::list<unsigned char>* m_out_buffer;
     const Formats m_format;
     const Compressions m_compression;
   };

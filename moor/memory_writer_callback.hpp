@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include <list>
+#include <vector>
 
 #if defined (_WIN64)
   typedef long long ssize_t;
@@ -36,5 +36,5 @@ struct archive;
 
 namespace moor
 {
-  int write_open_memory(struct archive *a, std::list<unsigned char>* _buff);
+  int write_open_memory(struct archive *a, std::vector<unsigned char>* _buff);
 }

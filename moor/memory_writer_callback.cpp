@@ -35,7 +35,7 @@ struct write_memory_data
   //size_t used;
   //size_t size;
   //size_t * client_size;
-  std::list<unsigned char> * buff;
+  std::vector<unsigned char> * buff;
 };
 
 static int moor_memory_write_close(struct archive *, void *);
@@ -43,7 +43,7 @@ static int moor_memory_write_open(struct archive *, void *);
 static ssize_t moor_memory_write(struct archive *, void *, const void *buff
   , size_t);
 
-int moor::write_open_memory(struct archive *a, std::list<unsigned char> * _buff)
+int moor::write_open_memory(struct archive *a, std::vector<unsigned char> * _buff)
 {
   struct write_memory_data *mine = new write_memory_data;
 

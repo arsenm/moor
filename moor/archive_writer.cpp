@@ -72,7 +72,7 @@ ArchiveWriter::ArchiveWriter(const std::string& _archive_file_name
       , true);
 }
 
-ArchiveWriter::ArchiveWriter(std::list<unsigned char>& _out_buffer
+ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& _out_buffer
     , const Formats& _format, const Compressions& _compression)
   : m_open(true), m_archive(archive_write_new()), m_entry (archive_entry_new())
   , m_archive_file_name (""), m_format(_format)
