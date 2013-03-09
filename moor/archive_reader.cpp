@@ -175,7 +175,11 @@ void ArchiveReader::checkError(const int _err_code
   if (_close_before_throw && _err_code == ARCHIVE_FATAL)
     close();
   if (_err_code != ARCHIVE_OK && _err_code != ARCHIVE_WARN)
-    throw std::runtime_error(archive_error_string(m_archive));
+  {
+    throw std::system_error(_err_code,
+                            std::generic_category(),
+                            archive_error_string(m_archive));
+  }
 }
 
 void ArchiveReader::close()
