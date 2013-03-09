@@ -47,7 +47,7 @@ void ArchiveWriter::checkError(const int _err_code
     Close();
   if (_err_code != ARCHIVE_OK && _err_code != ARCHIVE_WARN)
   {
-    throw std::system_error(_err_code,
+    throw std::system_error(archive_errno(m_archive),
                             std::generic_category(),
                             archive_error_string(m_archive));
   }
