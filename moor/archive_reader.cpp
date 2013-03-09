@@ -117,7 +117,6 @@ bool ArchiveReader::extractNext(const std::string& _root_path)
   {
     if(a != NULL)
     {
-      archive_write_finish_entry(a);
       archive_write_close(a);
       archive_write_free(a);
     }
