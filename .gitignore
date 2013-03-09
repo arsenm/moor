@@ -11,3 +11,6 @@ cmaked/
 release/
 *.user
 tags
+.DS_Store
+*.lib
+*.dll
