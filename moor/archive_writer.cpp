@@ -46,7 +46,7 @@ namespace
     archive* m_archive;
 
   public:
-    ScopedReadDisk(const std::string& path)
+    ScopedReadDisk()
       : m_archive(archive_read_disk_new())
     {
         if (!m_archive)
@@ -171,7 +171,7 @@ void ArchiveWriter::addHeader(const std::string& entry_name_,
 
 void ArchiveWriter::addHeader(const std::string& file_path_)
 {
-  ScopedReadDisk a(file_path_);
+  ScopedReadDisk a;
 
   m_entry = archive_entry_clear(m_entry);
   archive_entry_set_pathname(m_entry, file_path_.c_str());
