@@ -98,21 +98,23 @@ static bool testArchiveRead(const std::string& path)
     iff.seekg(0, std::ios::beg);
     std::vector<unsigned char> ff(size);
 
-    while(iff.good())
-      iff.read((char*)&*ff.begin(), size);
-    ArchiveReader reader(std::move(ff));
+    while (iff.good())
+    {
+      iff.read(reinterpret_cast<char*>(ff.data()), size);
+    }
 
+    ArchiveReader reader(std::move(ff));
     auto data = reader.extractNext();
     while (data.first.length() > 0)
     {
-        std::cout << data.first << " : " << data.second.size()<< std::endl;
-        data = reader.extractNext();
+      std::cout << data.first << " : " << data.second.size() << '\n';
+      data = reader.extractNext();
     }
 
     data = reader1.extractNext();
     while (data.first.length() > 0)
     {
-      std::cout << data.first << " : " << data.second.size()<< std::endl;
+      std::cout << data.first << " : " << data.second.size() << '\n';
       data = reader1.extractNext();
     }
 
