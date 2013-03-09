@@ -50,7 +50,7 @@ int main()
     compressor.AddFile("b_list.txt", l.begin(), l.end());
     compressor.AddFile("vector_a.txt", v.begin(), v.end());
 
-    compressor.Close();
+    compressor.close();
     std::ofstream of("test2.tar.gz", std::ios::binary);
     for (auto a = lout.begin(); a != lout.end(); a++)
         of << *a;

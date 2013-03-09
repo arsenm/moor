@@ -56,7 +56,7 @@ namespace moor
     void AddFile (const std::string& _entry_name, const unsigned char * _data
       , const unsigned long long _size);
     void AddDirectory(const std::string& _directory_name);
-    void Close();
+    void close();
 
   private:
     void checkError(const int _err_code, const bool _close_before_throw = false);

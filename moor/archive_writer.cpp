@@ -51,7 +51,7 @@ void ArchiveWriter::checkError(const int _err_code
       errStr = archive_error_string(m_archive);
       if (_close_before_throw)
       {
-          Close();
+          close();
       }
   }
 
@@ -107,7 +107,7 @@ ArchiveWriter::ArchiveWriter(unsigned char* _out_buffer, size_t* _size
 
 ArchiveWriter::~ArchiveWriter()
 {
-  Close();
+  close();
 }
 
 void ArchiveWriter::addHeader(const std::string& _entry_name
@@ -199,7 +199,7 @@ void ArchiveWriter::AddDirectory(const std::string& _directory_name)
   addFinish();
 }
 
-void ArchiveWriter::Close()
+void ArchiveWriter::close()
 {
   if (m_open)
   {
