@@ -33,6 +33,7 @@
 
 #include <fstream>
 #include <stdexcept>
+#include <system_error>
 
 #include <sys/stat.h>
 
@@ -142,34 +143,34 @@ void ArchiveWriter::addFinish()
 
 void ArchiveWriter::AddFile (const std::string& _file_path)
 {
-  if (boost::filesystem::exists(_file_path))
+  if (!boost::filesystem::exists(_file_path))
   {
-    boost::filesystem::file_status file_stat
-      = boost::filesystem::status(_file_path);
-    boost::filesystem::perms perm = file_stat.permissions();
-    long long file_size = boost::filesystem::file_size(_file_path);
-
-    addHeader(_file_path);
-
-    if (file_stat.type() == boost::filesystem::regular_file)
-    {
-      std::fstream entry_file(_file_path.c_str(), std::ios::in);
-      char buff[8192];
-      while (entry_file.good())
-      {
-        entry_file.read(buff, 8192);
-        archive_write_data(m_archive, buff
-          , static_cast<size_t>(entry_file.gcount()));
-      }
-      entry_file.close();
-    }
-    else
-      throw std::runtime_error("Entry file type not yet supported.");
-
-    addFinish();
+      throw std::errc::no_such_file_or_directory;
   }
-  else
-    throw std::runtime_error("Entry file not found.");
+
+  boost::filesystem::file_status file_stat
+    = boost::filesystem::status(_file_path);
+  boost::filesystem::perms perm = file_stat.permissions();
+  long long file_size = boost::filesystem::file_size(_file_path);
+
+  addHeader(_file_path);
+
+  if (!boost::filesystem::is_regular_file(file_stat))
+  {
+    throw std::errc::not_supported;
+  }
+
+  std::fstream entry_file(_file_path.c_str(), std::ios::in);
+  char buff[8192];
+  while (entry_file.good())
+  {
+    entry_file.read(buff, 8192);
+    archive_write_data(m_archive, buff
+      , static_cast<size_t>(entry_file.gcount()));
+  }
+  entry_file.close();
+
+  addFinish();
 }
 void ArchiveWriter::AddFile (const std::string& _entry_name
   , const unsigned char * _data , const unsigned long long _size)

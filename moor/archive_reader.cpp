@@ -27,6 +27,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 #include <stdexcept>
+#include <system_error>
 
 #include <boost/filesystem.hpp>
 #include <boost/scope_exit.hpp>
@@ -38,7 +39,7 @@ ArchiveReader::ArchiveReader(const std::string& _archive_file_name)
    , m_open(true)
 {
   if (!boost::filesystem::exists(m_archive_file_name))
-    throw std::runtime_error("Archive file not found.");
+    throw std::errc::no_such_file_or_directory;
 
   init();
   checkError(archive_read_open_filename(m_archive, m_archive_file_name.c_str()
