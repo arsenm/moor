@@ -43,7 +43,7 @@ static int moor_memory_write_open(struct archive *a, void *client_data)
 {
   /*struct write_memory_data *mine;
     mine = client_data; mine->used = 0;
-    if (mine->client_size != NULL)
+    if (mine->client_size != 0)
      *mine->client_size = mine->used;*/
   /* Disable padding if it hasn't been set explicitly. */
   if (-1 == archive_write_get_bytes_in_last_block(a))
@@ -62,7 +62,7 @@ static ssize_t moor_memory_write(struct archive *a, void *client_data,
   }
   memcpy(mine->buff + mine->used, buff, length);
   mine->used += length;
-  if (mine->client_size != NULL)
+  if (mine->client_size != 0)
     *mine->client_size = mine->used;*/
   std::copy((unsigned char*)buff, (unsigned char*)buff + length
     , std::back_inserter(*(mine->buff)));

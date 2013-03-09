@@ -232,7 +232,7 @@ void ArchiveReader::close()
 {
   if (m_open)
   {
-    if (m_archive != NULL)
+    if (m_archive)
     {
       archive_read_close(m_archive);
       archive_read_free (m_archive);

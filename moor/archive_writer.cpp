@@ -240,12 +240,12 @@ void ArchiveWriter::close()
 {
   if (m_open)
   {
-    if (m_archive != NULL)
+    if (m_archive)
     {
       archive_write_close(m_archive);
       archive_write_free (m_archive);
     }
-    if (m_entry != NULL)
+    if (m_entry)
       archive_entry_free(m_entry);
 
     m_open = false;
