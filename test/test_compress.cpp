@@ -22,11 +22,12 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <moor/archive_writer.hpp>
 #include <moor/archive_reader.hpp>
+#include <moor/archive_writer.hpp>
 
 #include <iostream>
 #include <fstream>
+#include <stdexcept>
 #include <vector>
 
 
@@ -34,46 +35,62 @@ using namespace moor;
 
 int main()
 {
-  std::vector<unsigned char> lout;
-  //ArchiveWriter compressor("test1.tar.gz", Format::PAX, Filter::Gzip);
-  ArchiveWriter compressor(lout, Format::PAX, Filter::Gzip);
-  compressor.AddFile("test_data_dir/bar.txt");
-  compressor.AddDirectory("test_data_dir/foo_dir");
-  char a[] = {64, 65, 66, 67, 68};
-  std::vector<char> l(10, 'A');
-  std::vector<char> v(10, 'B');
-
-  compressor.AddFile("a_array.txt", a, a+10);
-  compressor.AddFile("b_list.txt", l.begin(), l.end());
-  compressor.AddFile("vector_a.txt", v.begin(), v.end());
-
-  compressor.Close();
-  std::ofstream of("test2.tar.gz", std::ios::binary);
-  for (auto a = lout.begin(); a != lout.end(); a++)
-    of << *a;
-  of.close();
-
-  ArchiveReader reader1("test2.tar.gz");
-  std::ifstream iff ("test2.tar.gz", std::ios::binary);
-  iff.seekg(0, std::ios::end);
-  auto size = iff.tellg();
-  iff.seekg(0, std::ios::beg);
-  std::vector<unsigned char> ff(size);
-
-  while(iff.good())
-    iff.read((char*)&*ff.begin(), size);
-  ArchiveReader reader(std::move(ff));
-  auto data = reader.ExtractNext();
-  while(data.first.length() > 0)
+  try
   {
-    std::cout << data.first << " : " << data.second.size()<< std::endl;
-    data = reader.ExtractNext();
+    std::vector<unsigned char> lout;
+    //ArchiveWriter compressor("test1.tar.gz", Format::PAX, Filter::Gzip);
+    ArchiveWriter compressor(lout, Format::PAX, Filter::Gzip);
+    compressor.AddFile("test_data_dir/bar.txt");
+    compressor.AddDirectory("test_data_dir/foo_dir");
+    char a[] = {64, 65, 66, 67, 68};
+    std::vector<char> l(10, 'A');
+    std::vector<char> v(10, 'B');
+
+    compressor.AddFile("a_array.txt", a, a+10);
+    compressor.AddFile("b_list.txt", l.begin(), l.end());
+    compressor.AddFile("vector_a.txt", v.begin(), v.end());
+
+    compressor.Close();
+    std::ofstream of("test2.tar.gz", std::ios::binary);
+    for (auto a = lout.begin(); a != lout.end(); a++)
+        of << *a;
+    of.close();
   }
-  data = reader1.ExtractNext();
-  while(data.first.length() > 0)
+  catch (const std::runtime_error& ex)
   {
-    std::cout << data.first << " : " << data.second.size()<< std::endl;
+    std::cerr << "Error writing archive: " << ex.what();
+    return 1;
+  }
+
+  try
+  {
+    ArchiveReader reader1("test2.tar.gz");
+    std::ifstream iff ("test2.tar.gz", std::ios::binary);
+    iff.seekg(0, std::ios::end);
+    auto size = iff.tellg();
+    iff.seekg(0, std::ios::beg);
+    std::vector<unsigned char> ff(size);
+
+    while(iff.good())
+      iff.read((char*)&*ff.begin(), size);
+    ArchiveReader reader(std::move(ff));
+    auto data = reader.ExtractNext();
+    while(data.first.length() > 0)
+    {
+        std::cout << data.first << " : " << data.second.size()<< std::endl;
+        data = reader.ExtractNext();
+    }
     data = reader1.ExtractNext();
+    while(data.first.length() > 0)
+    {
+      std::cout << data.first << " : " << data.second.size()<< std::endl;
+      data = reader1.ExtractNext();
+    }
+  }
+  catch (const std::runtime_error& ex)
+  {
+    std::cerr << "Error reading archive: " << ex.what();
+    return 1;
   }
 
   return 0;
