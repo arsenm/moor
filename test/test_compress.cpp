@@ -69,14 +69,14 @@ static bool testArchiveWrite(const std::string& path)
     std::vector<char> l(10, 'A');
     std::vector<char> v(10, 'B');
 
-    compressor.addFile("a_array.txt", a, a+10);
+    compressor.addFile("a_array.txt", a, a + 10);
     compressor.addFile("b_list.txt", l.begin(), l.end());
     compressor.addFile("vector_a.txt", v.begin(), v.end());
 
     compressor.close();
     std::ofstream of(path, std::ios::binary);
-    for (auto a = lout.begin(); a != lout.end(); a++)
-        of << *a;
+    for (auto a = lout.begin(), e = lout.end(); a != e; ++a)
+      of << *a;
     of.close();
     return false;
   }
