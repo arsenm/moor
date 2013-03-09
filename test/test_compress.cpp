@@ -37,18 +37,15 @@ int main()
   std::vector<unsigned char> lout;
   //ArchiveWriter compressor("test1.tar.gz", Format_pax, Compression_gzip);
   ArchiveWriter compressor(lout, Format_pax, Compression_gzip);
-  //compressor.AddFile("ttt1");
-  //compressor.AddFile("ttt/test_compress");
-  compressor.AddFile("test_compress");
-  compressor.AddDirectory("mem_dir");
+  compressor.AddFile("test_data_dir/bar.txt");
+  compressor.AddDirectory("test_data_dir/foo_dir");
   char a[] = {64, 65, 66, 67, 68};
   std::vector<char> l(10, 'A');
   std::vector<char> v(10, 'B');
 
-  compressor.AddFile("mem_dir/arary", a, a+10);
-  compressor.AddFile("list", l.begin(), l.end());
-  compressor.AddFile("vector", v.begin(), v.end());
-
+  compressor.AddFile("a_array.txt", a, a+10);
+  compressor.AddFile("b_list.txt", l.begin(), l.end());
+  compressor.AddFile("vector_a.txt", v.begin(), v.end());
 
   compressor.Close();
   std::ofstream of("test2.tar.gz", std::ios::binary);
