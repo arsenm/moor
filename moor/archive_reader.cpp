@@ -177,24 +177,26 @@ std::pair<std::string, std::vector<unsigned char>> ArchiveReader::extractNext()
 
   result.first = archive_entry_pathname(entry);
   std::int64_t entry_size = archive_entry_size(entry);
-  if (entry_size > 0)
+  if (entry_size <= 0)
   {
-    ssize_t read_index = 0;
-    result.second.resize(entry_size);
-    while (true)
-    {
-      ssize_t r = archive_read_data(m_archive,
-                                    &result.second[read_index],
-                                    result.second.size() - read_index);
-      if (r == 0)
+      return result;
+  }
+
+  ssize_t read_index = 0;
+  result.second.resize(entry_size);
+  while (true)
+  {
+    ssize_t r = archive_read_data(m_archive,
+                                  &result.second[read_index],
+                                  result.second.size() - read_index);
+    if (r == 0)
         break;
-      if (r < ARCHIVE_OK)
+    if (r < ARCHIVE_OK)
         checkError(r);
 
-      read_index += r;
-      if (read_index == entry_size)
+    read_index += r;
+    if (read_index == entry_size)
         break;
-    }
   }
 
   return result;
