@@ -38,7 +38,7 @@ struct write_memory_data
   std::vector<unsigned char>* buff;
 };
 
-static int moor_memory_write_open(struct archive* a, void* client_data)
+static int moor_memory_write_open(struct archive* a, void* /* client_data */)
 {
   /*struct write_memory_data *mine;
     mine = client_data; mine->used = 0;
@@ -49,7 +49,7 @@ static int moor_memory_write_open(struct archive* a, void* client_data)
     archive_write_set_bytes_in_last_block(a, 1);
   return ARCHIVE_OK;
 }
-static ssize_t moor_memory_write(struct archive* a,
+static ssize_t moor_memory_write(struct archive*,
                                  void* client_data,
                                  const void* buff ,
                                  size_t length)
