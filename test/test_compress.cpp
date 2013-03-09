@@ -28,13 +28,41 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <system_error>
 #include <vector>
 
 
 using namespace moor;
 
+static bool testDoesNotExist()
+{
+    try
+    {
+        ArchiveReader badReader("xxxx_does_not_exist");
+
+        return true; // Failure, we expect an exception
+    }
+    catch (const std::system_error& ex)
+    {
+        std::cerr << "Expected exception reading non-existent file: " << ex.what() << '\n';
+
+        if (ex.code() != std::errc::no_such_file_or_directory)
+        {
+            std::cerr << "Unexpected error code for non-existent file\n";
+            return true;
+        }
+
+        return false;
+    }
+}
+
 int main()
 {
+  if (testDoesNotExist())
+  {
+      return 1;
+  }
+
   try
   {
     std::vector<unsigned char> lout;
