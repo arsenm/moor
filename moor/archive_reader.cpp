@@ -169,28 +169,27 @@ std::pair<std::string, std::vector<unsigned char>> ArchiveReader::extractNext()
   auto result = std::make_pair(std::string(), std::vector<unsigned char>());
 
   struct archive_entry* entry;
-  auto r = archive_read_next_header(m_archive, &entry);
-  if (r == ARCHIVE_EOF)
+  int ec = archive_read_next_header(m_archive, &entry);
+  if (ec == ARCHIVE_EOF)
     return result;
 
-  checkError(r);
+  checkError(ec);
 
   result.first = archive_entry_pathname(entry);
-  auto entry_size = archive_entry_size(entry);
+  std::int64_t entry_size = archive_entry_size(entry);
   if (entry_size > 0)
   {
-    int r;
-    size_t read_index = 0;
+    ssize_t read_index = 0;
     result.second.resize(entry_size);
-    for (;;)
+    while (true)
     {
-      r = archive_read_data(m_archive,
-                            &result.second[read_index],
-                            result.second.size() - read_index);
+      ssize_t r = archive_read_data(m_archive,
+                                    &result.second[read_index],
+                                    result.second.size() - read_index);
       if (r == 0)
         break;
       if (r < ARCHIVE_OK)
-        checkError (r);
+        checkError(r);
 
       read_index += r;
       if (read_index == entry_size)
