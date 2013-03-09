@@ -36,5 +36,5 @@ struct archive;
 
 namespace moor
 {
-  int write_open_memory(struct archive *a, std::vector<unsigned char>* _buff);
+  int write_open_memory(archive* a, std::vector<unsigned char>* buff);
 }
