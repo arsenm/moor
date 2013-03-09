@@ -202,8 +202,6 @@ void ArchiveWriter::addFile(const std::string& file_path)
   {
     throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
   }
-  boost::filesystem::perms perm = file_stat.permissions();
-  long long file_size = boost::filesystem::file_size(file_path);
 
   addHeader(file_path);
 
