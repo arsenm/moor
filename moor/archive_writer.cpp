@@ -38,15 +38,6 @@
 
 using namespace moor;
 
-int (*format_tab[])(archive*)
-    = {archive_write_set_format_pax_restricted, archive_write_set_format_gnutar
-        , archive_write_set_format_zip, archive_write_set_format_7zip};
-
-int (*compression_tab[])(archive*)
-    = {archive_write_set_compression_gzip, archive_write_set_compression_bzip2
-        , archive_write_set_compression_lzma};
-
-int archive_file_type[] = {AE_IFREG, AE_IFDIR};
 
 void ArchiveWriter::checkError(const int _err_code
   , const bool _close_before_throw)
@@ -59,42 +50,42 @@ void ArchiveWriter::checkError(const int _err_code
 
 
 ArchiveWriter::ArchiveWriter(const std::string& _archive_file_name
-    , const Formats& _format, const Compressions& _compression)
+    , const Formats& _format, const Filters& _filter)
   : m_open (true), m_archive (archive_write_new()), m_entry (archive_entry_new())
   , m_archive_file_name (_archive_file_name)
-   , m_format(_format), m_compression(_compression)
+   , m_format(_format), m_filter(_filter)
 {
   //set archive format
-  checkError((format_tab[m_format](m_archive)), true);
+  checkError(archive_write_set_format(m_archive, (int) m_format), true);
   //set archive compression
-  checkError((compression_tab[m_compression](m_archive)), true);
+  checkError(archive_write_add_filter(m_archive, (int) m_filter), true);
   checkError(archive_write_open_filename(m_archive, m_archive_file_name.c_str())
       , true);
 }
 
 ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& _out_buffer
-    , const Formats& _format, const Compressions& _compression)
+    , const Formats& _format, const Filters& _filter)
   : m_open(true), m_archive(archive_write_new()), m_entry (archive_entry_new())
   , m_archive_file_name (""), m_format(_format)
-  , m_compression(_compression)
+  , m_filter(_filter)
 {
   //set archive format
-  checkError((format_tab[m_format](m_archive)), true);
-  //set archive compression
-  checkError((compression_tab[m_compression](m_archive)), true);
+  checkError(archive_write_set_format(m_archive, (int) m_format), true);
+  //set archive filter
+  checkError(archive_write_add_filter(m_archive, (int) m_format), true);
   checkError(write_open_memory(m_archive, &_out_buffer), true);
 }
 
 ArchiveWriter::ArchiveWriter(unsigned char* _out_buffer, size_t* _size
-    , const Formats& _format, const Compressions& _compression)
+    , const Formats& _format, const Filters& _filter)
   : m_open(true), m_archive(archive_write_new()), m_entry (archive_entry_new())
   , m_archive_file_name (""), m_format(_format)
-  , m_compression(_compression)
+  , m_filter(_filter)
 {
   //set archive format
-  checkError((format_tab[m_format](m_archive)), true);
-  //set archive compression
-  checkError((compression_tab[m_compression](m_archive)), true);
+  checkError(archive_write_set_format(m_archive, (int) m_format), true);
+  //set archive filter
+  checkError(archive_write_add_filter(m_archive, (int) m_filter), true);
   checkError(archive_write_open_memory(m_archive, _out_buffer, *_size, _size)
    , true);
 }
@@ -110,7 +101,7 @@ void ArchiveWriter::addHeader(const std::string& _entry_name
   m_entry = archive_entry_clear(m_entry);
   archive_entry_set_pathname(m_entry, _entry_name.c_str());
   archive_entry_set_perm(m_entry, _permission);
-  archive_entry_set_filetype(m_entry, archive_file_type[_entry_type]);
+  archive_entry_set_filetype(m_entry, (int) _entry_type);
   archive_entry_set_size(m_entry, _size);
   checkError(archive_write_header(m_archive, m_entry));
 }

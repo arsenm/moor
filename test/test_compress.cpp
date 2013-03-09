@@ -35,8 +35,8 @@ using namespace moor;
 int main()
 {
   std::vector<unsigned char> lout;
-  //ArchiveWriter compressor("test1.tar.gz", Format_pax, Compression_gzip);
-  ArchiveWriter compressor(lout, Format_pax, Compression_gzip);
+  //ArchiveWriter compressor("test1.tar.gz", Format_pax, Filter_gzip);
+  ArchiveWriter compressor(lout, Format_pax, Filter_Gzip);
   compressor.AddFile("test_data_dir/bar.txt");
   compressor.AddDirectory("test_data_dir/foo_dir");
   char a[] = {64, 65, 66, 67, 68};

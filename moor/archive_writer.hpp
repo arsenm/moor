@@ -40,11 +40,11 @@ namespace moor
   {
   public:
     ArchiveWriter(const std::string& _archive_file_name, const Formats& _format,
-                  const Compressions& _compression);
+                  const Filters& _compression);
     ArchiveWriter(std::vector<unsigned char>& _out_buffer, const Formats& _format,
-        const Compressions& _compression);
+        const Filters& _compression);
     ArchiveWriter(unsigned char * _out_buffer, size_t* _size
-      , const Formats& _format, const Compressions& _compression);
+      , const Formats& _format, const Filters& _compression);
     ~ArchiveWriter();
 
     void AddFile (const std::string& _file_path);
@@ -72,7 +72,7 @@ namespace moor
 
     const std::string m_archive_file_name;
     const Formats m_format;
-    const Compressions m_compression;
+    const Filters m_filter;
   };
 
   template <class Iter>

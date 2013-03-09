@@ -24,26 +24,32 @@
 
 #pragma once
 
+#include <archive.h>
+#include <archive_entry.h>
+
+
 namespace moor
 {
   enum Formats
   {
-    Format_pax = 0,
-    Format_tar = 1,
-    Format_ZIP = 2,
-    Format_7Zip = 3
+    Format_pax = ARCHIVE_FORMAT_TAR_PAX_RESTRICTED,
+    Format_tar = ARCHIVE_FORMAT_TAR_GNUTAR,
+    Format_ZIP = ARCHIVE_FORMAT_ZIP,
+    Format_7Zip = ARCHIVE_FORMAT_7ZIP
   };
 
-  enum Compressions
+  enum Filters
   {
-    Compression_gzip = 0,
-    Compression_bzip2 = 1,
-    Compression_lzma = 2
+      Filter_None = ARCHIVE_FILTER_NONE,
+      Filter_Gzip = ARCHIVE_FILTER_GZIP,
+      Filter_Bzip2 = ARCHIVE_FILTER_BZIP2,
+      Filter_LZMA = ARCHIVE_FILTER_LZMA,
+      Filter_Xz = ARCHIVE_FILTER_XZ
   };
 
   enum FileTypes
   {
-    FileType_Regular = 0,
-    FileType_Directory = 1
+    FileType_Regular = AE_IFREG,
+    FileType_Directory = AE_IFDIR
   };
 }
