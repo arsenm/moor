@@ -43,10 +43,13 @@ namespace moor
     archive* m_archive; // Archive the entry belongs to
     archive_entry* m_entry;
 
+    static const int s_defaultExtractFlags;
+
     bool extractDataImpl(archive* a,
                          unsigned char* ptr,
                          ssize_t size,
                          ssize_t entrySize);
+    int copyData(archive* ar, archive* aw);
 
   public:
     explicit ArchiveEntry(archive* a,
@@ -89,6 +92,9 @@ namespace moor
 
     bool extractData(std::vector<unsigned char>& out);
     bool extractData(void* out, size_t size);
+
+    // Like extract data but extract to the given filepath instead
+    bool extractDisk(const std::string& rootPath);
 
     time_t atime() const
     {

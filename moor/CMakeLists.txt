@@ -6,6 +6,7 @@ SET (include_HEADERS
   archive.hpp
   archive_entry.hpp
   archive_iterator.hpp
+  moor_utils.hpp
   )
 SET (libmoor_SOURCES
   archive_writer.cpp

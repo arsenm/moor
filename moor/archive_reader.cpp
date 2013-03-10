@@ -31,44 +31,6 @@
 
 using namespace moor;
 
-namespace
-{
-  class ScopedWriteDisk
-  {
-  private:
-    archive* m_archive;
-
-  public:
-    ScopedWriteDisk(int flags)
-      : m_archive(archive_write_disk_new())
-    {
-      if (!m_archive)
-      {
-        throw std::bad_alloc();
-      }
-
-      archive_write_disk_set_options(m_archive, flags);
-      archive_write_disk_set_standard_lookup(m_archive);
-    }
-
-    ~ScopedWriteDisk()
-    {
-      archive_write_close(m_archive);
-      archive_write_free(m_archive);
-    }
-
-    operator archive*()
-    {
-      return m_archive;
-    }
-
-    operator const archive*() const
-    {
-      return m_archive;
-    }
-  };
-}
-
 // Select which attributes we want to restore.
 const int ArchiveReader::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
                                                | ARCHIVE_EXTRACT_PERM
@@ -119,51 +81,16 @@ ArchiveReader::~ArchiveReader()
   close();
 }
 
-int ArchiveReader::copyData(archive* ar, archive* aw)
+bool ArchiveReader::extractEntry(const char* entryName,
+                                 const char* outputFile)
 {
-  while (true)
-  {
-    const void* buff;
-    size_t size;
-    __LA_INT64_T offset;
-
-    int r = archive_read_data_block(ar, &buff, &size, &offset);
-    if (r == ARCHIVE_EOF)
-      return ARCHIVE_OK;
-    if (r != ARCHIVE_OK)
-      return r;
-    r = archive_write_data_block(aw, buff, size, offset);
-    if (r != ARCHIVE_OK)
-      return r;
-  }
-
-  return ARCHIVE_OK;
+  return false;
 }
 
-bool ArchiveReader::extractNext(const std::string& root_path_)
+bool ArchiveReader::extractEntry(const char* entryName,
+                                 std::vector<unsigned char>& out)
 {
-  ScopedWriteDisk a(s_defaultExtractFlags);
-
-  struct archive_entry* entry;
-  auto r = archive_read_next_header(m_archive, &entry);
-  if (r == ARCHIVE_EOF)
     return false;
-
-  checkError(r);
-
-  std::string fullPath(root_path_);
-  fullPath += '/';
-  fullPath.append(archive_entry_pathname(entry));
-
-  archive_entry_set_pathname(entry, fullPath.c_str());
-  checkError(archive_write_header(a, entry));
-
-  if (archive_entry_size(entry) > 0)
-  {
-    checkError(copyData(m_archive, a));
-  }
-
-  return true;
 }
 
 ArchiveIterator ArchiveReader::begin()

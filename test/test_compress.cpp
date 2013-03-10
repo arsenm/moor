@@ -244,10 +244,8 @@ static bool testArchiveRead(const std::string& path)
   }
 }
 
-static bool testCompressDirectory()
+static bool testCompressDirectory(const std::string& path)
 {
-  const std::string path = "test_data_dir.tar.gz";
-
   try
   {
     {
@@ -260,7 +258,34 @@ static bool testCompressDirectory()
   }
   catch (const std::runtime_error& ex)
   {
-      std::cerr << "Error writing archive from directory: " << ex.what() << '\n';
+    std::cerr << "Error writing archive from directory: " << ex.what() << '\n';
+    return true;
+  }
+}
+
+static bool testExtractDirectory(const std::string& path)
+{
+  try
+  {
+    ArchiveReader reader(path);
+
+    std::string extractedPath("extracted_");
+    extractedPath += path;
+
+    for (auto it = reader.begin(); !it.isAtEnd(); ++it)
+    {
+      if (!it->extractDisk(extractedPath))
+      {
+        std::cerr << "Error extracting directory\n";
+        return true;
+      }
+    }
+
+    return false;
+  }
+  catch (const std::runtime_error& ex)
+  {
+      std::cerr << "Excpetion extracting directory: " << ex.what() << '\n';
       return true;
   }
 }
@@ -272,7 +297,12 @@ int main()
     compressor.addDiskPath("CMakeLists.txt");
   }
 
-  if (testCompressDirectory())
+  if (testCompressDirectory("test_data_dir.tar.gz"))
+  {
+    return 1;
+  }
+
+  if (testExtractDirectory("test_data_dir.tar.gz"))
   {
     return 1;
   }
