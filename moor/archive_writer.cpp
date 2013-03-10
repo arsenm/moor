@@ -210,16 +210,17 @@ void ArchiveWriter::addFile(const std::string& file_path)
   }
 
   std::fstream entry_file(file_path.c_str(), std::ios::in);
-  char buff[8192];
+  char buf[8192];
   while (entry_file.good())
   {
-    entry_file.read(buff, 8192);
-    archive_write_data(m_archive, buff, static_cast<size_t>(entry_file.gcount()));
+    entry_file.read(buf, sizeof(buf));
+    archive_write_data(m_archive, buf, static_cast<size_t>(entry_file.gcount()));
   }
   entry_file.close();
 
   addFinish();
 }
+
 void ArchiveWriter::addFile(const std::string& entry_name,
                             const void* data,
                             unsigned long long size)
