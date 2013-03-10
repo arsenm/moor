@@ -126,10 +126,10 @@ ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
     m_open(true)
 {
   // Set archive format
-  checkError(archive_write_set_format(m_archive, (int) m_format), true);
+  checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
 
   // Set archive filter
-  checkError(archive_write_add_filter(m_archive, (int) m_filter), true);
+  checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
   checkError(write_open_memory(m_archive, &out_buffer_), true);
 }
 
@@ -145,9 +145,9 @@ ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
     m_open(true)
 {
   //set archive format
-  checkError(archive_write_set_format(m_archive, (int) m_format), true);
+  checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
   //set archive filter
-  checkError(archive_write_add_filter(m_archive, (int) m_filter), true);
+  checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
   checkError(archive_write_open_memory(m_archive, out_buffer_, *size_, size_), true);
 }
 
@@ -164,7 +164,7 @@ void ArchiveWriter::addHeader(const std::string& entry_name_,
   m_entry = archive_entry_clear(m_entry);
   archive_entry_set_pathname(m_entry, entry_name_.c_str());
   archive_entry_set_perm(m_entry, permission_);
-  archive_entry_set_filetype(m_entry, (int) entry_type_);
+  archive_entry_set_filetype(m_entry, static_cast<int>(entry_type_));
   archive_entry_set_size(m_entry, size_);
   checkError(archive_write_header(m_archive, m_entry));
 }
@@ -196,8 +196,7 @@ void ArchiveWriter::addFinish()
 
 void ArchiveWriter::addFile(const std::string& file_path)
 {
-  boost::filesystem::file_status file_stat
-    = boost::filesystem::status(file_path);
+  boost::filesystem::file_status file_stat = boost::filesystem::status(file_path);
   if (!boost::filesystem::exists(file_stat))
   {
     throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
@@ -240,14 +239,17 @@ void ArchiveWriter::close()
 {
   if (m_open)
   {
+    m_open = false;
+
     if (m_archive)
     {
       archive_write_close(m_archive);
       archive_write_free (m_archive);
     }
-    if (m_entry)
-      archive_entry_free(m_entry);
 
-    m_open = false;
+    if (m_entry)
+    {
+      archive_entry_free(m_entry);
+    }
   }
 }
