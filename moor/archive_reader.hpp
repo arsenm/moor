@@ -44,6 +44,13 @@ namespace moor
     ArchiveReader(std::vector<unsigned char>&& in_buffer);
     ~ArchiveReader();
 
+    // Returns a count of the number of files processed by this archive object.
+    int fileCount() const;
+    int filterCount() const;
+    const char* formatName() const;
+    const char* filterName() const;
+    const char* errorString() const;
+
     // Returns false at EOF
     bool extractNext(const std::string& root_path);
 

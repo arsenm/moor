@@ -124,6 +124,31 @@ ArchiveReader::~ArchiveReader()
   close();
 }
 
+int ArchiveReader::fileCount() const
+{
+    return archive_file_count(m_archive);
+}
+
+int ArchiveReader::filterCount() const
+{
+    return archive_filter_count(m_archive);
+}
+
+const char* ArchiveReader::formatName() const
+{
+    return archive_format_name(m_archive);
+}
+
+const char* ArchiveReader::filterName() const
+{
+    return archive_filter_name(m_archive, -1);
+}
+
+const char* ArchiveReader::errorString() const
+{
+    return archive_error_string(m_archive);
+}
+
 int ArchiveReader::copyData(archive* ar, archive* aw)
 {
   while (true)

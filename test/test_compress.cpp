@@ -120,6 +120,13 @@ static bool testArchiveDataCheck()
       return true;
   }
 
+  // TODO: Is this actually useful? It isn't updated until you archive_read_next_header?
+  if (reader.fileCount() != 1)
+  {
+      std::cerr << "Expected 1 files, found " << reader.fileCount() << '\n';
+      return true;
+  }
+
   const std::vector<unsigned char>& out = item.second;
 
   std::string extractedCopy(out.begin(), out.end());
