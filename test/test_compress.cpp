@@ -72,7 +72,7 @@ static bool testArchiveWriteImpl(ArchiveWriter& compressor)
   std::vector<char> l(10, 'A');
   std::vector<char> v(10, 'B');
 
-  compressor.addFile("a_array.txt", a, a + 10);
+  compressor.addFile("a_array.txt", a, sizeof(a));
   compressor.addFile("b_list.txt", l.begin(), l.end());
   compressor.addFile("vector_a.txt", v.begin(), v.end());
   compressor.close();
