@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include "moor_build_config.hpp"
+
 #include "archive_entry.hpp"
 #include "types.hpp"
 
@@ -35,7 +37,7 @@
 
 namespace moor
 {
-  class ArchiveIterator
+  class MOOR_API ArchiveIterator
   {
   private:
     archive* m_archive;

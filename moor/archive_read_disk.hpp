@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include "moor_build_config.hpp"
+
 #include "archive.hpp"
 #include "archive_match.hpp"
 
@@ -32,7 +34,7 @@
 
 namespace moor
 {
-  class ArchiveReadDisk : public Archive
+  class MOOR_API ArchiveReadDisk : public Archive
   {
   private:
       /*

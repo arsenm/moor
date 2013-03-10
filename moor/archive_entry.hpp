@@ -24,6 +24,7 @@
 
 #pragma once
 
+#include "moor_build_config.hpp"
 #include "types.hpp"
 
 #include <archive_entry.h>
@@ -37,7 +38,7 @@
 namespace moor
 {
   // Non-owning references to archive*, archive_entry*
-  class ArchiveEntry
+  class MOOR_API ArchiveEntry
   {
   private:
     archive* m_archive; // Archive the entry belongs to

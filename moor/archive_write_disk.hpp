@@ -25,12 +25,14 @@
 
 #pragma once
 
+#include "moor_build_config.hpp"
+
 #include "archive.hpp"
 
 
 namespace moor
 {
-  class ArchiveWriteDisk : public Archive
+  class MOOR_API ArchiveWriteDisk : public Archive
   {
   private:
     archive* m_archive;
