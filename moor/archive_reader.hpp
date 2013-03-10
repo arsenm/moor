@@ -32,6 +32,7 @@
 #include "archive.hpp"
 #include "types.hpp"
 
+#include "archive_iterator.hpp"
 
 struct archive;
 struct archive_entry;
@@ -51,6 +52,9 @@ namespace moor
 
     // Returns empty filename at EOF
     std::pair<std::string, std::vector<unsigned char>> extractNext();
+
+    // Check ArchiveIterator::isAtEnd for EOF
+    ArchiveIterator begin();
 
   private:
     static const int s_defaultExtractFlags;

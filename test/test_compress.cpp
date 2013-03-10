@@ -31,6 +31,8 @@
 #include <system_error>
 #include <vector>
 
+#include <moor/archive_iterator.hpp>
+
 
 using namespace moor;
 
@@ -39,6 +41,8 @@ static bool testDoesNotExist()
   try
   {
     ArchiveReader badReader("xxxx_does_not_exist");
+
+    std::cerr << "Should not have reached this point\n";
     return true; // Failure, we expect an exception
   }
   catch (const std::system_error& ex)
@@ -179,6 +183,31 @@ static bool testArchiveWriteMemory(const std::string& path)
   }
 }
 
+static bool printArchiveEntries(ArchiveReader& reader)
+{
+  for (ArchiveIterator it = reader.begin(); !it.isAtEnd(); ++it)
+  {
+    std::cout << "Extracting " << it->pathname()
+              << " size " << it->size()
+              << '\n';
+
+    std::vector<unsigned char> data;
+    if (!it->extractData<std::vector<unsigned char>>(data))
+    {
+      std::cerr << "Error extracting data\n";
+      return true;
+    }
+
+    if (static_cast<size_t>(it->size()) != data.size())
+    {
+      std::cerr << "Read data size doesn't match entry size\n";
+      return true;
+    }
+  }
+
+  return false;
+}
+
 static bool testArchiveRead(const std::string& path)
 {
   try
@@ -196,21 +225,8 @@ static bool testArchiveRead(const std::string& path)
     }
 
     ArchiveReader reader(std::move(ff));
-    auto data = reader.extractNext();
-    while (!data.first.empty())
-    {
-      std::cout << data.first << " : " << data.second.size() << '\n';
-      data = reader.extractNext();
-    }
-
-    data = reader1.extractNext();
-    while (!data.first.empty())
-    {
-      std::cout << data.first << " : " << data.second.size() << '\n';
-      data = reader1.extractNext();
-    }
-
-    return false;
+    return printArchiveEntries(reader)
+        && printArchiveEntries(reader1);
   }
   catch (const std::runtime_error& ex)
   {
@@ -219,8 +235,39 @@ static bool testArchiveRead(const std::string& path)
   }
 }
 
+static bool testCompressDirectory()
+{
+  const std::string path = "test_data_dir.tar.gz";
+
+  try
+  {
+    {
+      ArchiveWriter compressor(path, Format::PAX, Filter::Gzip);
+      compressor.addDiskPath("test_data_dir");
+    }
+
+    ArchiveReader reader(path);
+    return printArchiveEntries(reader);
+  }
+  catch (const std::runtime_error& ex)
+  {
+      std::cerr << "Error writing archive from directory: " << ex.what() << '\n';
+      return true;
+  }
+}
+
 int main()
 {
+  {
+    ArchiveWriter compressor("cmake_compressed.tar.gz", Format::PAX, Filter::Gzip);
+    compressor.addDiskPath("CMakeLists.txt");
+  }
+
+  if (testCompressDirectory())
+  {
+    return 1;
+  }
+
   if (testDoesNotExist())
   {
     return 1;
@@ -247,6 +294,11 @@ int main()
   }
 
   if (testArchiveDataCheck())
+  {
+    return 1;
+  }
+
+  if (testExtractEntry())
   {
     return 1;
   }

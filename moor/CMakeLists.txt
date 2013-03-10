@@ -4,6 +4,8 @@ SET (include_HEADERS
   moor_build_config.hpp
   types.hpp
   archive.hpp
+  archive_entry.hpp
+  archive_iterator.hpp
   )
 SET (libmoor_SOURCES
   archive_writer.cpp
@@ -11,6 +13,7 @@ SET (libmoor_SOURCES
   memory_writer_callback.cpp
   types.cpp
   archive.cpp
+  archive_entry.cpp
 )
 
 IF(MSVC)

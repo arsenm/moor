@@ -166,6 +166,11 @@ bool ArchiveReader::extractNext(const std::string& root_path_)
   return true;
 }
 
+ArchiveIterator ArchiveReader::begin()
+{
+    return ArchiveIterator(m_archive);
+}
+
 std::pair<std::string, std::vector<unsigned char>> ArchiveReader::extractNext()
 {
   auto result = std::make_pair(std::string(), std::vector<unsigned char>());
