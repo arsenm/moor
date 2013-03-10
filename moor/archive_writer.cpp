@@ -38,49 +38,6 @@
 using namespace moor;
 
 
-namespace
-{
-  class ScopedReadDisk
-  {
-  private:
-    archive* m_archive;
-
-  public:
-    ScopedReadDisk()
-      : m_archive(archive_read_disk_new())
-    {
-        if (!m_archive)
-        {
-            throw std::bad_alloc();
-        }
-
-      #if !defined(_WIN32) || defined(__CYGWIN__)
-        int ec = archive_read_disk_set_standard_lookup(m_archive);
-        if (ec != ARCHIVE_OK)
-        {
-            throw std::bad_alloc();
-        }
-      #endif
-    }
-
-    ~ScopedReadDisk()
-    {
-      archive_read_close(m_archive);
-      archive_read_free(m_archive);
-    }
-
-    operator archive*()
-    {
-      return m_archive;
-    }
-
-    operator const archive*() const
-    {
-      return m_archive;
-    }
-  };
-}
-
 
 void ArchiveWriter::checkError(const int err_code,
                                const bool close_before_throw)
@@ -178,7 +135,7 @@ void ArchiveWriter::addHeader(const std::string& entry_name_,
 void ArchiveWriter::addHeader(const std::string& filePath,
                               const struct stat* statBuf)
 {
-  ScopedReadDisk a;
+  ArchiveReadDisk a;
 
   m_entry = archive_entry_clear(m_entry);
   archive_entry_set_pathname(m_entry, filePath.c_str());
@@ -256,7 +213,7 @@ void ArchiveWriter::addFile(const std::string& entry_name,
 
 void ArchiveWriter::addDiskPath(const std::string& path)
 {
-  ScopedReadDisk disk;
+  ArchiveReadDisk disk;
 
   checkError(archive_read_disk_open(disk, path.c_str()), true);
   while (true)
