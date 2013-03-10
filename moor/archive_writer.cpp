@@ -206,7 +206,7 @@ void ArchiveWriter::addFile(const std::string& file_path)
     throw std::system_error(std::make_error_code(std::errc::not_supported));
   }
 
-  std::fstream entry_file(file_path, std::ios::in);
+  std::ifstream entry_file(file_path, std::ios::in);
   char buf[8192];
   while (entry_file.good())
   {
