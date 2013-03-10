@@ -65,4 +65,8 @@ namespace moor
     Regular = AE_IFREG,
     Directory = AE_IFDIR
   };
+
+  const char* showFormat(Format);
+  const char* showFilter(Filter);
+  const char* showFileType(FileType);
 }

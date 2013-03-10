@@ -8,6 +8,7 @@ SET (libmoor_SOURCES
   archive_writer.cpp
   archive_reader.cpp
   memory_writer_callback.cpp
+  types.cpp
 )
 
 IF(MSVC)
