@@ -24,6 +24,8 @@
 
 #pragma once
 
+#include "archive_match.hpp"
+
 #include <archive.h>
 
 #include <functional>
@@ -85,13 +87,27 @@ namespace moor
       return m_archive;
     }
 
-    /*
+    int open(const char* path)
+    {
+        return archive_read_disk_open(m_archive, path);
+    }
+
+    int setFilter(ArchiveMatch& match)
+    {
+      return archive_read_disk_set_matching(m_archive,
+                                            match,
+                                            nullptr,
+                                            nullptr);
+    }
+
+#if 0
     int setFilterCallback(std::function<int(ArchiveEntry, void*)>& f, void* ud)
     {
       m_fcd.m_f = &f;
       m_fcd.m_ud = ud;
       return archive_read_disk_set_matching(
         m_archive,
+        m_match,
         [](archive* a, void* ud, archive_entry* e) -> int
         {
           FilterCallbackData* fcd = reinterpret_cast<FilterCallbackData*>(ud);
@@ -108,7 +124,8 @@ namespace moor
                                                        nullptr,
                                                        nullptr);
     }
-    */
+#endif
+
   };
 }
 

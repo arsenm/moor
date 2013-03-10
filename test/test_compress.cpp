@@ -22,6 +22,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include <moor/archive_iterator.hpp>
+#include <moor/archive_match.hpp>
 #include <moor/archive_reader.hpp>
 #include <moor/archive_writer.hpp>
 
@@ -31,7 +33,6 @@
 #include <system_error>
 #include <vector>
 
-#include <moor/archive_iterator.hpp>
 
 
 using namespace moor;
@@ -290,6 +291,33 @@ static bool testExtractDirectory(const std::string& path)
   }
 }
 
+static bool testMatch(const std::string& path)
+{
+  std::vector<unsigned char> buf;
+
+  ArchiveMatch match;
+  match.excludePattern("foo*");
+
+  {
+    ArchiveWriter compressor(buf, Format::PAX, Filter::Gzip);
+    compressor.addDiskPath(path, &match);
+  }
+
+  ArchiveReader reader(std::move(buf));
+
+  for (auto it = reader.begin(); !it.isAtEnd(); ++it)
+  {
+    std::string entryName(it->pathname());
+    if (entryName.find("foo") != std::string::npos)
+    {
+      std::cerr << "File should have been excluded from archive";
+      return true;
+    }
+  }
+
+  return false;
+}
+
 int main()
 {
   {
@@ -333,6 +361,11 @@ int main()
   }
 
   if (testArchiveDataCheck())
+  {
+    return 1;
+  }
+
+  if (testMatch("test_data_dir"))
   {
     return 1;
   }

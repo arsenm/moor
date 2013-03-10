@@ -23,6 +23,8 @@
  */
 
 #include "archive_writer.hpp"
+#include "archive_entry.hpp"
+#include "read_disk.hpp"
 #include "memory_writer_callback.hpp"
 
 #include <archive.h>
@@ -211,11 +213,16 @@ void ArchiveWriter::addFile(const std::string& entry_name,
   addFinish();
 }
 
-void ArchiveWriter::addDiskPath(const std::string& path)
+void ArchiveWriter::addDiskPath(const std::string& path, ArchiveMatch* filter)
 {
   ArchiveReadDisk disk;
 
-  checkError(archive_read_disk_open(disk, path.c_str()), true);
+  checkError(disk.open(path.c_str()), true);
+  if (filter)
+  {
+      checkError(disk.setFilter(*filter), true);
+  }
+
   while (true)
   {
       int r = archive_read_next_header2(disk, m_entry);
