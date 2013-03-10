@@ -136,6 +136,8 @@ int ArchiveReader::copyData(archive* ar, archive* aw)
     if (r != ARCHIVE_OK)
       return r;
   }
+
+  return ARCHIVE_OK;
 }
 
 bool ArchiveReader::extractNext(const std::string& root_path_)
