@@ -78,22 +78,20 @@ const int ArchiveReader::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
                                                | ARCHIVE_EXTRACT_FFLAGS;
 
 ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
-  : m_archive_file_name(archive_file_name_),
+  : Archive(archive_read_new(), archive_file_name_),
     m_in_buffer(),
-    m_archive(archive_read_new()),
     m_open(true)
 {
   init();
   int ec = archive_read_open_filename(m_archive,
-                                      m_archive_file_name.c_str(),
+                                      filename().c_str(),
                                       10240);
   checkError(ec, true);
 }
 
 ArchiveReader::ArchiveReader(void* in_buffer_, const size_t size_)
-  : m_archive_file_name(),
+  : Archive(archive_read_new()),
     m_in_buffer(),
-    m_archive(archive_read_new()),
     m_open(true)
 {
   init();
@@ -101,9 +99,8 @@ ArchiveReader::ArchiveReader(void* in_buffer_, const size_t size_)
 }
 
 ArchiveReader::ArchiveReader(std::vector<unsigned char>&& in_buffer_)
-  : m_archive_file_name(),
+  : Archive(archive_read_new()),
     m_in_buffer(std::move(in_buffer_)),
-    m_archive(archive_read_new()),
     m_open(true)
 {
   init();
@@ -122,31 +119,6 @@ void ArchiveReader::init()
 ArchiveReader::~ArchiveReader()
 {
   close();
-}
-
-int ArchiveReader::fileCount() const
-{
-    return archive_file_count(m_archive);
-}
-
-int ArchiveReader::filterCount() const
-{
-    return archive_filter_count(m_archive);
-}
-
-const char* ArchiveReader::formatName() const
-{
-    return archive_format_name(m_archive);
-}
-
-const char* ArchiveReader::filterName() const
-{
-    return archive_filter_name(m_archive, -1);
-}
-
-const char* ArchiveReader::errorString() const
-{
-    return archive_error_string(m_archive);
 }
 
 int ArchiveReader::copyData(archive* ar, archive* aw)
@@ -265,7 +237,7 @@ void ArchiveReader::close()
     if (m_archive)
     {
       archive_read_close(m_archive);
-      archive_read_free (m_archive);
+      archive_read_free(m_archive);
     }
 
     m_open = false;

@@ -26,6 +26,7 @@
 
 #include "moor_build_config.hpp"
 #include "types.hpp"
+#include "archive.hpp"
 
 #include <iterator>
 #include <string>
@@ -37,7 +38,7 @@ struct archive_entry;
 
 namespace moor
 {
-  class MOOR_API ArchiveWriter
+  class MOOR_API ArchiveWriter : public Archive
   {
   public:
     ArchiveWriter(const std::string& archive_file_name,
@@ -86,7 +87,6 @@ namespace moor
     void addFinish();
 
     const std::string m_archive_file_name;
-    archive* m_archive;
     archive_entry* m_entry;
     const Format m_format;
     const Filter m_filter;

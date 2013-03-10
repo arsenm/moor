@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Mohammad Mehdi Saboorian
+ * Copyright (c) 2013 Matthew Arsenault
  *
  * This is part of moor, a wrapper for libarchive
  *
@@ -24,46 +24,58 @@
 
 #pragma once
 
-#include <string>
-#include <utility>
-#include <vector>
-
 #include "moor_build_config.hpp"
-#include "archive.hpp"
-#include "types.hpp"
+
+#include <string>
 
 
 struct archive;
-struct archive_entry;
 
 namespace moor
 {
-  class MOOR_API ArchiveReader : public Archive
-  {
-  public:
-    ArchiveReader(const std::string& archive_file_name);
-    ArchiveReader(void* in_buffer, const size_t size);
-    ArchiveReader(std::vector<unsigned char>&& in_buffer);
-    ~ArchiveReader();
+    class MOOR_API Archive
+    {
+    private:
+        const std::string m_archive_file_name;
 
-    // Returns false at EOF
-    bool extractNext(const std::string& root_path);
+    protected:
+        archive* m_archive;
 
-    // Returns empty filename at EOF
-    std::pair<std::string, std::vector<unsigned char>> extractNext();
+        Archive(archive* a) :
+            m_archive_file_name(),
+            m_archive(a)
+        {
 
-  private:
-    static const int s_defaultExtractFlags;
+        }
 
-    void init();
-    void checkError(const int err_code,
-                    const bool close_before_throw = false);
-    void close();
-    static int copyData(archive* ar, archive* aw);
+        Archive(archive* a, const std::string& filename_) :
+            m_archive_file_name(filename_),
+            m_archive(a)
+        {
 
-    std::vector<unsigned char> m_in_buffer;
+        }
 
-    bool m_open;
-  };
+        operator archive*()
+        {
+            return m_archive;
+        }
+
+        operator const archive*() const
+        {
+            return m_archive;
+        }
+
+    public:
+        const std::string& filename() const
+        {
+            return m_archive_file_name;
+        }
+
+        // Returns a count of the number of files processed by this archive object.
+        int fileCount() const;
+        int filterCount() const;
+        const char* formatName() const;
+        const char* filterName() const;
+        const char* errorString() const;
+    };
 }
-

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Mohammad Mehdi Saboorian
+ * Copyright (c) 2013 Matthew Arsenault
  *
  * This is part of moor, a wrapper for libarchive
  *
@@ -22,48 +22,36 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
-#include <string>
-#include <utility>
-#include <vector>
-
-#include "moor_build_config.hpp"
 #include "archive.hpp"
-#include "types.hpp"
+
+#include <archive.h>
 
 
-struct archive;
-struct archive_entry;
+using namespace moor;
 
-namespace moor
+
+int Archive::fileCount() const
 {
-  class MOOR_API ArchiveReader : public Archive
-  {
-  public:
-    ArchiveReader(const std::string& archive_file_name);
-    ArchiveReader(void* in_buffer, const size_t size);
-    ArchiveReader(std::vector<unsigned char>&& in_buffer);
-    ~ArchiveReader();
+    return archive_file_count(m_archive);
+}
 
-    // Returns false at EOF
-    bool extractNext(const std::string& root_path);
+int Archive::filterCount() const
+{
+    return archive_filter_count(m_archive);
+}
 
-    // Returns empty filename at EOF
-    std::pair<std::string, std::vector<unsigned char>> extractNext();
+const char* Archive::formatName() const
+{
+    return archive_format_name(m_archive);
+}
 
-  private:
-    static const int s_defaultExtractFlags;
+const char* Archive::filterName() const
+{
+    return archive_filter_name(m_archive, -1);
+}
 
-    void init();
-    void checkError(const int err_code,
-                    const bool close_before_throw = false);
-    void close();
-    static int copyData(archive* ar, archive* aw);
-
-    std::vector<unsigned char> m_in_buffer;
-
-    bool m_open;
-  };
+const char* Archive::errorString() const
+{
+    return archive_error_string(m_archive);
 }
 

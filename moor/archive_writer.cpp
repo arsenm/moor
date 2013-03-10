@@ -100,8 +100,7 @@ void ArchiveWriter::checkError(const int err_code,
 ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
                              const Format& format_,
                              const Filter& filter_)
-  : m_archive_file_name(archive_file_name_),
-    m_archive(archive_write_new()),
+  : Archive(archive_write_new(), archive_file_name_),
     m_entry(archive_entry_new()),
     m_format(format_),
     m_filter(filter_),
@@ -118,8 +117,7 @@ ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
 ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
                              const Format& format_,
                              const Filter& filter_)
-  : m_archive_file_name(),
-    m_archive(archive_write_new()),
+  : Archive(archive_write_new()),
     m_entry(archive_entry_new()),
     m_format(format_),
     m_filter(filter_),
@@ -137,16 +135,16 @@ ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
                              size_t* size_,
                              const Format& format_,
                              const Filter& filter_)
-  : m_archive_file_name(),
-    m_archive(archive_write_new()),
+  : Archive(archive_write_new()),
     m_entry(archive_entry_new()),
     m_format(format_),
     m_filter(filter_),
     m_open(true)
 {
-  //set archive format
+  // Set archive format
   checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
-  //set archive filter
+
+  // Set archive filter
   checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
   checkError(archive_write_open_memory(m_archive, out_buffer_, *size_, size_), true);
 }
@@ -245,7 +243,7 @@ void ArchiveWriter::close()
     if (m_archive)
     {
       archive_write_close(m_archive);
-      archive_write_free (m_archive);
+      archive_write_free(m_archive);
     }
 
     if (m_entry)

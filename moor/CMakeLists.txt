@@ -3,12 +3,14 @@ SET (include_HEADERS
   archive_reader.hpp
   moor_build_config.hpp
   types.hpp
+  archive.hpp
   )
 SET (libmoor_SOURCES
   archive_writer.cpp
   archive_reader.cpp
   memory_writer_callback.cpp
   types.cpp
+  archive.cpp
 )
 
 IF(MSVC)
