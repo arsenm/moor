@@ -35,7 +35,7 @@
 
 #define PRINT_TEST_NAME() do                            \
     {                                                   \
-      std::cout << "\nStart test " << __FUNCTION__ << std::endl;  \
+      std::cout << "\nStart test " << __func__ << std::endl;  \
     } while (0)
 
 
