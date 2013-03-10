@@ -71,6 +71,11 @@ namespace moor
             return m_archive_file_name;
         }
 
+        const char* cfilename() const
+        {
+            return m_archive_file_name.c_str();
+        }
+
         // Returns a count of the number of files processed by this archive object.
         int fileCount() const;
         int filterCount() const;

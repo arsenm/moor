@@ -84,7 +84,7 @@ ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
 {
   init();
   int ec = archive_read_open_filename(m_archive,
-                                      filename().c_str(),
+                                      cfilename(),
                                       10240);
   checkError(ec, true);
 }

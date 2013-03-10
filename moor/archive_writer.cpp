@@ -111,7 +111,7 @@ ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
 
   // Set archive compression
   checkError(archive_write_add_filter(m_archive, (int) m_filter), true);
-  checkError(archive_write_open_filename(m_archive, m_archive_file_name.c_str()), true);
+  checkError(archive_write_open_filename(m_archive, cfilename()), true);
 }
 
 ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
