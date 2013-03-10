@@ -62,8 +62,14 @@ namespace moor
 
   enum class FileType
   {
+    IFMT = AE_IFMT,
     Regular = AE_IFREG,
-    Directory = AE_IFDIR
+    Link = AE_IFLNK,
+    Socket = AE_IFSOCK,
+    Char = AE_IFCHR,
+    Block = AE_IFBLK,
+    Directory = AE_IFDIR,
+    FIFO = AE_IFIFO
   };
 
   const char* showFormat(Format);

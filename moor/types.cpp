@@ -113,11 +113,29 @@ const char* moor::showFileType(moor::FileType fileType)
 {
   switch (fileType)
   {
+    case moor::FileType::IFMT:
+        return "ifmt";
+
     case moor::FileType::Regular:
       return "regular";
 
+    case moor::FileType::Link:
+        return "link";
+
+     case moor::FileType::Socket:
+        return "socket";
+
+      case moor::FileType::Char:
+        return "char";
+
+      case moor::FileType::Block:
+        return "block";
+
     case moor::FileType::Directory:
       return "directory";
+
+      case moor::FileType::FIFO:
+        return "fifo";
 
     default:
       return "unknown";
