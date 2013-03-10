@@ -24,7 +24,7 @@
 
 #include "archive_writer.hpp"
 #include "archive_entry.hpp"
-#include "read_disk.hpp"
+#include "archive_read_disk.hpp"
 #include "memory_writer_callback.hpp"
 
 #include <archive.h>
