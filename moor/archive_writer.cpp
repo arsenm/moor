@@ -106,10 +106,10 @@ ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
     m_open(true)
 {
   // Set archive format
-  checkError(archive_write_set_format(m_archive, (int) m_format), true);
+  checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
 
   // Set archive compression
-  checkError(archive_write_add_filter(m_archive, (int) m_filter), true);
+  checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
   checkError(archive_write_open_filename(m_archive, cfilename()), true);
 }
 
