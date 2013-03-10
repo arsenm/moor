@@ -42,13 +42,13 @@ namespace
     ScopedWriteDisk(int flags)
       : m_archive(archive_write_disk_new())
     {
-        if (!m_archive)
-        {
-            throw std::bad_alloc();
-        }
+      if (!m_archive)
+      {
+        throw std::bad_alloc();
+      }
 
-        archive_write_disk_set_options(m_archive, flags);
-        archive_write_disk_set_standard_lookup(m_archive);
+      archive_write_disk_set_options(m_archive, flags);
+      archive_write_disk_set_standard_lookup(m_archive);
     }
 
     ~ScopedWriteDisk()
