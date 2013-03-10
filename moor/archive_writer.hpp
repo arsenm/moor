@@ -45,15 +45,15 @@ namespace moor
   {
   public:
     ArchiveWriter(const std::string& archive_file_name,
-                  const Format& format,
-                  const Filter& compression);
+                  const Format format,
+                  const Filter compression);
     ArchiveWriter(std::vector<unsigned char>& out_buffer,
-                  const Format& format,
-                  const Filter& compression);
+                  const Format format,
+                  const Filter compression);
     ArchiveWriter(unsigned char* out_buffer,
                   size_t* size,
-                  const Format& format,
-                  const Filter& compression);
+                  const Format format,
+                  const Filter compression);
     ~ArchiveWriter();
 
     // Add the file / directories under file_path and their content to

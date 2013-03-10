@@ -65,8 +65,8 @@ void ArchiveWriter::checkError(const int err_code,
 }
 
 ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
-                             const Format& format_,
-                             const Filter& filter_)
+                             const Format format_,
+                             const Filter filter_)
   : Archive(archive_write_new(), archive_file_name_),
     m_entry(archive_entry_new()),
     m_format(format_),
@@ -82,8 +82,8 @@ ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
 }
 
 ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
-                             const Format& format_,
-                             const Filter& filter_)
+                             const Format format_,
+                             const Filter filter_)
   : Archive(archive_write_new()),
     m_entry(archive_entry_new()),
     m_format(format_),
@@ -100,8 +100,8 @@ ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
 
 ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
                              size_t* size_,
-                             const Format& format_,
-                             const Filter& filter_)
+                             const Format format_,
+                             const Filter filter_)
   : Archive(archive_write_new()),
     m_entry(archive_entry_new()),
     m_format(format_),
