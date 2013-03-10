@@ -37,6 +37,7 @@
 
 using namespace moor;
 
+
 namespace
 {
   class ScopedReadDisk
@@ -52,6 +53,14 @@ namespace
         {
             throw std::bad_alloc();
         }
+
+      #if !defined(_WIN32) || defined(__CYGWIN__)
+        int ec = archive_read_disk_set_standard_lookup(m_archive);
+        if (ec != ARCHIVE_OK)
+        {
+            throw std::bad_alloc();
+        }
+      #endif
     }
 
     ~ScopedReadDisk()
@@ -166,7 +175,8 @@ void ArchiveWriter::addHeader(const std::string& entry_name_,
   checkError(archive_write_header(m_archive, m_entry));
 }
 
-void ArchiveWriter::addHeader(const std::string& filePath, const struct stat* statBuf)
+void ArchiveWriter::addHeader(const std::string& filePath,
+                              const struct stat* statBuf)
 {
   ScopedReadDisk a;
 
@@ -191,6 +201,31 @@ void ArchiveWriter::addFinish()
   archive_write_finish_entry(m_archive);
 }
 
+void ArchiveWriter::writeFileData(const char* path)
+{
+  static char buf[16384];
+
+  std::ifstream file(path, std::ios::in);
+  while (file.good())
+  {
+    file.read(buf, sizeof(buf));
+    archive_write_data(m_archive,
+                       buf,
+                       static_cast<size_t>(file.gcount()));
+  }
+
+#if 0
+      int fd = open(archive_entry_sourcepath(m_entry), O_RDONLY);
+      auto len = read(fd, buf, sizeof(buf));
+      while (len > 0)
+      {
+          archive_write_data(m_archive, buf, len);
+          len = read(fd, buf, sizeof(buf));
+      }
+      ::close(fd);
+#endif
+}
+
 void ArchiveWriter::addFile(const std::string& file_path)
 {
   struct stat file_stat;
@@ -206,15 +241,7 @@ void ArchiveWriter::addFile(const std::string& file_path)
     throw std::system_error(std::make_error_code(std::errc::not_supported));
   }
 
-  std::ifstream entry_file(file_path, std::ios::in);
-  char buf[8192];
-  while (entry_file.good())
-  {
-    entry_file.read(buf, sizeof(buf));
-    archive_write_data(m_archive, buf, static_cast<size_t>(entry_file.gcount()));
-  }
-  entry_file.close();
-
+  writeFileData(file_path.c_str());
   addFinish();
 }
 
@@ -225,6 +252,37 @@ void ArchiveWriter::addFile(const std::string& entry_name,
   addHeader(entry_name, FileType::Regular, size);
   addContent(data, size);
   addFinish();
+}
+
+void ArchiveWriter::addDiskPath(const std::string& path)
+{
+  ScopedReadDisk disk;
+
+  checkError(archive_read_disk_open(disk, path.c_str()), true);
+  while (true)
+  {
+      int r = archive_read_next_header2(disk, m_entry);
+      if (r == ARCHIVE_EOF)
+      {
+          break;
+      }
+
+      checkError(r, true);
+
+      archive_read_disk_descend(disk);
+
+      if (!m_prefix.empty())
+      {
+        std::string dest(m_prefix);
+        dest += path;
+        archive_entry_set_pathname(m_entry, dest.c_str());
+      }
+
+      r = archive_write_header(m_archive, m_entry);
+      checkError(r, true);
+
+      writeFileData(archive_entry_sourcepath(m_entry));
+  }
 }
 
 void ArchiveWriter::addDirectory(const std::string& directory_name)

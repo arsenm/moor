@@ -54,6 +54,11 @@ namespace moor
                   const Filter& compression);
     ~ArchiveWriter();
 
+    // Add the file / directories under file_path and their content to
+    // the archive
+    void addDiskPath(const std::string& file_path);
+
+    // Add an entry
     void addFile(const std::string& file_path);
 
     template <class Iter>
@@ -81,11 +86,14 @@ namespace moor
                    const FileType entry_type,
                    const long long size = 0,
                    const int permission = 0644);
-    void addHeader(const std::string& file_path, const struct stat* file_stat = nullptr);
+    void addHeader(const std::string& file_path,
+                   const struct stat* file_stat = nullptr);
     void addContent(const char byte);
     void addContent(const void* bytes,
                     const unsigned long long size);
     void addFinish();
+
+    void writeFileData(const char* path);
 
     archive_entry* m_entry;
     const Format m_format;
