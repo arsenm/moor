@@ -64,18 +64,73 @@ static void writeArrayToFile(const std::string& path,
   }
 }
 
+static const char testDataAArray[] = { 64, 65, 66, 67, 68 };
+static const std::vector<char> testDataA10(10, 'A');
+static const std::vector<char> testDataB10(10, 'B');
+
+const std::string testDataString =
+  "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod "
+  "tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, "
+  "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. "
+  "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat"
+  "nulla pariatur. Excepteur sint occaecat cupidatat non proident, "
+  "sunt in culpa qui officia deserunt mollit anim id est laborum.";
+
+
 static bool testArchiveWriteImpl(ArchiveWriter& compressor)
 {
   compressor.addFile("test_data_dir/bar.txt");
   compressor.addDirectory("test_data_dir/foo_dir");
-  char a[] = { 64, 65, 66, 67, 68 };
-  std::vector<char> l(10, 'A');
-  std::vector<char> v(10, 'B');
 
-  compressor.addFile("a_array.txt", a, sizeof(a));
-  compressor.addFile("b_list.txt", l.begin(), l.end());
-  compressor.addFile("vector_a.txt", v.begin(), v.end());
+  compressor.addFile("a_array.txt",
+                     testDataAArray,
+                     sizeof(testDataAArray) / sizeof(testDataAArray[0]));
+
+  compressor.addFile("b_list.txt",
+                     testDataA10.begin(),
+                     testDataA10.end());
+
+  compressor.addFile("vector_b.txt",
+                     testDataB10.begin(),
+                     testDataB10.end());
   compressor.close();
+
+  return false;
+}
+
+static bool testArchiveDataCheck()
+{
+  const std::string entryName("lorem_ipsum.txt");
+  std::vector<unsigned char> buf;
+
+  {
+      ArchiveWriter compressor(buf, Format::PAX, Filter::Gzip);
+      compressor.addFile(entryName, testDataString);
+  }
+
+  ArchiveReader reader(std::move(buf));
+  auto item = reader.extractNext();
+  if (item.first != entryName)
+  {
+      std::cerr << "Entry name does not match: "
+                << item.first
+                << " vs. expected "
+                << entryName
+                << '\n';
+      return true;
+  }
+
+  const std::vector<unsigned char>& out = item.second;
+
+  std::string extractedCopy(out.begin(), out.end());
+  if (extractedCopy != testDataString)
+  {
+      std::cerr << "Extracted string does not match:\n"
+                << "  Original string size: " << testDataString.size() << '\n'
+                << "  Extracted string size: " << extractedCopy.size() << '\n';
+
+      return true;
+  }
 
   return false;
 }
@@ -180,6 +235,11 @@ int main()
   }
 
   if (testArchiveRead("test_write_memory.tar.gz"))
+  {
+    return 1;
+  }
+
+  if (testArchiveDataCheck())
   {
     return 1;
   }
