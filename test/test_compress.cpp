@@ -285,8 +285,8 @@ static bool testExtractDirectory(const std::string& path)
   }
   catch (const std::runtime_error& ex)
   {
-      std::cerr << "Excpetion extracting directory: " << ex.what() << '\n';
-      return true;
+    std::cerr << "Exception extracting directory: " << ex.what() << '\n';
+    return true;
   }
 }
 
@@ -333,11 +333,6 @@ int main()
   }
 
   if (testArchiveDataCheck())
-  {
-    return 1;
-  }
-
-  if (testExtractEntry())
   {
     return 1;
   }

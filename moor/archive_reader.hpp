@@ -47,9 +47,6 @@ namespace moor
     ArchiveReader(std::vector<unsigned char>&& in_buffer);
     ~ArchiveReader();
 
-    // Returns false at EOF
-    bool extractNext(const std::string& root_path);
-
     // Check ArchiveIterator::isAtEnd for EOF
     ArchiveIterator begin();
 

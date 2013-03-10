@@ -271,12 +271,14 @@ void ArchiveWriter::addDiskPath(const std::string& path)
 
       archive_read_disk_descend(disk);
 
+      #if 0
       if (!m_prefix.empty())
       {
         std::string dest(m_prefix);
         dest += path;
         archive_entry_set_pathname(m_entry, dest.c_str());
       }
+      #endif
 
       r = archive_write_header(m_archive, m_entry);
       checkError(r, true);

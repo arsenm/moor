@@ -74,13 +74,13 @@ namespace moor
 
       if (!size_is_set())
       {
-          return false;
+        return false;
       }
 
       std::int64_t entrySize = size();
       if (entrySize < 0 || entrySize >= std::numeric_limits<ssize_t>::max())
       {
-          return false;
+        return false;
       }
 
       out.resize(entrySize);

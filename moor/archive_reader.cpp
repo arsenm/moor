@@ -81,18 +81,6 @@ ArchiveReader::~ArchiveReader()
   close();
 }
 
-bool ArchiveReader::extractEntry(const char* entryName,
-                                 const char* outputFile)
-{
-  return false;
-}
-
-bool ArchiveReader::extractEntry(const char* entryName,
-                                 std::vector<unsigned char>& out)
-{
-    return false;
-}
-
 ArchiveIterator ArchiveReader::begin()
 {
     return ArchiveIterator(m_archive);
