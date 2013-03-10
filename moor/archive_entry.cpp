@@ -25,48 +25,10 @@
 
 #include "archive_entry.hpp"
 #include "moor_utils.hpp"
+#include "write_disk.hpp"
 
 #include <cassert>
 #include <system_error>
-
-
-namespace
-{
-  class ScopedWriteDisk
-  {
-  private:
-    archive* m_archive;
-
-  public:
-    ScopedWriteDisk(int flags)
-      : m_archive(archive_write_disk_new())
-    {
-      if (!m_archive)
-      {
-        throw std::bad_alloc();
-      }
-
-      archive_write_disk_set_options(m_archive, flags);
-      archive_write_disk_set_standard_lookup(m_archive);
-    }
-
-    ~ScopedWriteDisk()
-    {
-      archive_write_close(m_archive);
-      archive_write_free(m_archive);
-    }
-
-    operator archive*()
-    {
-      return m_archive;
-    }
-
-    operator const archive*() const
-    {
-      return m_archive;
-    }
-  };
-}
 
 
 // Select which attributes we want to restore.
@@ -148,14 +110,14 @@ int moor::ArchiveEntry::copyData(archive* ar, archive* aw)
 
 bool moor::ArchiveEntry::extractDisk(const std::string& rootPath)
 {
-  ScopedWriteDisk disk(s_defaultExtractFlags);
+  ArchiveWriteDisk disk(s_defaultExtractFlags);
   std::string fullPath(rootPath);
   fullPath += '/';
   fullPath.append(pathname());
 
   set_pathname(fullPath.c_str());
 
-  int rc = archive_write_header(disk, m_entry);
+  int rc = disk.writeHeader(m_entry);
   if (rc != ARCHIVE_OK)
   {
       moor::throwArchiveError(disk);
