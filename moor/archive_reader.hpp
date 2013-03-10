@@ -51,6 +51,8 @@ namespace moor
     std::pair<std::string, std::vector<unsigned char>> extractNext();
 
   private:
+    static const int s_defaultExtractFlags;
+
     void init();
     void checkError(const int err_code,
                     const bool close_before_throw = false);

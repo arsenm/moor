@@ -71,6 +71,11 @@ namespace
   };
 }
 
+// Select which attributes we want to restore.
+const int ArchiveReader::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
+                                               | ARCHIVE_EXTRACT_PERM
+                                               | ARCHIVE_EXTRACT_ACL
+                                               | ARCHIVE_EXTRACT_FFLAGS;
 
 ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
   : m_archive_file_name(archive_file_name_),
@@ -142,12 +147,7 @@ int ArchiveReader::copyData(archive* ar, archive* aw)
 
 bool ArchiveReader::extractNext(const std::string& root_path_)
 {
-  /* Select which attributes we want to restore. */
-  const int flags = ARCHIVE_EXTRACT_TIME
-                  | ARCHIVE_EXTRACT_PERM
-                  | ARCHIVE_EXTRACT_ACL
-                  | ARCHIVE_EXTRACT_FFLAGS;
-  ScopedWriteDisk a(flags);
+  ScopedWriteDisk a(s_defaultExtractFlags);
 
   struct archive_entry* entry;
   auto r = archive_read_next_header(m_archive, &entry);
