@@ -28,12 +28,11 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-#include <boost/filesystem.hpp>
-
 #include <fstream>
 #include <stdexcept>
 #include <system_error>
 
+#include <sys/types.h>
 #include <sys/stat.h>
 
 using namespace moor;
@@ -167,13 +166,13 @@ void ArchiveWriter::addHeader(const std::string& entry_name_,
   checkError(archive_write_header(m_archive, m_entry));
 }
 
-void ArchiveWriter::addHeader(const std::string& file_path_)
+void ArchiveWriter::addHeader(const std::string& filePath, const struct stat* statBuf)
 {
   ScopedReadDisk a;
 
   m_entry = archive_entry_clear(m_entry);
-  archive_entry_set_pathname(m_entry, file_path_.c_str());
-  checkError(archive_read_disk_entry_from_file(a, m_entry, -1, 0));
+  archive_entry_set_pathname(m_entry, filePath.c_str());
+  checkError(archive_read_disk_entry_from_file(a, m_entry, -1, statBuf));
   checkError(archive_write_header(m_archive, m_entry));
 }
 
@@ -194,15 +193,15 @@ void ArchiveWriter::addFinish()
 
 void ArchiveWriter::addFile(const std::string& file_path)
 {
-  boost::filesystem::file_status file_stat = boost::filesystem::status(file_path);
-  if (!boost::filesystem::exists(file_stat))
+  struct stat file_stat;
+  if (stat(file_path.c_str(), &file_stat) < 0)
   {
-    throw std::system_error(std::make_error_code(std::errc::no_such_file_or_directory));
+      throw std::system_error(std::error_code(errno, std::generic_category()));
   }
 
-  addHeader(file_path);
+  addHeader(file_path, &file_stat);
 
-  if (!boost::filesystem::is_regular_file(file_stat))
+  if (!S_ISREG(file_stat.st_mode))
   {
     throw std::system_error(std::make_error_code(std::errc::not_supported));
   }

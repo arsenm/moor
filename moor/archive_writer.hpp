@@ -35,6 +35,7 @@
 
 struct archive;
 struct archive_entry;
+struct stat;
 
 namespace moor
 {
@@ -80,13 +81,12 @@ namespace moor
                    const FileType entry_type,
                    const long long size = 0,
                    const int permission = 0644);
-    void addHeader(const std::string& file_path);
+    void addHeader(const std::string& file_path, const struct stat* file_stat = nullptr);
     void addContent(const char byte);
     void addContent(const void* bytes,
                     const unsigned long long size);
     void addFinish();
 
-    const std::string m_archive_file_name;
     archive_entry* m_entry;
     const Format m_format;
     const Filter m_filter;

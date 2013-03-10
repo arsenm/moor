@@ -29,8 +29,6 @@
 #include <stdexcept>
 #include <system_error>
 
-#include <boost/filesystem.hpp>
-
 using namespace moor;
 
 namespace
@@ -153,15 +151,17 @@ bool ArchiveReader::extractNext(const std::string& root_path_)
 
   checkError(r);
 
-  boost::filesystem::path entryPath = boost::filesystem::path(root_path_)
-                                      / archive_entry_pathname(entry);
-  std::string entryPathStr = entryPath.string();
+  std::string fullPath(root_path_);
+  fullPath += '/';
+  fullPath.append(archive_entry_pathname(entry));
 
-  archive_entry_set_pathname(entry, entryPathStr.c_str());
+  archive_entry_set_pathname(entry, fullPath.c_str());
   checkError(archive_write_header(a, entry));
 
   if (archive_entry_size(entry) > 0)
+  {
     checkError(copyData(m_archive, a));
+  }
 
   return true;
 }
