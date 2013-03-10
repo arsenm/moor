@@ -34,9 +34,6 @@ namespace moor
 {
   class MOOR_API ArchiveWriteDisk : public Archive
   {
-  private:
-    archive* m_archive;
-
   public:
     ArchiveWriteDisk(int flags)
       : Archive(archive_write_disk_new())
