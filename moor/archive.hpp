@@ -45,7 +45,10 @@ namespace moor
             m_archive_file_name(),
             m_archive(a)
         {
-
+          if (!m_archive)
+          {
+            throw std::bad_alloc();
+          }
         }
 
         Archive(archive* a, const std::string& filename_) :

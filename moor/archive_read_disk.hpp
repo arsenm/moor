@@ -24,16 +24,15 @@
 
 #pragma once
 
+#include "archive.hpp"
 #include "archive_match.hpp"
 
 #include <archive.h>
 
-#include <functional>
-
 
 namespace moor
 {
-  class ArchiveReadDisk
+  class ArchiveReadDisk : public Archive
   {
   private:
       /*
@@ -50,18 +49,12 @@ namespace moor
     };
       */
 
-    archive* m_archive;
       //FilterCallbackData m_fcd;
 
   public:
     ArchiveReadDisk()
-      : m_archive(archive_read_disk_new())
+      : Archive(archive_read_disk_new())
     {
-      if (!m_archive)
-      {
-        throw std::bad_alloc();
-      }
-
     #if !defined(_WIN32) || defined(__CYGWIN__)
       int ec = archive_read_disk_set_standard_lookup(m_archive);
       if (ec != ARCHIVE_OK)

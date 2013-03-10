@@ -25,22 +25,20 @@
 
 #pragma once
 
+#include "archive.hpp"
+
+
 namespace moor
 {
-  class ArchiveWriteDisk
+  class ArchiveWriteDisk : public Archive
   {
   private:
     archive* m_archive;
 
   public:
     ArchiveWriteDisk(int flags)
-      : m_archive(archive_write_disk_new())
+      : Archive(archive_write_disk_new())
     {
-      if (!m_archive)
-      {
-        throw std::bad_alloc();
-      }
-
       archive_write_disk_set_options(m_archive, flags);
       archive_write_disk_set_standard_lookup(m_archive);
     }
