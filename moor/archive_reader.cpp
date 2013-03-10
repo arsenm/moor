@@ -156,9 +156,11 @@ bool ArchiveReader::extractNext(const std::string& root_path_)
 
   checkError(r);
 
-  archive_entry_set_pathname(entry,
-    (boost::filesystem::path(root_path_)
-      / archive_entry_pathname(entry)).string().c_str());
+  boost::filesystem::path entryPath = boost::filesystem::path(root_path_)
+                                      / archive_entry_pathname(entry);
+  std::string entryPathStr = entryPath.string();
+
+  archive_entry_set_pathname(entry, entryPathStr.c_str());
   checkError(archive_write_header(a, entry));
 
   if (archive_entry_size(entry) > 0)
