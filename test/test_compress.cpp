@@ -135,14 +135,14 @@ static bool testArchiveRead(const std::string& path)
 
     ArchiveReader reader(std::move(ff));
     auto data = reader.extractNext();
-    while (data.first.length() > 0)
+    while (!data.first.empty())
     {
       std::cout << data.first << " : " << data.second.size() << '\n';
       data = reader.extractNext();
     }
 
     data = reader1.extractNext();
-    while (data.first.length() > 0)
+    while (!data.first.empty())
     {
       std::cout << data.first << " : " << data.second.size() << '\n';
       data = reader1.extractNext();
