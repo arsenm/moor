@@ -50,6 +50,11 @@ const char* Archive::filterName() const
     return archive_filter_name(m_archive, -1);
 }
 
+int Archive::errorNumber() const
+{
+    return archive_errno(m_archive);
+}
+
 const char* Archive::errorString() const
 {
     return archive_error_string(m_archive);

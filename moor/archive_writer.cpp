@@ -48,8 +48,8 @@ void ArchiveWriter::checkError(const int err_code,
   const char* errStr = nullptr;
   if (err_code == ARCHIVE_FATAL)
   {
-      archiveErrno = archive_errno(m_archive);
-      errStr = archive_error_string(m_archive);
+      archiveErrno = errorNumber();
+      errStr = errorString();
       if (close_before_throw)
       {
           close();

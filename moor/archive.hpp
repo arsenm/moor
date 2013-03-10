@@ -81,6 +81,8 @@ namespace moor
         int filterCount() const;
         const char* formatName() const;
         const char* filterName() const;
+
+        int errorNumber() const;
         const char* errorString() const;
     };
 }
