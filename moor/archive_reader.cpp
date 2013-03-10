@@ -171,44 +171,6 @@ ArchiveIterator ArchiveReader::begin()
     return ArchiveIterator(m_archive);
 }
 
-std::pair<std::string, std::vector<unsigned char>> ArchiveReader::extractNext()
-{
-  auto result = std::make_pair(std::string(), std::vector<unsigned char>());
-
-  struct archive_entry* entry;
-  int ec = archive_read_next_header(m_archive, &entry);
-  if (ec == ARCHIVE_EOF)
-    return result;
-
-  checkError(ec);
-
-  result.first = archive_entry_pathname(entry);
-  std::int64_t entry_size = archive_entry_size(entry);
-  if (entry_size <= 0)
-  {
-      return result;
-  }
-
-  ssize_t read_index = 0;
-  result.second.resize(entry_size);
-  while (true)
-  {
-    ssize_t r = archive_read_data(m_archive,
-                                  &result.second[read_index],
-                                  result.second.size() - read_index);
-    if (r == 0)
-      break;
-    if (r < ARCHIVE_OK)
-      checkError(r);
-
-    read_index += r;
-    if (read_index == entry_size)
-      break;
-  }
-
-  return result;
-}
-
 void ArchiveReader::checkError(const int _err_code,
                                const bool _close_before_throw)
 {

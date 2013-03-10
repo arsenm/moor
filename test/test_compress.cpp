@@ -113,15 +113,35 @@ static bool testArchiveDataCheck()
   }
 
   ArchiveReader reader(std::move(buf));
-  auto item = reader.extractNext();
-  if (item.first != entryName)
+  for (auto it = reader.begin(); !it.isAtEnd(); ++it)
   {
+    std::string path(it->pathname());
+    if (entryName != path)
+    {
       std::cerr << "Entry name does not match: "
-                << item.first
+                << path
                 << " vs. expected "
                 << entryName
                 << '\n';
       return true;
+    }
+
+    std::vector<unsigned char> out;
+    if (!it->extractData<std::vector<unsigned char>>(out))
+    {
+      std::cerr << "Error extracting test data\n";
+      return true;
+    }
+
+    std::string extractedCopy(out.begin(), out.end());
+    if (extractedCopy != testDataString)
+    {
+        std::cerr << "Extracted string does not match:\n"
+                  << "  Original string size: " << testDataString.size() << '\n'
+                  << "  Extracted string size: " << extractedCopy.size() << '\n';
+
+        return true;
+    }
   }
 
   // TODO: Is this actually useful? It isn't updated until you archive_read_next_header?
@@ -131,17 +151,6 @@ static bool testArchiveDataCheck()
       return true;
   }
 
-  const std::vector<unsigned char>& out = item.second;
-
-  std::string extractedCopy(out.begin(), out.end());
-  if (extractedCopy != testDataString)
-  {
-      std::cerr << "Extracted string does not match:\n"
-                << "  Original string size: " << testDataString.size() << '\n'
-                << "  Extracted string size: " << extractedCopy.size() << '\n';
-
-      return true;
-  }
 
   return false;
 }

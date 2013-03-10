@@ -50,9 +50,6 @@ namespace moor
     // Returns false at EOF
     bool extractNext(const std::string& root_path);
 
-    // Returns empty filename at EOF
-    std::pair<std::string, std::vector<unsigned char>> extractNext();
-
     // Check ArchiveIterator::isAtEnd for EOF
     ArchiveIterator begin();
 

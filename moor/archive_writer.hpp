@@ -58,9 +58,10 @@ namespace moor
     // the archive
     void addDiskPath(const std::string& file_path);
 
-    // Add an entry
+    // Add an entry and its content from a real file
     void addFile(const std::string& file_path);
 
+    // Add a file entry with the given data for the content
     template <class Iter>
     void addFile(const std::string& entry_name,
                  const Iter entry_contents_begin,
