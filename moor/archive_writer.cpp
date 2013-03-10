@@ -129,7 +129,7 @@ ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
   checkError(archive_write_set_format(m_archive, (int) m_format), true);
 
   // Set archive filter
-  checkError(archive_write_add_filter(m_archive, (int) m_format), true);
+  checkError(archive_write_add_filter(m_archive, (int) m_filter), true);
   checkError(write_open_memory(m_archive, &out_buffer_), true);
 }
 
