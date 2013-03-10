@@ -54,33 +54,65 @@ static bool testDoesNotExist()
   }
 }
 
-static bool testArchiveWrite(const std::string& path)
+static void writeArrayToFile(const std::string& path,
+                             const std::vector<unsigned char>& v)
+{
+  std::ofstream of(path, std::ios::binary);
+  for (auto a : v)
+  {
+    of << a;
+  }
+}
+
+static bool testArchiveWriteImpl(ArchiveWriter& compressor)
+{
+  compressor.addFile("test_data_dir/bar.txt");
+  compressor.addDirectory("test_data_dir/foo_dir");
+  char a[] = { 64, 65, 66, 67, 68 };
+  std::vector<char> l(10, 'A');
+  std::vector<char> v(10, 'B');
+
+  compressor.addFile("a_array.txt", a, a + 10);
+  compressor.addFile("b_list.txt", l.begin(), l.end());
+  compressor.addFile("vector_a.txt", v.begin(), v.end());
+  compressor.close();
+
+  return false;
+}
+
+// Write result directly to path
+static bool testArchiveWriteFile(const std::string& path)
+{
+  try
+  {
+    ArchiveWriter compressor(path, Format::PAX, Filter::Gzip);
+    return testArchiveWriteImpl(compressor);
+  }
+  catch (const std::runtime_error& ex)
+  {
+    std::cerr << "Error writing file archive: " << ex.what() << '\n';
+    return true;
+  }
+}
+
+// Write to path and first go through temporary buffer
+static bool testArchiveWriteMemory(const std::string& path)
 {
   try
   {
     std::vector<unsigned char> lout;
-    //ArchiveWriter compressor("test1.tar.gz", Format::PAX, Filter::Gzip);
     ArchiveWriter compressor(lout, Format::PAX, Filter::Gzip);
-    compressor.addFile("test_data_dir/bar.txt");
-    compressor.addDirectory("test_data_dir/foo_dir");
-    char a[] = { 64, 65, 66, 67, 68 };
-    std::vector<char> l(10, 'A');
-    std::vector<char> v(10, 'B');
+    if (testArchiveWriteImpl(compressor))
+    {
+      return true;
+    }
 
-    compressor.addFile("a_array.txt", a, a + 10);
-    compressor.addFile("b_list.txt", l.begin(), l.end());
-    compressor.addFile("vector_a.txt", v.begin(), v.end());
-
-    compressor.close();
-    std::ofstream of(path, std::ios::binary);
-    for (auto a = lout.begin(), e = lout.end(); a != e; ++a)
-      of << *a;
-    of.close();
+    writeArrayToFile(path, lout);
     return false;
   }
   catch (const std::runtime_error& ex)
   {
-    std::cerr << "Error writing archive: " << ex.what() << '\n';
+    std::cerr << "Error writing memory archive: " << ex.what() << '\n';
     return true;
   }
 }
@@ -132,12 +164,22 @@ int main()
     return 1;
   }
 
-  if (testArchiveWrite("test2.tar.gz"))
+  if (testArchiveWriteFile("test_write_file.tar.gz"))
   {
     return 1;
   }
 
-  if (testArchiveRead("test2.tar.gz"))
+  if (testArchiveRead("test_write_file.tar.gz"))
+  {
+    return 1;
+  }
+
+  if (testArchiveWriteMemory("test_write_memory.tar.gz"))
+  {
+    return 1;
+  }
+
+  if (testArchiveRead("test_write_memory.tar.gz"))
   {
     return 1;
   }
