@@ -33,12 +33,19 @@
 #include <system_error>
 #include <vector>
 
+#define PRINT_TEST_NAME() do                            \
+    {                                                   \
+      std::cout << "\nStart test " << __FUNCTION__ << std::endl;  \
+    } while (0)
+
 
 
 using namespace moor;
 
 static bool testDoesNotExist()
 {
+  PRINT_TEST_NAME();
+
   try
   {
     ArchiveReader badReader("xxxx_does_not_exist");
@@ -105,6 +112,7 @@ static bool testArchiveWriteImpl(ArchiveWriter& compressor)
 
 static bool testArchiveDataCheck()
 {
+  PRINT_TEST_NAME();
   const std::string entryName("lorem_ipsum.txt");
   std::vector<unsigned char> buf;
 
@@ -159,6 +167,7 @@ static bool testArchiveDataCheck()
 // Write result directly to path
 static bool testArchiveWriteFile(const std::string& path)
 {
+  PRINT_TEST_NAME();
   try
   {
     ArchiveWriter compressor(path, Format::PAX, Filter::Gzip);
@@ -174,6 +183,7 @@ static bool testArchiveWriteFile(const std::string& path)
 // Write to path and first go through temporary buffer
 static bool testArchiveWriteMemory(const std::string& path)
 {
+  PRINT_TEST_NAME();
   try
   {
     std::vector<unsigned char> lout;
@@ -220,6 +230,8 @@ static bool printArchiveEntries(ArchiveReader& reader)
 
 static bool testArchiveRead(const std::string& path)
 {
+  PRINT_TEST_NAME();
+
   try
   {
     ArchiveReader reader1(path);
@@ -247,6 +259,8 @@ static bool testArchiveRead(const std::string& path)
 
 static bool testCompressDirectory(const std::string& path)
 {
+  PRINT_TEST_NAME();
+
   try
   {
     {
@@ -266,6 +280,8 @@ static bool testCompressDirectory(const std::string& path)
 
 static bool testExtractDirectory(const std::string& path)
 {
+  PRINT_TEST_NAME();
+
   try
   {
     ArchiveReader reader(path);
