@@ -311,39 +311,47 @@ static bool testMatch(const std::string& path, bool useCallback)
 {
   PRINT_TEST_NAME();
 
-  std::vector<unsigned char> buf;
-
-  ArchiveMatch match;
-  match.excludePattern("foo*");
-
-  if (useCallback)
+  try
   {
-    match.addCallback(
-      [](ArchiveEntry entry, void*) -> void
+      std::vector<unsigned char> buf;
+
+      ArchiveMatch match;
+      match.excludePattern("foo*");
+
+      if (useCallback)
       {
-        std::cout << "Callback: skipping path " << entry.pathname() << '\n';
-      },
-      nullptr);
+          match.addCallback(
+              [](ArchiveEntry entry, void*) -> void
+              {
+                  std::cout << "Callback: skipping path " << entry.pathname() << '\n';
+              },
+              nullptr);
+      }
+
+      {
+          ArchiveWriter compressor(buf, Format::PAX, Filter::Gzip);
+          compressor.addDiskPath(path, &match);
+      }
+
+      ArchiveReader reader(std::move(buf));
+
+      for (auto it = reader.begin(); !it.isAtEnd(); ++it)
+      {
+          std::string entryName(it->pathname());
+          if (entryName.find("foo") != std::string::npos)
+          {
+              std::cerr << "File should have been excluded from archive";
+              return true;
+          }
+      }
+
+      return false;
   }
-
+  catch (const std::runtime_error& ex)
   {
-    ArchiveWriter compressor(buf, Format::PAX, Filter::Gzip);
-    compressor.addDiskPath(path, &match);
-  }
-
-  ArchiveReader reader(std::move(buf));
-
-  for (auto it = reader.begin(); !it.isAtEnd(); ++it)
-  {
-    std::string entryName(it->pathname());
-    if (entryName.find("foo") != std::string::npos)
-    {
-      std::cerr << "File should have been excluded from archive";
+      std::cerr << "Error testing match: " << ex.what() << '\n';
       return true;
-    }
   }
-
-  return false;
 }
 
 int main()
@@ -393,12 +401,12 @@ int main()
     return 1;
   }
 
-  if (testMatch("test_data_dir_no_foo", false))
+  if (testMatch("test_data_dir", false))
   {
     return 1;
   }
 
-  if (testMatch("test_data_dir_no_foo_callback", true))
+  if (testMatch("test_data_dir", true))
   {
     return 1;
   }
