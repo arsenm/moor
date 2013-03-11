@@ -44,7 +44,7 @@ ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
                              const Format format_,
                              const Filter filter_)
     : Archive(archive_write_new(), archive_file_name_),
-      m_entry(archive_entry_new()),
+      m_entry(m_archive, archive_entry_new()),
       m_format(format_),
       m_filter(filter_),
       m_open(true)
@@ -61,7 +61,7 @@ ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
                              const Format format_,
                              const Filter filter_)
     : Archive(archive_write_new()),
-      m_entry(archive_entry_new()),
+      m_entry(m_archive, archive_entry_new()),
       m_format(format_),
       m_filter(filter_),
       m_open(true)
@@ -79,7 +79,7 @@ ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
                              const Format format_,
                              const Filter filter_)
     : Archive(archive_write_new()),
-      m_entry(archive_entry_new()),
+      m_entry(m_archive, archive_entry_new()),
       m_format(format_),
       m_filter(filter_),
       m_open(true)
@@ -122,22 +122,22 @@ void ArchiveWriter::addHeader(const std::string& entry_name_,
                               const long long size_,
                               const int permission_)
 {
-    m_entry = archive_entry_clear(m_entry);
-    archive_entry_set_pathname(m_entry, entry_name_.c_str());
-    archive_entry_set_perm(m_entry, permission_);
-    archive_entry_set_filetype(m_entry, static_cast<int>(entry_type_));
-    archive_entry_set_size(m_entry, size_);
-    checkError(archive_write_header(m_archive, m_entry));
+    m_entry.clear();
+    m_entry.set_pathname(entry_name_.c_str());
+    m_entry.set_perm(permission_);
+    m_entry.set_filetype(entry_type_);
+    m_entry.set_size(size_);
+    checkError(writeHeader(m_entry));
 }
 
 void ArchiveWriter::addHeader(const std::string& filePath,
                               const struct stat* statBuf)
 {
-    ArchiveReadDisk a;
+    ArchiveReadDisk disk;
 
-    m_entry = archive_entry_clear(m_entry);
-    archive_entry_set_pathname(m_entry, filePath.c_str());
-    checkError(archive_read_disk_entry_from_file(a, m_entry, -1, statBuf));
+    m_entry.clear();
+    m_entry.set_pathname(filePath.c_str());
+    checkError(disk.entryFromFile(m_entry, -1, statBuf));
     checkError(writeHeader(m_entry));
 }
 

@@ -31,11 +31,12 @@
 
 using namespace moor;
 
+
 // Select which attributes we want to restore.
 const int ArchiveReader::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
-        | ARCHIVE_EXTRACT_PERM
-        | ARCHIVE_EXTRACT_ACL
-        | ARCHIVE_EXTRACT_FFLAGS;
+                                               | ARCHIVE_EXTRACT_PERM
+                                               | ARCHIVE_EXTRACT_ACL
+                                               | ARCHIVE_EXTRACT_FFLAGS;
 
 ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
     : Archive(archive_read_new(), archive_file_name_),
@@ -43,10 +44,7 @@ ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
       m_open(true)
 {
     init();
-    int ec = archive_read_open_filename(m_archive,
-                                        cfilename(),
-                                        10240);
-    checkError(ec, true);
+    checkError(openFilename(cfilename()), true);
 }
 
 ArchiveReader::ArchiveReader(void* in_buffer_, const size_t size_)
@@ -55,18 +53,16 @@ ArchiveReader::ArchiveReader(void* in_buffer_, const size_t size_)
       m_open(true)
 {
     init();
-    checkError(archive_read_open_memory(m_archive, in_buffer_, size_), true);
+    checkError(openMemory(in_buffer_, size_), true);
 }
 
-ArchiveReader::ArchiveReader(std::vector<unsigned char> && in_buffer_)
+ArchiveReader::ArchiveReader(std::vector<unsigned char>&& in_buffer_)
     : Archive(archive_read_new()),
       m_in_buffer(std::move(in_buffer_)),
       m_open(true)
 {
     init();
-    int ec = archive_read_open_memory(m_archive,
-                                      m_in_buffer.data(),
-                                      m_in_buffer.size());
+    int ec = openMemory(m_in_buffer.data(), m_in_buffer.size());
     checkError(ec, true);
 }
 
@@ -74,6 +70,16 @@ void ArchiveReader::init()
 {
     checkError(archive_read_support_format_all(m_archive), true);
     checkError(archive_read_support_filter_all(m_archive), true);
+}
+
+int ArchiveReader::openFilename(const char* path, size_t blockSize)
+{
+    return archive_read_open_filename(m_archive, path, blockSize);
+}
+
+int ArchiveReader::openMemory(void* buffer, size_t bufferSize)
+{
+    return archive_read_open_memory(m_archive, buffer, bufferSize);
 }
 
 ArchiveReader::~ArchiveReader()

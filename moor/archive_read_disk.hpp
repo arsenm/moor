@@ -94,6 +94,16 @@ namespace moor
         {
             return archive_read_next_header2(m_archive, e);
         }
+
+        int entryFromFile(archive_entry* e,
+                          int fd = -1,
+                          const struct stat* statBuf = nullptr)
+        {
+            return archive_read_disk_entry_from_file(m_archive,
+                                                     e,
+                                                     fd,
+                                                     statBuf);
+        }
     };
 }
 

@@ -27,6 +27,7 @@
 #include "moor_build_config.hpp"
 #include "types.hpp"
 #include "archive.hpp"
+#include "archive_entry.hpp"
 
 #include <iterator>
 #include <string>
@@ -102,7 +103,7 @@ namespace moor
 
         void writeFileData(const char* path);
 
-        archive_entry* m_entry;
+        ArchiveEntry m_entry;
         const Format m_format;
         const Filter m_filter;
         bool m_open;

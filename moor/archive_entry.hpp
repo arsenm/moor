@@ -58,6 +58,16 @@ namespace moor
             : m_archive(a),
               m_entry(e) { }
 
+        operator archive_entry*()
+        {
+            return m_entry;
+        }
+
+        operator const archive_entry*() const
+        {
+            return m_entry;
+        }
+
         archive_entry* entry()
         {
             return m_entry;
@@ -97,6 +107,11 @@ namespace moor
 
         // Like extract data but extract to the given filepath instead
         bool extractDisk(const std::string& rootPath);
+
+        void clear()
+        {
+            m_entry = archive_entry_clear(m_entry);
+        }
 
         time_t atime() const
         {

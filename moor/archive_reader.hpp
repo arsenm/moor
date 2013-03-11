@@ -44,7 +44,7 @@ namespace moor
     public:
         ArchiveReader(const std::string& archive_file_name);
         ArchiveReader(void* in_buffer, const size_t size);
-        ArchiveReader(std::vector<unsigned char> && in_buffer);
+        ArchiveReader(std::vector<unsigned char>&& in_buffer);
         virtual ~ArchiveReader() override;
 
         // Check ArchiveIterator::isAtEnd for EOF
@@ -54,6 +54,9 @@ namespace moor
         static const int s_defaultExtractFlags;
 
         void init();
+        int openFilename(const char* path, size_t blockSize = 10240);
+        int openMemory(void* buffer, size_t bufferSize);
+
         virtual void close() override;
         static int copyData(archive* ar, archive* aw);
 
