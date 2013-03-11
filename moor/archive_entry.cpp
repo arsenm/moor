@@ -130,12 +130,7 @@ bool moor::ArchiveEntry::extractDisk(const std::string& rootPath)
     fullPath.append(pathname());
 
     set_pathname(fullPath.c_str());
-
-    int rc = disk.writeHeader(m_entry);
-    if (rc != ARCHIVE_OK)
-    {
-        moor::throwArchiveError(disk);
-    }
+    disk.checkError(disk.writeHeader(m_entry));
 
     if (!size_is_set())
     {
@@ -148,11 +143,6 @@ bool moor::ArchiveEntry::extractDisk(const std::string& rootPath)
         return false;
     }
 
-    rc = copyData(m_archive, disk);
-    if (rc != ARCHIVE_OK)
-    {
-        moor::throwArchiveError(disk);
-    }
-
+    disk.checkError(copyData(m_archive, disk));
     return true;
 }
