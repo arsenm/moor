@@ -101,6 +101,7 @@ namespace moor
                         const unsigned long long size);
         void addFinish();
 
+        ssize_t writeData(const void* buf, size_t bufSize);
         void writeFileData(const char* path);
 
         ArchiveEntry m_entry;

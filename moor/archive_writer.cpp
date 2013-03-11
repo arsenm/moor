@@ -154,6 +154,11 @@ void moor::ArchiveWriter::addFinish()
     archive_write_finish_entry(m_archive);
 }
 
+ssize_t moor::ArchiveWriter::writeData(const void* buf, size_t bufSize)
+{
+    return archive_write_data(m_archive, buf, bufSize);
+}
+
 void moor::ArchiveWriter::writeFileData(const char* path)
 {
     static char buf[16384];
@@ -163,9 +168,7 @@ void moor::ArchiveWriter::writeFileData(const char* path)
     while (file.good())
     {
         file.read(buf, sizeof(buf));
-        archive_write_data(m_archive,
-                           buf,
-                           static_cast<size_t>(file.gcount()));
+        writeData(buf, static_cast<size_t>(file.gcount()));
     }
 
 #if 0
@@ -225,7 +228,6 @@ void moor::ArchiveWriter::addDiskPath(const std::string& path, ArchiveMatch* mat
     while (true)
     {
         int r = disk.nextHeader2(m_entry);
-
         if (r == ARCHIVE_EOF)
         {
             break;
@@ -237,7 +239,7 @@ void moor::ArchiveWriter::addDiskPath(const std::string& path, ArchiveMatch* mat
         r = writeHeader(m_entry);
         checkError(r, true);
 
-        writeFileData(archive_entry_sourcepath(m_entry));
+        writeFileData(m_entry.sourcepath());
     }
 }
 
