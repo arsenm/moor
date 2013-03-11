@@ -37,12 +37,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-using namespace moor;
 
-
-ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
-                             const Format format_,
-                             const Filter filter_)
+moor::ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
+                                   const moor::Format format_,
+                                   const moor::Filter filter_)
     : Archive(archive_write_new(), archive_file_name_),
       m_entry(m_archive, archive_entry_new()),
       m_format(format_),
@@ -57,9 +55,9 @@ ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
     checkError(openFilename(cfilename()), true);
 }
 
-ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
-                             const Format format_,
-                             const Filter filter_)
+moor::ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
+                                   const moor::Format format_,
+                                   const moor::Filter filter_)
     : Archive(archive_write_new()),
       m_entry(m_archive, archive_entry_new()),
       m_format(format_),
@@ -74,10 +72,10 @@ ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
     checkError(openMemory(out_buffer_), true);
 }
 
-ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
-                             size_t* size_,
-                             const Format format_,
-                             const Filter filter_)
+moor::ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
+                                   size_t* size_,
+                                   const moor::Format format_,
+                                   const moor::Filter filter_)
     : Archive(archive_write_new()),
       m_entry(m_archive, archive_entry_new()),
       m_format(format_),
@@ -92,35 +90,35 @@ ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
     checkError(openMemory(out_buffer_, size_), true);
 }
 
-ArchiveWriter::~ArchiveWriter()
+moor::ArchiveWriter::~ArchiveWriter()
 {
     close();
 }
 
-int ArchiveWriter::writeHeader(archive_entry* e)
+int moor::ArchiveWriter::writeHeader(archive_entry* e)
 {
     return archive_write_header(m_archive, e);
 }
 
-int ArchiveWriter::openFilename(const char* path)
+int moor::ArchiveWriter::openFilename(const char* path)
 {
     return archive_write_open_filename(m_archive, path);
 }
 
-int ArchiveWriter::openMemory(std::vector<unsigned char>& outBuf)
+int moor::ArchiveWriter::openMemory(std::vector<unsigned char>& outBuf)
 {
     return write_open_memory(m_archive, &outBuf);
 }
 
-int ArchiveWriter::openMemory(void* buf, size_t* bufSize)
+int moor::ArchiveWriter::openMemory(void* buf, size_t* bufSize)
 {
     return archive_write_open_memory(m_archive, buf, *bufSize, bufSize);
 }
 
-void ArchiveWriter::addHeader(const std::string& entry_name_,
-                              const FileType entry_type_,
-                              const long long size_,
-                              const int permission_)
+void moor::ArchiveWriter::addHeader(const std::string& entry_name_,
+                                    const FileType entry_type_,
+                                    const long long size_,
+                                    const int permission_)
 {
     m_entry.clear();
     m_entry.set_pathname(entry_name_.c_str());
@@ -130,8 +128,8 @@ void ArchiveWriter::addHeader(const std::string& entry_name_,
     checkError(writeHeader(m_entry));
 }
 
-void ArchiveWriter::addHeader(const std::string& filePath,
-                              const struct stat* statBuf)
+void moor::ArchiveWriter::addHeader(const std::string& filePath,
+                                    const struct stat* statBuf)
 {
     ArchiveReadDisk disk;
 
@@ -141,22 +139,22 @@ void ArchiveWriter::addHeader(const std::string& filePath,
     checkError(writeHeader(m_entry));
 }
 
-void ArchiveWriter::addContent(const char b)
+void moor::ArchiveWriter::addContent(const char b)
 {
     archive_write_data(m_archive, &b, 1);
 }
 
-void ArchiveWriter::addContent(const void* data, const unsigned long long size)
+void moor::ArchiveWriter::addContent(const void* data, const unsigned long long size)
 {
     archive_write_data(m_archive, data, size);
 }
 
-void ArchiveWriter::addFinish()
+void moor::ArchiveWriter::addFinish()
 {
     archive_write_finish_entry(m_archive);
 }
 
-void ArchiveWriter::writeFileData(const char* path)
+void moor::ArchiveWriter::writeFileData(const char* path)
 {
     static char buf[16384];
 
@@ -184,7 +182,7 @@ void ArchiveWriter::writeFileData(const char* path)
 #endif
 }
 
-void ArchiveWriter::addFile(const std::string& file_path)
+void moor::ArchiveWriter::addFile(const std::string& file_path)
 {
     struct stat file_stat;
 
@@ -204,18 +202,18 @@ void ArchiveWriter::addFile(const std::string& file_path)
     addFinish();
 }
 
-void ArchiveWriter::addFile(const std::string& entry_name,
-                            const void* data,
-                            unsigned long long size)
+void moor::ArchiveWriter::addFile(const std::string& entry_name,
+                                  const void* data,
+                                  unsigned long long size)
 {
     addHeader(entry_name, FileType::Regular, size);
     addContent(data, size);
     addFinish();
 }
 
-void ArchiveWriter::addDiskPath(const std::string& path, ArchiveMatch* match)
+void moor::ArchiveWriter::addDiskPath(const std::string& path, ArchiveMatch* match)
 {
-    ArchiveReadDisk disk;
+    moor::ArchiveReadDisk disk;
 
     checkError(disk.open(path.c_str()), true);
 
@@ -243,13 +241,13 @@ void ArchiveWriter::addDiskPath(const std::string& path, ArchiveMatch* match)
     }
 }
 
-void ArchiveWriter::addDirectory(const std::string& directory_name)
+void moor::ArchiveWriter::addDirectory(const std::string& directory_name)
 {
     addHeader(directory_name, FileType::Directory, 0777);
     addFinish();
 }
 
-void ArchiveWriter::close()
+void moor::ArchiveWriter::close()
 {
     if (m_open)
     {
