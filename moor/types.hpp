@@ -30,49 +30,49 @@
 
 namespace moor
 {
-  enum class Format
-  {
-    CPIO = ARCHIVE_FORMAT_CPIO,
-    PAX = ARCHIVE_FORMAT_TAR,
-    Tar = ARCHIVE_FORMAT_TAR_GNUTAR,
-    ISO9660 = ARCHIVE_FORMAT_ISO9660,
-    Zip = ARCHIVE_FORMAT_ZIP,
-    Empty = ARCHIVE_FORMAT_EMPTY,
-    Ar = ARCHIVE_FORMAT_AR,
-    CAB = ARCHIVE_FORMAT_CAB,
-    RAR = ARCHIVE_FORMAT_RAR,
-    Zip7 = ARCHIVE_FORMAT_7ZIP
-  };
+    enum class Format
+    {
+        CPIO = ARCHIVE_FORMAT_CPIO,
+        PAX = ARCHIVE_FORMAT_TAR,
+        Tar = ARCHIVE_FORMAT_TAR_GNUTAR,
+        ISO9660 = ARCHIVE_FORMAT_ISO9660,
+        Zip = ARCHIVE_FORMAT_ZIP,
+        Empty = ARCHIVE_FORMAT_EMPTY,
+        Ar = ARCHIVE_FORMAT_AR,
+        CAB = ARCHIVE_FORMAT_CAB,
+        RAR = ARCHIVE_FORMAT_RAR,
+        Zip7 = ARCHIVE_FORMAT_7ZIP
+    };
 
-  enum class Filter
-  {
-    None = ARCHIVE_FILTER_NONE,
-    Gzip = ARCHIVE_FILTER_GZIP,
-    Bzip2 = ARCHIVE_FILTER_BZIP2,
-    Compress = ARCHIVE_FILTER_COMPRESS,
-    LZMA = ARCHIVE_FILTER_LZMA,
-    Xz = ARCHIVE_FILTER_XZ,
-    UU = ARCHIVE_FILTER_UU,
-    RPM = ARCHIVE_FILTER_RPM,
-    LZip = ARCHIVE_FILTER_LZIP,
-    LRZip = ARCHIVE_FILTER_LRZIP,
-    LZOP = ARCHIVE_FILTER_LZOP,
-    GRZip = ARCHIVE_FILTER_GRZIP
-  };
+    enum class Filter
+    {
+        None = ARCHIVE_FILTER_NONE,
+        Gzip = ARCHIVE_FILTER_GZIP,
+        Bzip2 = ARCHIVE_FILTER_BZIP2,
+        Compress = ARCHIVE_FILTER_COMPRESS,
+        LZMA = ARCHIVE_FILTER_LZMA,
+        Xz = ARCHIVE_FILTER_XZ,
+        UU = ARCHIVE_FILTER_UU,
+        RPM = ARCHIVE_FILTER_RPM,
+        LZip = ARCHIVE_FILTER_LZIP,
+        LRZip = ARCHIVE_FILTER_LRZIP,
+        LZOP = ARCHIVE_FILTER_LZOP,
+        GRZip = ARCHIVE_FILTER_GRZIP
+    };
 
-  enum class FileType
-  {
-    IFMT = AE_IFMT,
-    Regular = AE_IFREG,
-    Link = AE_IFLNK,
-    Socket = AE_IFSOCK,
-    Char = AE_IFCHR,
-    Block = AE_IFBLK,
-    Directory = AE_IFDIR,
-    FIFO = AE_IFIFO
-  };
+    enum class FileType
+    {
+        IFMT = AE_IFMT,
+        Regular = AE_IFREG,
+        Link = AE_IFLNK,
+        Socket = AE_IFSOCK,
+        Char = AE_IFCHR,
+        Block = AE_IFBLK,
+        Directory = AE_IFDIR,
+        FIFO = AE_IFIFO
+    };
 
-  const char* showFormat(Format);
-  const char* showFilter(Filter);
-  const char* showFileType(FileType);
+    const char* showFormat(Format);
+    const char* showFilter(Filter);
+    const char* showFileType(FileType);
 }

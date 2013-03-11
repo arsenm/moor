@@ -34,11 +34,11 @@ namespace moor
 
     void throwArchiveError(archive* a)
     {
-      const char* errStr = archive_error_string(a);
+        const char* errStr = archive_error_string(a);
 
-      throw std::system_error(archive_errno(a),
-                              std::generic_category(),
-                              errStr ? errStr : "");
+        throw std::system_error(archive_errno(a),
+                                std::generic_category(),
+                                errStr ? errStr : "");
     }
 
 

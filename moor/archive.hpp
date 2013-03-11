@@ -49,10 +49,10 @@ namespace moor
             m_archive_file_name(),
             m_archive(a)
         {
-          if (!m_archive)
-          {
-            throw std::bad_alloc();
-          }
+            if (!m_archive)
+            {
+                throw std::bad_alloc();
+            }
         }
 
         Archive(archive* a, const std::string& filename_) :
@@ -112,10 +112,10 @@ namespace moor
         inline void checkError(int errCode,
                                bool closeBeforeThrow = false)
         {
-          if (errCode != ARCHIVE_OK && errCode != ARCHIVE_WARN)
-          {
-              throwError(errCode, closeBeforeThrow);
-          }
+            if (errCode != ARCHIVE_OK && errCode != ARCHIVE_WARN)
+            {
+                throwError(errCode, closeBeforeThrow);
+            }
         }
     };
 }

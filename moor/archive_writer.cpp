@@ -43,78 +43,78 @@ using namespace moor;
 ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
                              const Format format_,
                              const Filter filter_)
-  : Archive(archive_write_new(), archive_file_name_),
-    m_entry(archive_entry_new()),
-    m_format(format_),
-    m_filter(filter_),
-    m_open(true)
+    : Archive(archive_write_new(), archive_file_name_),
+      m_entry(archive_entry_new()),
+      m_format(format_),
+      m_filter(filter_),
+      m_open(true)
 {
-  // Set archive format
-  checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
+    // Set archive format
+    checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
 
-  // Set archive compression
-  checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
-  checkError(openFilename(cfilename()), true);
+    // Set archive compression
+    checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
+    checkError(openFilename(cfilename()), true);
 }
 
 ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
                              const Format format_,
                              const Filter filter_)
-  : Archive(archive_write_new()),
-    m_entry(archive_entry_new()),
-    m_format(format_),
-    m_filter(filter_),
-    m_open(true)
+    : Archive(archive_write_new()),
+      m_entry(archive_entry_new()),
+      m_format(format_),
+      m_filter(filter_),
+      m_open(true)
 {
-  // Set archive format
-  checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
+    // Set archive format
+    checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
 
-  // Set archive filter
-  checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
-  checkError(openMemory(out_buffer_), true);
+    // Set archive filter
+    checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
+    checkError(openMemory(out_buffer_), true);
 }
 
 ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
                              size_t* size_,
                              const Format format_,
                              const Filter filter_)
-  : Archive(archive_write_new()),
-    m_entry(archive_entry_new()),
-    m_format(format_),
-    m_filter(filter_),
-    m_open(true)
+    : Archive(archive_write_new()),
+      m_entry(archive_entry_new()),
+      m_format(format_),
+      m_filter(filter_),
+      m_open(true)
 {
-  // Set archive format
-  checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
+    // Set archive format
+    checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
 
-  // Set archive filter
-  checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
-  checkError(openMemory(out_buffer_, size_), true);
+    // Set archive filter
+    checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
+    checkError(openMemory(out_buffer_, size_), true);
 }
 
 ArchiveWriter::~ArchiveWriter()
 {
-  close();
+    close();
 }
 
 int ArchiveWriter::writeHeader(archive_entry* e)
 {
-  return archive_write_header(m_archive, e);
+    return archive_write_header(m_archive, e);
 }
 
 int ArchiveWriter::openFilename(const char* path)
 {
-  return archive_write_open_filename(m_archive, path);
+    return archive_write_open_filename(m_archive, path);
 }
 
 int ArchiveWriter::openMemory(std::vector<unsigned char>& outBuf)
 {
-  return write_open_memory(m_archive, &outBuf);
+    return write_open_memory(m_archive, &outBuf);
 }
 
 int ArchiveWriter::openMemory(void* buf, size_t* bufSize)
 {
-  return archive_write_open_memory(m_archive, buf, *bufSize, bufSize);
+    return archive_write_open_memory(m_archive, buf, *bufSize, bufSize);
 }
 
 void ArchiveWriter::addHeader(const std::string& entry_name_,
@@ -122,142 +122,148 @@ void ArchiveWriter::addHeader(const std::string& entry_name_,
                               const long long size_,
                               const int permission_)
 {
-  m_entry = archive_entry_clear(m_entry);
-  archive_entry_set_pathname(m_entry, entry_name_.c_str());
-  archive_entry_set_perm(m_entry, permission_);
-  archive_entry_set_filetype(m_entry, static_cast<int>(entry_type_));
-  archive_entry_set_size(m_entry, size_);
-  checkError(archive_write_header(m_archive, m_entry));
+    m_entry = archive_entry_clear(m_entry);
+    archive_entry_set_pathname(m_entry, entry_name_.c_str());
+    archive_entry_set_perm(m_entry, permission_);
+    archive_entry_set_filetype(m_entry, static_cast<int>(entry_type_));
+    archive_entry_set_size(m_entry, size_);
+    checkError(archive_write_header(m_archive, m_entry));
 }
 
 void ArchiveWriter::addHeader(const std::string& filePath,
                               const struct stat* statBuf)
 {
-  ArchiveReadDisk a;
+    ArchiveReadDisk a;
 
-  m_entry = archive_entry_clear(m_entry);
-  archive_entry_set_pathname(m_entry, filePath.c_str());
-  checkError(archive_read_disk_entry_from_file(a, m_entry, -1, statBuf));
-  checkError(writeHeader(m_entry));
+    m_entry = archive_entry_clear(m_entry);
+    archive_entry_set_pathname(m_entry, filePath.c_str());
+    checkError(archive_read_disk_entry_from_file(a, m_entry, -1, statBuf));
+    checkError(writeHeader(m_entry));
 }
 
 void ArchiveWriter::addContent(const char b)
 {
-  archive_write_data(m_archive, &b, 1);
+    archive_write_data(m_archive, &b, 1);
 }
 
 void ArchiveWriter::addContent(const void* data, const unsigned long long size)
 {
-  archive_write_data(m_archive, data, size);
+    archive_write_data(m_archive, data, size);
 }
 
 void ArchiveWriter::addFinish()
 {
-  archive_write_finish_entry(m_archive);
+    archive_write_finish_entry(m_archive);
 }
 
 void ArchiveWriter::writeFileData(const char* path)
 {
-  static char buf[16384];
+    static char buf[16384];
 
-  std::ifstream file(path, std::ios::in);
-  while (file.good())
-  {
-    file.read(buf, sizeof(buf));
-    archive_write_data(m_archive,
-                       buf,
-                       static_cast<size_t>(file.gcount()));
-  }
+    std::ifstream file(path, std::ios::in);
+
+    while (file.good())
+    {
+        file.read(buf, sizeof(buf));
+        archive_write_data(m_archive,
+                           buf,
+                           static_cast<size_t>(file.gcount()));
+    }
 
 #if 0
-      int fd = open(archive_entry_sourcepath(m_entry), O_RDONLY);
-      auto len = read(fd, buf, sizeof(buf));
-      while (len > 0)
-      {
-          archive_write_data(m_archive, buf, len);
-          len = read(fd, buf, sizeof(buf));
-      }
-      ::close(fd);
+    int fd = open(archive_entry_sourcepath(m_entry), O_RDONLY);
+    auto len = read(fd, buf, sizeof(buf));
+
+    while (len > 0)
+    {
+        archive_write_data(m_archive, buf, len);
+        len = read(fd, buf, sizeof(buf));
+    }
+
+    ::close(fd);
 #endif
 }
 
 void ArchiveWriter::addFile(const std::string& file_path)
 {
-  struct stat file_stat;
-  if (stat(file_path.c_str(), &file_stat) < 0)
-  {
-      throw std::system_error(std::error_code(errno, std::generic_category()));
-  }
+    struct stat file_stat;
 
-  addHeader(file_path, &file_stat);
+    if (stat(file_path.c_str(), &file_stat) < 0)
+    {
+        throw std::system_error(std::error_code(errno, std::generic_category()));
+    }
 
-  if (!S_ISREG(file_stat.st_mode))
-  {
-    throw std::system_error(std::make_error_code(std::errc::not_supported));
-  }
+    addHeader(file_path, &file_stat);
 
-  writeFileData(file_path.c_str());
-  addFinish();
+    if (!S_ISREG(file_stat.st_mode))
+    {
+        throw std::system_error(std::make_error_code(std::errc::not_supported));
+    }
+
+    writeFileData(file_path.c_str());
+    addFinish();
 }
 
 void ArchiveWriter::addFile(const std::string& entry_name,
                             const void* data,
                             unsigned long long size)
 {
-  addHeader(entry_name, FileType::Regular, size);
-  addContent(data, size);
-  addFinish();
+    addHeader(entry_name, FileType::Regular, size);
+    addContent(data, size);
+    addFinish();
 }
 
 void ArchiveWriter::addDiskPath(const std::string& path, ArchiveMatch* match)
 {
-  ArchiveReadDisk disk;
+    ArchiveReadDisk disk;
 
-  checkError(disk.open(path.c_str()), true);
-  if (match)
-  {
-    disk.checkError(disk.setMatchFilter(*match), true);
-  }
+    checkError(disk.open(path.c_str()), true);
 
-  while (true)
-  {
-    int r = disk.nextHeader2(m_entry);
-    if (r == ARCHIVE_EOF)
+    if (match)
     {
-        break;
+        disk.checkError(disk.setMatchFilter(*match), true);
     }
 
-    disk.checkError(r, true);
-    disk.descend();
+    while (true)
+    {
+        int r = disk.nextHeader2(m_entry);
 
-    r = writeHeader(m_entry);
-    checkError(r, true);
+        if (r == ARCHIVE_EOF)
+        {
+            break;
+        }
 
-    writeFileData(archive_entry_sourcepath(m_entry));
-  }
+        disk.checkError(r, true);
+        disk.descend();
+
+        r = writeHeader(m_entry);
+        checkError(r, true);
+
+        writeFileData(archive_entry_sourcepath(m_entry));
+    }
 }
 
 void ArchiveWriter::addDirectory(const std::string& directory_name)
 {
-  addHeader(directory_name, FileType::Directory, 0777);
-  addFinish();
+    addHeader(directory_name, FileType::Directory, 0777);
+    addFinish();
 }
 
 void ArchiveWriter::close()
 {
-  if (m_open)
-  {
-    m_open = false;
-
-    if (m_archive)
+    if (m_open)
     {
-      archive_write_close(m_archive);
-      archive_write_free(m_archive);
-    }
+        m_open = false;
 
-    if (m_entry)
-    {
-      archive_entry_free(m_entry);
+        if (m_archive)
+        {
+            archive_write_close(m_archive);
+            archive_write_free(m_archive);
+        }
+
+        if (m_entry)
+        {
+            archive_entry_free(m_entry);
+        }
     }
-  }
 }

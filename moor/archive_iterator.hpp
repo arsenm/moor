@@ -37,86 +37,87 @@
 
 namespace moor
 {
-  class MOOR_API ArchiveIterator
-  {
-  private:
-    archive* m_archive;
-    ArchiveEntry m_state;
-
-    void throwArchiveError()
+    class MOOR_API ArchiveIterator
     {
-      assert(m_archive);
-      const char* errStr = archive_error_string(m_archive);
+    private:
+        archive* m_archive;
+        ArchiveEntry m_state;
 
-      throw std::system_error(archive_errno(m_archive),
-                              std::generic_category(),
-                              errStr ? errStr : "");
-    }
+        void throwArchiveError()
+        {
+            assert(m_archive);
+            const char* errStr = archive_error_string(m_archive);
 
-  public:
-    typedef ArchiveEntry value_type;
-    typedef value_type& reference;
-    typedef value_type* pointer;
+            throw std::system_error(archive_errno(m_archive),
+                                    std::generic_category(),
+                                    errStr ? errStr : "");
+        }
 
-    reference operator*()
-    {
-      return m_state;
-    }
+    public:
+        typedef ArchiveEntry value_type;
+        typedef value_type& reference;
+        typedef value_type* pointer;
 
-    pointer operator->()
-    {
-      return &m_state;
-    }
+        reference operator*()
+        {
+            return m_state;
+        }
 
-    ArchiveIterator& operator++()
-    {
-      assert(m_archive && "Trying to iterate past end");
+        pointer operator->()
+        {
+            return &m_state;
+        }
 
-      archive_entry* e;
-      int r = archive_read_next_header(m_archive, &e);
+        ArchiveIterator& operator++()
+        {
+            assert(m_archive && "Trying to iterate past end");
 
-      // Check for end
-      if (r == ARCHIVE_EOF)
-      {
-        m_state = ArchiveEntry(m_archive);
-        return *this;
-      }
+            archive_entry* e;
+            int r = archive_read_next_header(m_archive, &e);
 
-      if (r != ARCHIVE_OK)
-      {
-        throwArchiveError();
-      }
+            // Check for end
+            if (r == ARCHIVE_EOF)
+            {
+                m_state = ArchiveEntry(m_archive);
+                return *this;
+            }
 
-      m_state = ArchiveEntry(m_archive, e);
-      return *this;
-    }
+            if (r != ARCHIVE_OK)
+            {
+                throwArchiveError();
+            }
 
-    // There's no sense using operator== since
-    // archive_read_next_header gives us back the same pointer each
-    // time. The position is also side-effecty on the archive
-    // itself, so that isn't useful either
-    bool isAtEnd() const
-    {
-      return (m_state.entry() == nullptr);
-    }
+            m_state = ArchiveEntry(m_archive, e);
+            return *this;
+        }
 
-    explicit ArchiveIterator(archive* a = nullptr)
-      : m_archive(a),
-        m_state(nullptr)
-    {
-      if (!m_archive)
-      {
-        return;
-      }
+        // There's no sense using operator== since
+        // archive_read_next_header gives us back the same pointer each
+        // time. The position is also side-effecty on the archive
+        // itself, so that isn't useful either
+        bool isAtEnd() const
+        {
+            return (m_state.entry() == nullptr);
+        }
 
-      archive_entry* e;
-      int r = archive_read_next_header(a, &e);
-      if (r != ARCHIVE_OK && r != ARCHIVE_EOF)
-      {
-        throwArchiveError();
-      }
+        explicit ArchiveIterator(archive* a = nullptr)
+            : m_archive(a),
+              m_state(nullptr)
+        {
+            if (!m_archive)
+            {
+                return;
+            }
 
-      m_state = ArchiveEntry(m_archive, e);
-    }
-  };
+            archive_entry* e;
+            int r = archive_read_next_header(a, &e);
+
+            if (r != ARCHIVE_OK && r != ARCHIVE_EOF)
+            {
+                throwArchiveError();
+            }
+
+            m_state = ArchiveEntry(m_archive, e);
+        }
+    };
 }

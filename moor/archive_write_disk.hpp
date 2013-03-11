@@ -32,40 +32,40 @@
 
 namespace moor
 {
-  class MOOR_API ArchiveWriteDisk : public Archive
-  {
-  public:
-    ArchiveWriteDisk(int flags)
-      : Archive(archive_write_disk_new())
+    class MOOR_API ArchiveWriteDisk : public Archive
     {
-      archive_write_disk_set_options(m_archive, flags);
-      archive_write_disk_set_standard_lookup(m_archive);
-    }
+    public:
+        ArchiveWriteDisk(int flags)
+            : Archive(archive_write_disk_new())
+        {
+            archive_write_disk_set_options(m_archive, flags);
+            archive_write_disk_set_standard_lookup(m_archive);
+        }
 
-    ~ArchiveWriteDisk()
-    {
-        close();
-    }
+        ~ArchiveWriteDisk()
+        {
+            close();
+        }
 
-    virtual void close() override
-    {
-      archive_write_close(m_archive);
-      archive_write_free(m_archive);
-    }
+        virtual void close() override
+        {
+            archive_write_close(m_archive);
+            archive_write_free(m_archive);
+        }
 
-    operator archive*()
-    {
-      return m_archive;
-    }
+        operator archive*()
+        {
+            return m_archive;
+        }
 
-    operator const archive*() const
-    {
-      return m_archive;
-    }
+        operator const archive*() const
+        {
+            return m_archive;
+        }
 
-    int writeHeader(archive_entry* entry)
-    {
-        return archive_write_header(m_archive, entry);
-    }
-  };
+        int writeHeader(archive_entry* entry)
+        {
+            return archive_write_header(m_archive, entry);
+        }
+    };
 }

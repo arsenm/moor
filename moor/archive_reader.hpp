@@ -39,27 +39,27 @@ struct archive_entry;
 
 namespace moor
 {
-  class MOOR_API ArchiveReader : public Archive
-  {
-  public:
-    ArchiveReader(const std::string& archive_file_name);
-    ArchiveReader(void* in_buffer, const size_t size);
-    ArchiveReader(std::vector<unsigned char>&& in_buffer);
-    virtual ~ArchiveReader() override;
+    class MOOR_API ArchiveReader : public Archive
+    {
+    public:
+        ArchiveReader(const std::string& archive_file_name);
+        ArchiveReader(void* in_buffer, const size_t size);
+        ArchiveReader(std::vector<unsigned char> && in_buffer);
+        virtual ~ArchiveReader() override;
 
-    // Check ArchiveIterator::isAtEnd for EOF
-    ArchiveIterator begin();
+        // Check ArchiveIterator::isAtEnd for EOF
+        ArchiveIterator begin();
 
-  private:
-    static const int s_defaultExtractFlags;
+    private:
+        static const int s_defaultExtractFlags;
 
-    void init();
-    virtual void close() override;
-    static int copyData(archive* ar, archive* aw);
+        void init();
+        virtual void close() override;
+        static int copyData(archive* ar, archive* aw);
 
-    std::vector<unsigned char> m_in_buffer;
+        std::vector<unsigned char> m_in_buffer;
 
-    bool m_open;
-  };
+        bool m_open;
+    };
 }
 

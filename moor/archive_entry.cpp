@@ -33,112 +33,132 @@
 
 // Select which attributes we want to restore.
 const int moor::ArchiveEntry::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
-                                                    | ARCHIVE_EXTRACT_PERM
-                                                    | ARCHIVE_EXTRACT_ACL
-                                                    | ARCHIVE_EXTRACT_FFLAGS;
+        | ARCHIVE_EXTRACT_PERM
+        | ARCHIVE_EXTRACT_ACL
+        | ARCHIVE_EXTRACT_FFLAGS;
 
 bool moor::ArchiveEntry::extractDataImpl(archive* a,
-                                         unsigned char* out,
-                                         ssize_t outSize,
-                                         ssize_t entrySize)
+        unsigned char* out,
+        ssize_t outSize,
+        ssize_t entrySize)
 {
-  ssize_t readIndex = 0;
+    ssize_t readIndex = 0;
 
-  while (true)
-  {
-    ssize_t r = archive_read_data(a,
-                                  &out[readIndex],
-                                  outSize - readIndex);
-    if (r == 0)
-        return true;
-
-    if (r < ARCHIVE_OK && r != ARCHIVE_WARN)
+    while (true)
     {
-      const char* errStr = archive_error_string(a);
-      throw std::system_error(archive_errno(a),
-                              std::generic_category(),
-                              errStr ? errStr : "");
-    }
+        ssize_t r = archive_read_data(a,
+                                      &out[readIndex],
+                                      outSize - readIndex);
 
-    readIndex += r;
-    if (readIndex == entrySize)
-      return true;
-  }
+        if (r == 0)
+        {
+            return true;
+        }
+
+        if (r < ARCHIVE_OK && r != ARCHIVE_WARN)
+        {
+            const char* errStr = archive_error_string(a);
+            throw std::system_error(archive_errno(a),
+                                    std::generic_category(),
+                                    errStr ? errStr : "");
+        }
+
+        readIndex += r;
+
+        if (readIndex == entrySize)
+        {
+            return true;
+        }
+    }
 }
 
 bool moor::ArchiveEntry::extractData(void* out, size_t outSize)
 {
-  assert(m_entry);
+    assert(m_entry);
 
-  if (!size_is_set())
-  {
-      return false;
-  }
+    if (!size_is_set())
+    {
+        return false;
+    }
 
-  std::int64_t entrySize = size();
-  if (entrySize < 0 || entrySize >= std::numeric_limits<ssize_t>::max())
-  {
-      return false;
-  }
+    std::int64_t entrySize = size();
 
-  return extractDataImpl(m_archive,
-                         static_cast<unsigned char*>(out),
-                         outSize,
-                         static_cast<ssize_t>(entrySize));
+    if (entrySize < 0 || entrySize >= std::numeric_limits<ssize_t>::max())
+    {
+        return false;
+    }
+
+    return extractDataImpl(m_archive,
+                           static_cast<unsigned char*>(out),
+                           outSize,
+                           static_cast<ssize_t>(entrySize));
 }
 
 int moor::ArchiveEntry::copyData(archive* ar, archive* aw)
 {
-  while (true)
-  {
-    const void* buff;
-    size_t size;
-    __LA_INT64_T offset;
+    while (true)
+    {
+        const void* buff;
+        size_t size;
+        __LA_INT64_T offset;
 
-    int r = archive_read_data_block(ar, &buff, &size, &offset);
-    if (r == ARCHIVE_EOF)
-      return ARCHIVE_OK;
-    if (r != ARCHIVE_OK)
-      return r;
-    r = archive_write_data_block(aw, buff, size, offset);
-    if (r != ARCHIVE_OK)
-      return r;
-  }
+        int r = archive_read_data_block(ar, &buff, &size, &offset);
 
-  return ARCHIVE_OK;
+        if (r == ARCHIVE_EOF)
+        {
+            return ARCHIVE_OK;
+        }
+
+        if (r != ARCHIVE_OK)
+        {
+            return r;
+        }
+
+        r = archive_write_data_block(aw, buff, size, offset);
+
+        if (r != ARCHIVE_OK)
+        {
+            return r;
+        }
+    }
+
+    return ARCHIVE_OK;
 }
 
 bool moor::ArchiveEntry::extractDisk(const std::string& rootPath)
 {
-  ArchiveWriteDisk disk(s_defaultExtractFlags);
-  std::string fullPath(rootPath);
-  fullPath += '/';
-  fullPath.append(pathname());
+    ArchiveWriteDisk disk(s_defaultExtractFlags);
+    std::string fullPath(rootPath);
+    fullPath += '/';
+    fullPath.append(pathname());
 
-  set_pathname(fullPath.c_str());
+    set_pathname(fullPath.c_str());
 
-  int rc = disk.writeHeader(m_entry);
-  if (rc != ARCHIVE_OK)
-  {
-      moor::throwArchiveError(disk);
-  }
+    int rc = disk.writeHeader(m_entry);
 
-  if (!size_is_set())
-  {
+    if (rc != ARCHIVE_OK)
+    {
+        moor::throwArchiveError(disk);
+    }
+
+    if (!size_is_set())
+    {
+        return true;
+    }
+
+    std::int64_t entrySize = size();
+
+    if (entrySize < 0)
+    {
+        return false;
+    }
+
+    rc = copyData(m_archive, disk);
+
+    if (rc != ARCHIVE_OK)
+    {
+        moor::throwArchiveError(disk);
+    }
+
     return true;
-  }
-
-  std::int64_t entrySize = size();
-  if (entrySize < 0)
-  {
-    return false;
-  }
-
-  rc = copyData(m_archive, disk);
-  if (rc != ARCHIVE_OK)
-  {
-      moor::throwArchiveError(disk);
-  }
-
-  return true;
 }

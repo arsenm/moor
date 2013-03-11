@@ -34,74 +34,76 @@
 
 namespace moor
 {
-  class MOOR_API ArchiveReadDisk : public Archive
-  {
-  public:
-    ArchiveReadDisk()
-      : Archive(archive_read_disk_new())
+    class MOOR_API ArchiveReadDisk : public Archive
     {
-    #if !defined(_WIN32) || defined(__CYGWIN__)
-      int ec = archive_read_disk_set_standard_lookup(m_archive);
-      if (ec != ARCHIVE_OK)
-      {
-        throw std::bad_alloc();
-      }
-    #endif
-    }
+    public:
+        ArchiveReadDisk()
+            : Archive(archive_read_disk_new())
+        {
+#if !defined(_WIN32) || defined(__CYGWIN__)
+            int ec = archive_read_disk_set_standard_lookup(m_archive);
 
-    ~ArchiveReadDisk()
-    {
-        close();
-    }
+            if (ec != ARCHIVE_OK)
+            {
+                throw std::bad_alloc();
+            }
 
-    virtual void close() override
-    {
-      archive_read_close(m_archive);
-      archive_read_free(m_archive);
-    }
+#endif
+        }
 
-    operator archive*()
-    {
-      return m_archive;
-    }
+        ~ArchiveReadDisk()
+        {
+            close();
+        }
 
-    operator const archive*() const
-    {
-      return m_archive;
-    }
+        virtual void close() override
+        {
+            archive_read_close(m_archive);
+            archive_read_free(m_archive);
+        }
 
-    int open(const char* path)
-    {
-      return archive_read_disk_open(m_archive, path);
-    }
+        operator archive*()
+        {
+            return m_archive;
+        }
 
-    int setMatchFilter(ArchiveMatch& match)
-    {
-      if (match.hasCallback())
-      {
-        return archive_read_disk_set_matching(m_archive,
-                                              match,
-                                              ArchiveMatch::matchCallbackWrapper,
-                                              match.callbackUserData());
-      }
-      else
-      {
-        return archive_read_disk_set_matching(m_archive,
-                                              match,
-                                              nullptr,
-                                              nullptr);
-      }
-    }
+        operator const archive*() const
+        {
+            return m_archive;
+        }
 
-    int descend()
-    {
-      return archive_read_disk_descend(m_archive);
-    }
+        int open(const char* path)
+        {
+            return archive_read_disk_open(m_archive, path);
+        }
 
-    int nextHeader2(archive_entry* e)
-    {
-        return archive_read_next_header2(m_archive, e);
-    }
-  };
+        int setMatchFilter(ArchiveMatch& match)
+        {
+            if (match.hasCallback())
+            {
+                return archive_read_disk_set_matching(m_archive,
+                                                      match,
+                                                      ArchiveMatch::matchCallbackWrapper,
+                                                      match.callbackUserData());
+            }
+            else
+            {
+                return archive_read_disk_set_matching(m_archive,
+                                                      match,
+                                                      nullptr,
+                                                      nullptr);
+            }
+        }
+
+        int descend()
+        {
+            return archive_read_disk_descend(m_archive);
+        }
+
+        int nextHeader2(archive_entry* e)
+        {
+            return archive_read_next_header2(m_archive, e);
+        }
+    };
 }
 

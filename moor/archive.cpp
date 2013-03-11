@@ -63,12 +63,13 @@ const char* Archive::errorString() const
 void Archive::throwError(int errCode,
                          bool closeBeforeThrow)
 {
-  std::system_error err = systemError();
-  if (errCode == ARCHIVE_FATAL && closeBeforeThrow)
-  {
-    close();
-  }
+    std::system_error err = systemError();
 
-  throw err;
+    if (errCode == ARCHIVE_FATAL && closeBeforeThrow)
+    {
+        close();
+    }
+
+    throw err;
 }
 

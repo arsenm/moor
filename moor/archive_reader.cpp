@@ -33,69 +33,69 @@ using namespace moor;
 
 // Select which attributes we want to restore.
 const int ArchiveReader::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
-                                               | ARCHIVE_EXTRACT_PERM
-                                               | ARCHIVE_EXTRACT_ACL
-                                               | ARCHIVE_EXTRACT_FFLAGS;
+        | ARCHIVE_EXTRACT_PERM
+        | ARCHIVE_EXTRACT_ACL
+        | ARCHIVE_EXTRACT_FFLAGS;
 
 ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
-  : Archive(archive_read_new(), archive_file_name_),
-    m_in_buffer(),
-    m_open(true)
+    : Archive(archive_read_new(), archive_file_name_),
+      m_in_buffer(),
+      m_open(true)
 {
-  init();
-  int ec = archive_read_open_filename(m_archive,
-                                      cfilename(),
-                                      10240);
-  checkError(ec, true);
+    init();
+    int ec = archive_read_open_filename(m_archive,
+                                        cfilename(),
+                                        10240);
+    checkError(ec, true);
 }
 
 ArchiveReader::ArchiveReader(void* in_buffer_, const size_t size_)
-  : Archive(archive_read_new()),
-    m_in_buffer(),
-    m_open(true)
+    : Archive(archive_read_new()),
+      m_in_buffer(),
+      m_open(true)
 {
-  init();
-  checkError(archive_read_open_memory(m_archive, in_buffer_, size_), true);
+    init();
+    checkError(archive_read_open_memory(m_archive, in_buffer_, size_), true);
 }
 
-ArchiveReader::ArchiveReader(std::vector<unsigned char>&& in_buffer_)
-  : Archive(archive_read_new()),
-    m_in_buffer(std::move(in_buffer_)),
-    m_open(true)
+ArchiveReader::ArchiveReader(std::vector<unsigned char> && in_buffer_)
+    : Archive(archive_read_new()),
+      m_in_buffer(std::move(in_buffer_)),
+      m_open(true)
 {
-  init();
-  int ec = archive_read_open_memory(m_archive,
-                                    m_in_buffer.data(),
-                                    m_in_buffer.size());
-  checkError(ec, true);
+    init();
+    int ec = archive_read_open_memory(m_archive,
+                                      m_in_buffer.data(),
+                                      m_in_buffer.size());
+    checkError(ec, true);
 }
 
 void ArchiveReader::init()
 {
-  checkError(archive_read_support_format_all(m_archive), true);
-  checkError(archive_read_support_filter_all(m_archive), true);
+    checkError(archive_read_support_format_all(m_archive), true);
+    checkError(archive_read_support_filter_all(m_archive), true);
 }
 
 ArchiveReader::~ArchiveReader()
 {
-  close();
+    close();
 }
 
 ArchiveIterator ArchiveReader::begin()
 {
-  return ArchiveIterator(m_archive);
+    return ArchiveIterator(m_archive);
 }
 
 void ArchiveReader::close()
 {
-  if (m_open)
-  {
-    if (m_archive)
+    if (m_open)
     {
-      archive_read_close(m_archive);
-      archive_read_free(m_archive);
-    }
+        if (m_archive)
+        {
+            archive_read_close(m_archive);
+            archive_read_free(m_archive);
+        }
 
-    m_open = false;
-  }
+        m_open = false;
+    }
 }
