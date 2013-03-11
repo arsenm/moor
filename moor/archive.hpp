@@ -67,6 +67,11 @@ namespace moor
 
         }
 
+        void throwError(int errCode, bool closeBeforeThrow);
+
+    public:
+        virtual void close() = 0;
+
         operator archive*()
         {
             return m_archive;
@@ -76,11 +81,6 @@ namespace moor
         {
             return m_archive;
         }
-
-        void throwError(int errCode, bool closeBeforeThrow);
-
-    public:
-        virtual void close() = 0;
 
         const std::string& filename() const
         {

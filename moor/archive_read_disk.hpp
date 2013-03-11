@@ -62,16 +62,6 @@ namespace moor
             archive_read_free(m_archive);
         }
 
-        operator archive*()
-        {
-            return m_archive;
-        }
-
-        operator const archive*() const
-        {
-            return m_archive;
-        }
-
         int open(const char* path)
         {
             return archive_read_disk_open(m_archive, path);

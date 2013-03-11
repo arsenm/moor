@@ -53,16 +53,6 @@ namespace moor
             archive_write_free(m_archive);
         }
 
-        operator archive*()
-        {
-            return m_archive;
-        }
-
-        operator const archive*() const
-        {
-            return m_archive;
-        }
-
         int writeHeader(archive_entry* entry)
         {
             return archive_write_header(m_archive, entry);
