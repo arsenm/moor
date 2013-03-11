@@ -29,7 +29,10 @@
 #include "archive.hpp"
 #include "archive_entry.hpp"
 
+#include <iosfwd>
 #include <iterator>
+#include <functional>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -38,12 +41,59 @@ struct archive;
 struct archive_entry;
 struct stat;
 
+
 namespace moor
 {
     class ArchiveMatch;
 
     class MOOR_API ArchiveWriter : public Archive
     {
+    public:
+        typedef std::function<int(ArchiveWriter&, void*)> OpenCallback;
+        typedef std::function<ssize_t(ArchiveWriter&, void*, const void*, size_t)> WriteCallback;
+        typedef std::function<int(ArchiveWriter&, void*)> CloseCallback;
+
+    private:
+        struct WriterCallbackData
+        {
+            ArchiveWriter& m_writer;
+            OpenCallback m_open;
+            WriteCallback m_write;
+            CloseCallback m_close;
+            void* m_userData;
+
+            static std::unique_ptr<WriterCallbackData> create(ArchiveWriter& writer,
+                                                              OpenCallback o,
+                                                              WriteCallback w,
+                                                              CloseCallback c,
+                                                              void* ud)
+            {
+                return std::unique_ptr<WriterCallbackData>(new WriterCallbackData(writer, o, w, c, ud));
+            }
+
+        private:
+            WriterCallbackData(ArchiveWriter& writer,
+                               OpenCallback o,
+                               WriteCallback w,
+                               CloseCallback c,
+                               void* ud)
+                : m_writer(writer),
+                  m_open(o),
+                  m_write(w),
+                  m_close(c),
+                  m_userData(ud) { }
+        };
+
+        ArchiveEntry m_entry;
+        const Format m_format;
+        const Filter m_filter;
+        std::unique_ptr<WriterCallbackData> m_callbackData;
+        bool m_open;
+
+        static int openCallbackWrapper(archive*, void* ud);
+        static ssize_t writeCallbackWrapper(archive*, void* ud, const void* buffer, size_t size);
+        static int closeCallbackWrapper(archive*, void* ud);
+
     public:
         ArchiveWriter(const std::string& archive_file_name,
                       const Format format,
@@ -55,6 +105,13 @@ namespace moor
                       size_t* size,
                       const Format format,
                       const Filter compression);
+        ArchiveWriter(OpenCallback,
+                      WriteCallback,
+                      CloseCallback,
+                      const moor::Format format_,
+                      const moor::Filter filter_,
+                      void* userData = nullptr);
+
         virtual ~ArchiveWriter() override;
 
         // Add the file / directories under file_path and their content to
@@ -84,7 +141,6 @@ namespace moor
         void addDirectory(const std::string& directory_name);
         virtual void close() override;
 
-    private:
         int writeHeader(archive_entry* e);
         int openFilename(const char* path);
         int openMemory(std::vector<unsigned char>& outBuf);
@@ -103,11 +159,6 @@ namespace moor
 
         ssize_t writeData(const void* buf, size_t bufSize);
         void writeFileData(const char* path);
-
-        ArchiveEntry m_entry;
-        const Format m_format;
-        const Filter m_filter;
-        bool m_open;
     };
 
     template <class Iter>

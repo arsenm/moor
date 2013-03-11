@@ -38,6 +38,27 @@
 #include <sys/stat.h>
 
 
+int moor::ArchiveWriter::openCallbackWrapper(archive*, void* ud)
+{
+    WriterCallbackData* wcb = reinterpret_cast<WriterCallbackData*>(ud);
+    return wcb->m_open(wcb->m_writer, wcb->m_userData);
+}
+
+ssize_t moor::ArchiveWriter::writeCallbackWrapper(archive*,
+                                                  void* ud,
+                                                  const void* buffer,
+                                                  size_t size)
+{
+    WriterCallbackData* wcb = reinterpret_cast<WriterCallbackData*>(ud);
+    return wcb->m_write(wcb->m_writer, wcb->m_userData, buffer, size);
+}
+
+int moor::ArchiveWriter::closeCallbackWrapper(archive*, void* ud)
+{
+    WriterCallbackData* wcb = reinterpret_cast<WriterCallbackData*>(ud);
+    return wcb->m_close(wcb->m_writer, wcb->m_userData);
+}
+
 moor::ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
                                    const moor::Format format_,
                                    const moor::Filter filter_)
@@ -45,6 +66,7 @@ moor::ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
       m_entry(m_archive, archive_entry_new()),
       m_format(format_),
       m_filter(filter_),
+      m_callbackData(),
       m_open(true)
 {
     // Set archive format
@@ -62,6 +84,7 @@ moor::ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
       m_entry(m_archive, archive_entry_new()),
       m_format(format_),
       m_filter(filter_),
+      m_callbackData(),
       m_open(true)
 {
     // Set archive format
@@ -80,6 +103,7 @@ moor::ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
       m_entry(m_archive, archive_entry_new()),
       m_format(format_),
       m_filter(filter_),
+      m_callbackData(nullptr),
       m_open(true)
 {
     // Set archive format
@@ -89,6 +113,77 @@ moor::ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
     checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
     checkError(openMemory(out_buffer_, size_), true);
 }
+
+moor::ArchiveWriter::ArchiveWriter(OpenCallback openCB,
+                                   WriteCallback writeCB,
+                                   CloseCallback closeCB,
+                                   const moor::Format format_,
+                                   const moor::Filter filter_,
+                                   void* userData)
+    : Archive(archive_write_new()),
+      m_entry(m_archive, archive_entry_new()),
+      m_format(format_),
+      m_filter(filter_),
+      m_callbackData(WriterCallbackData::create(*this,
+                                                openCB,
+                                                writeCB,
+                                                closeCB,
+                                                userData)),
+      m_open(true)
+{
+    // Set archive format
+    checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
+
+    // Set archive filter
+    checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
+
+    int r = archive_write_open(m_archive,
+                               m_callbackData.get(),
+                               ArchiveWriter::openCallbackWrapper,
+                               ArchiveWriter::writeCallbackWrapper,
+                               ArchiveWriter::closeCallbackWrapper);
+    checkError(r);
+}
+
+/*
+moor::ArchiveWriter::ArchiveWriter(std::ostream& os_,
+                                   const moor::Format format_,
+                                   const moor::Filter filter_)
+    : Archive(archive_write_new()),
+      m_entry(m_archive, archive_entry_new()),
+      m_format(format_),
+      m_filter(filter_),
+      m_callbackData(),
+      m_open(true)
+{
+    int r = archive_write_open(
+        *this,
+        &os_,
+        // Open
+        [](archive*, void* ud) -> int
+        {
+            //std::ostream* os = reinterpret_cast<std::ostream*>(ud);
+            return 0;
+        },
+
+        // Write
+        [](archive*, void* ud, const void* buffer, size_t size) -> ssize_t
+        {
+            //std::ostream* os = reinterpret_cast<std::ostream*>(ud);
+            return 0;
+        },
+
+        // Close
+        [](archive*, void* ud) -> int
+        {
+            //std::ostream* os = reinterpret_cast<std::ostream*>(ud);
+            return 0;
+        });
+
+
+    checkError(r);
+}
+*/
 
 moor::ArchiveWriter::~ArchiveWriter()
 {

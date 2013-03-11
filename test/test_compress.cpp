@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2013 Mohammad Mehdi Saboorian
+ * Copyright (c) 2013 Matthew Arsenault
  *
  * This is part of moor, a wrapper for libarchive
  *
@@ -199,6 +200,70 @@ static bool testArchiveWriteMemory(const std::string& path)
   catch (const std::runtime_error& ex)
   {
     std::cerr << "Error writing memory archive: " << ex.what() << '\n';
+    return true;
+  }
+}
+
+static bool testArchiveWriteCallback()
+{
+    PRINT_TEST_NAME();
+    std::vector<unsigned char> out;
+
+    try
+    {
+        ArchiveWriter compressor(
+            [](ArchiveWriter&, void*) -> int
+            {
+                std::cout << "Open callback\n";
+                return ARCHIVE_OK;
+            },
+            [&out](ArchiveWriter&, void*, const void* buf, size_t size) -> ssize_t
+            {
+                std::cout << "Write callback size " << size << '\n';
+                const unsigned char* p = reinterpret_cast<const unsigned char*>(buf);
+                std::copy(p,
+                          p + size,
+                          std::back_inserter(out));
+                return size;
+            },
+            [](ArchiveWriter&, void*) -> int
+            {
+                std::cout << "Close callback\n";
+                return ARCHIVE_OK;
+            },
+            Format::PAX,
+            Filter::Gzip);
+
+        compressor.addFile("lorem_ipsum.txt", testDataString);
+        compressor.close();
+
+        ArchiveReader reader(std::move(out));
+
+        std::vector<unsigned char> copied;
+        for (auto it = reader.begin(); !it.isAtEnd(); ++it)
+        {
+            if (!it->extractData<std::vector<unsigned char>>(copied))
+            {
+                std::cerr << "Error extracting test data\n";
+                return true;
+            }
+        }
+
+        std::string copyStr(copied.begin(), copied.end());
+        if (copyStr != testDataString)
+        {
+            std::cerr << "Extracted string does not match:\n"
+                      << "  Original string size: " << testDataString.size() << '\n'
+                      << "  Extracted string size: " << copyStr.size() << '\n';
+
+            return true;
+        }
+
+        return false;
+    }
+  catch (const std::runtime_error& ex)
+  {
+    std::cerr << "Error writing callback archive: " << ex.what() << '\n';
     return true;
   }
 }
@@ -409,6 +474,11 @@ int main()
   if (testMatch("test_data_dir", true))
   {
     return 1;
+  }
+
+  if (testArchiveWriteCallback())
+  {
+      return 1;
   }
 
   return 0;
