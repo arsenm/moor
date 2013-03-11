@@ -213,14 +213,15 @@ void ArchiveWriter::addFile(const std::string& entry_name,
   addFinish();
 }
 
-void ArchiveWriter::addDiskPath(const std::string& path, ArchiveMatch* filter)
+void ArchiveWriter::addDiskPath(const std::string& path, ArchiveMatch* match)
 {
   ArchiveReadDisk disk;
 
   checkError(disk.open(path.c_str()), true);
-  if (filter)
+  if (match)
   {
-      checkError(disk.setFilter(*filter), true);
+      int rc = disk.setMatchFilter(*match);
+      checkError(rc, true);
   }
 
   while (true)

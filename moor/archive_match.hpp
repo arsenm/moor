@@ -28,17 +28,44 @@
 
 #include <archive.h>
 
+#include <functional>
+#include <memory>
+
 
 namespace moor
 {
+  typedef std::function<void(ArchiveEntry, void*)> ReadDiskMatchCallback;
+
+
   class ArchiveMatch
   {
   private:
+    struct MatchCallbackData
+    {
+    public:
+      ReadDiskMatchCallback* m_f;
+      void* m_ud;
+
+        static std::unique_ptr<MatchCallbackData> create(ReadDiskMatchCallback* f,
+                                                         void* ud)
+        {
+            return std::unique_ptr<MatchCallbackData>(new MatchCallbackData(f, ud));
+        }
+
+    private:
+      MatchCallbackData(ReadDiskMatchCallback* f_ = nullptr,
+                        void* ud_ = nullptr)
+        : m_f(f_),
+          m_ud(ud_) { }
+    };
+
     archive* m_match;
+    std::unique_ptr<MatchCallbackData> m_cb;
 
   public:
     ArchiveMatch()
-      : m_match(archive_match_new())
+      : m_match(archive_match_new()),
+        m_cb(nullptr)
     {
       if (!m_match)
       {
@@ -59,6 +86,29 @@ namespace moor
     operator const archive*() const
     {
       return m_match;
+    }
+
+    void addCallback(ReadDiskMatchCallback f, void* ud)
+    {
+      m_cb = MatchCallbackData::create(&f, ud);
+    }
+
+    bool hasCallback() const
+    {
+      return (m_cb != nullptr);
+    }
+
+    static void matchCallbackWrapper(archive* a, void* ud, archive_entry* e)
+    {
+      MatchCallbackData* mcd = reinterpret_cast<MatchCallbackData*>(ud);
+      return (*mcd->m_f)(ArchiveEntry(a, e), mcd->m_ud);
+    }
+
+    // Return the wrapper user data which will be passed as the
+    // userdata to the wrapper.
+    void* callbackUserData() const
+    {
+      return m_cb.get();
     }
 
     bool excluded(ArchiveEntry& e)

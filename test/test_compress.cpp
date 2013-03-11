@@ -307,12 +307,24 @@ static bool testExtractDirectory(const std::string& path)
   }
 }
 
-static bool testMatch(const std::string& path)
+static bool testMatch(const std::string& path, bool useCallback)
 {
+  PRINT_TEST_NAME();
+
   std::vector<unsigned char> buf;
 
   ArchiveMatch match;
   match.excludePattern("foo*");
+
+  if (useCallback)
+  {
+    match.addCallback(
+      [](ArchiveEntry entry, void*) -> void
+      {
+        std::cout << "Callback: skipping path " << entry.pathname() << '\n';
+      },
+      nullptr);
+  }
 
   {
     ArchiveWriter compressor(buf, Format::PAX, Filter::Gzip);
@@ -381,7 +393,12 @@ int main()
     return 1;
   }
 
-  if (testMatch("test_data_dir"))
+  if (testMatch("test_data_dir_no_foo", false))
+  {
+    return 1;
+  }
+
+  if (testMatch("test_data_dir_no_foo_callback", true))
   {
     return 1;
   }

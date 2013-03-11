@@ -36,23 +36,6 @@ namespace moor
 {
   class MOOR_API ArchiveReadDisk : public Archive
   {
-  private:
-      /*
-    struct FilterCallbackData
-    {
-      std::function<int(ArchiveEntry, void*)>* m_f;
-      void* m_ud;
-
-      FilterCallbackData(std::function<int(ArchiveEntry, void*)>* f_ = nullptr,
-                         void* ud_ = nullptr
-            )
-        : m_f(f_),
-          m_ud(ud_) { }
-    };
-      */
-
-      //FilterCallbackData m_fcd;
-
   public:
     ArchiveReadDisk()
       : Archive(archive_read_disk_new())
@@ -86,43 +69,26 @@ namespace moor
 
     int open(const char* path)
     {
-        return archive_read_disk_open(m_archive, path);
+      return archive_read_disk_open(m_archive, path);
     }
 
-    int setFilter(ArchiveMatch& match)
+    int setMatchFilter(ArchiveMatch& match)
     {
-      return archive_read_disk_set_matching(m_archive,
-                                            match,
-                                            nullptr,
-                                            nullptr);
+      if (match.hasCallback())
+      {
+        return archive_read_disk_set_matching(m_archive,
+                                              match,
+                                              ArchiveMatch::matchCallbackWrapper,
+                                              match.callbackUserData());
+      }
+      else
+      {
+        return archive_read_disk_set_matching(m_archive,
+                                              match,
+                                              nullptr,
+                                              nullptr);
+      }
     }
-
-#if 0
-    int setFilterCallback(std::function<int(ArchiveEntry, void*)>& f, void* ud)
-    {
-      m_fcd.m_f = &f;
-      m_fcd.m_ud = ud;
-      return archive_read_disk_set_matching(
-        m_archive,
-        m_match,
-        [](archive* a, void* ud, archive_entry* e) -> int
-        {
-          FilterCallbackData* fcd = reinterpret_cast<FilterCallbackData*>(ud);
-          return (*fcd->m_f)(ArchiveEntry(a, e), fcd->m_ud);
-        },
-        &m_fcd);
-    }
-
-    void clearFilterCallback()
-    {
-        m_fcd.m_f = nullptr;
-        m_fcd.m_ud = nullptr;
-        archive_read_disk_set_metadata_filter_callback(m_archive,
-                                                       nullptr,
-                                                       nullptr);
-    }
-#endif
-
   };
 }
 

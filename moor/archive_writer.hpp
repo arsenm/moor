@@ -59,7 +59,7 @@ namespace moor
     // Add the file / directories under file_path and their content to
     // the archive
     void addDiskPath(const std::string& file_path,
-                     ArchiveMatch* filter = nullptr);
+                     ArchiveMatch* match = nullptr);
 
     // Add an entry and its content from a real file
     void addFile(const std::string& file_path);
