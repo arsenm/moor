@@ -67,7 +67,17 @@ namespace moor
 
         }
 
-        void throwError(int errCode, bool closeBeforeThrow);
+        void throwError(int errCode, bool closeBeforeThrow)
+        {
+            std::system_error err = systemError();
+
+            if (errCode == ARCHIVE_FATAL && closeBeforeThrow)
+            {
+                close();
+            }
+
+            throw err;
+        }
 
     public:
         virtual void close() = 0;
@@ -101,13 +111,35 @@ namespace moor
         }
 
         // Returns a count of the number of files processed by this archive object.
-        int fileCount() const;
-        int filterCount() const;
-        const char* formatName() const;
-        const char* filterName() const;
+        int fileCount() const
+        {
+            return archive_file_count(m_archive);
+        }
 
-        int errorNumber() const;
-        const char* errorString() const;
+        int filterCount() const
+        {
+            return archive_filter_count(m_archive);
+        }
+
+        const char* formatName() const
+        {
+            return archive_format_name(m_archive);
+        }
+
+        const char* filterName() const
+        {
+            return archive_filter_name(m_archive, -1);
+        }
+
+        int errorNumber() const
+        {
+            return archive_errno(m_archive);
+        }
+
+        const char* errorString() const
+        {
+            return archive_error_string(m_archive);
+        }
 
         inline void checkError(int errCode,
                                bool closeBeforeThrow = false)
