@@ -26,6 +26,8 @@
 
 #include "moor_build_config.hpp"
 
+#include <archive.h>
+
 #include <cassert>
 #include <string>
 #include <system_error>
@@ -107,7 +109,13 @@ namespace moor
         int errorNumber() const;
         const char* errorString() const;
 
-        void checkError(int errCode,
-                        bool closeBeforeThrow = false);
+        inline void checkError(int errCode,
+                               bool closeBeforeThrow = false)
+        {
+          if (errCode != ARCHIVE_OK && errCode != ARCHIVE_WARN)
+          {
+              throwError(errCode, closeBeforeThrow);
+          }
+        }
     };
 }
