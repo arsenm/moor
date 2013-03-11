@@ -196,35 +196,25 @@ void ArchiveWriter::addDiskPath(const std::string& path, ArchiveMatch* match)
   checkError(disk.open(path.c_str()), true);
   if (match)
   {
-      int rc = disk.setMatchFilter(*match);
-      checkError(rc, true);
+    disk.checkError(disk.setMatchFilter(*match), true);
   }
 
   while (true)
   {
-      int r = archive_read_next_header2(disk, m_entry);
-      if (r == ARCHIVE_EOF)
-      {
-          break;
-      }
+    int r = archive_read_next_header2(disk, m_entry);
+    if (r == ARCHIVE_EOF)
+    {
+        break;
+    }
 
-      checkError(r, true);
+    disk.checkError(r, true);
 
-      archive_read_disk_descend(disk);
+    archive_read_disk_descend(disk);
 
-      #if 0
-      if (!m_prefix.empty())
-      {
-        std::string dest(m_prefix);
-        dest += path;
-        archive_entry_set_pathname(m_entry, dest.c_str());
-      }
-      #endif
+    r = archive_write_header(m_archive, m_entry);
+    checkError(r, true);
 
-      r = archive_write_header(m_archive, m_entry);
-      checkError(r, true);
-
-      writeFileData(archive_entry_sourcepath(m_entry));
+    writeFileData(archive_entry_sourcepath(m_entry));
   }
 }
 
