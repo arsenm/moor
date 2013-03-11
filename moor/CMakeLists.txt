@@ -6,7 +6,6 @@ set(include_HEADERS
   archive.hpp
   archive_entry.hpp
   archive_iterator.hpp
-  moor_utils.hpp
   archive_read_disk.hpp
   archive_write_disk.hpp
   )

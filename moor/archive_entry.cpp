@@ -24,7 +24,6 @@
  */
 
 #include "archive_entry.hpp"
-#include "moor_utils.hpp"
 #include "archive_write_disk.hpp"
 
 #include <cassert>
