@@ -145,46 +145,6 @@ moor::ArchiveWriter::ArchiveWriter(OpenCallback openCB,
     checkError(r);
 }
 
-/*
-moor::ArchiveWriter::ArchiveWriter(std::ostream& os_,
-                                   const moor::Format format_,
-                                   const moor::Filter filter_)
-    : Archive(archive_write_new()),
-      m_entry(m_archive, archive_entry_new()),
-      m_format(format_),
-      m_filter(filter_),
-      m_callbackData(),
-      m_open(true)
-{
-    int r = archive_write_open(
-        *this,
-        &os_,
-        // Open
-        [](archive*, void* ud) -> int
-        {
-            //std::ostream* os = reinterpret_cast<std::ostream*>(ud);
-            return 0;
-        },
-
-        // Write
-        [](archive*, void* ud, const void* buffer, size_t size) -> ssize_t
-        {
-            //std::ostream* os = reinterpret_cast<std::ostream*>(ud);
-            return 0;
-        },
-
-        // Close
-        [](archive*, void* ud) -> int
-        {
-            //std::ostream* os = reinterpret_cast<std::ostream*>(ud);
-            return 0;
-        });
-
-
-    checkError(r);
-}
-*/
-
 moor::ArchiveWriter::~ArchiveWriter()
 {
     close();
