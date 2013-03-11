@@ -29,8 +29,6 @@
 #include "archive.hpp"
 #include "archive_entry.hpp"
 
-#include <iosfwd>
-#include <iterator>
 #include <functional>
 #include <memory>
 #include <string>
