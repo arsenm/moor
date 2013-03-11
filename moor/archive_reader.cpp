@@ -83,7 +83,7 @@ ArchiveReader::~ArchiveReader()
 
 ArchiveIterator ArchiveReader::begin()
 {
-    return ArchiveIterator(m_archive);
+  return ArchiveIterator(m_archive);
 }
 
 void ArchiveReader::close()

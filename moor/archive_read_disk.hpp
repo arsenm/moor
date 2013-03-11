@@ -92,6 +92,16 @@ namespace moor
                                               nullptr);
       }
     }
+
+    int descend()
+    {
+      return archive_read_disk_descend(m_archive);
+    }
+
+    int nextHeader2(archive_entry* e)
+    {
+        return archive_read_next_header2(m_archive, e);
+    }
   };
 }
 

@@ -84,6 +84,11 @@ namespace moor
     virtual void close() override;
 
   private:
+    int writeHeader(archive_entry* e);
+    int openFilename(const char* path);
+    int openMemory(std::vector<unsigned char>& outBuf);
+    int openMemory(void* buf, size_t* bufSize);
+
     void addHeader(const std::string& entry_name,
                    const FileType entry_type,
                    const long long size = 0,

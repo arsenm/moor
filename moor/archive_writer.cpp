@@ -54,7 +54,7 @@ ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
 
   // Set archive compression
   checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
-  checkError(archive_write_open_filename(m_archive, cfilename()), true);
+  checkError(openFilename(cfilename()), true);
 }
 
 ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
@@ -71,7 +71,7 @@ ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
 
   // Set archive filter
   checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
-  checkError(write_open_memory(m_archive, &out_buffer_), true);
+  checkError(openMemory(out_buffer_), true);
 }
 
 ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
@@ -89,12 +89,32 @@ ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
 
   // Set archive filter
   checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
-  checkError(archive_write_open_memory(m_archive, out_buffer_, *size_, size_), true);
+  checkError(openMemory(out_buffer_, size_), true);
 }
 
 ArchiveWriter::~ArchiveWriter()
 {
+  close();
+}
 
+int ArchiveWriter::writeHeader(archive_entry* e)
+{
+  return archive_write_header(m_archive, e);
+}
+
+int ArchiveWriter::openFilename(const char* path)
+{
+  return archive_write_open_filename(m_archive, path);
+}
+
+int ArchiveWriter::openMemory(std::vector<unsigned char>& outBuf)
+{
+  return write_open_memory(m_archive, &outBuf);
+}
+
+int ArchiveWriter::openMemory(void* buf, size_t* bufSize)
+{
+  return archive_write_open_memory(m_archive, buf, *bufSize, bufSize);
 }
 
 void ArchiveWriter::addHeader(const std::string& entry_name_,
@@ -118,7 +138,7 @@ void ArchiveWriter::addHeader(const std::string& filePath,
   m_entry = archive_entry_clear(m_entry);
   archive_entry_set_pathname(m_entry, filePath.c_str());
   checkError(archive_read_disk_entry_from_file(a, m_entry, -1, statBuf));
-  checkError(archive_write_header(m_archive, m_entry));
+  checkError(writeHeader(m_entry));
 }
 
 void ArchiveWriter::addContent(const char b)
@@ -201,17 +221,16 @@ void ArchiveWriter::addDiskPath(const std::string& path, ArchiveMatch* match)
 
   while (true)
   {
-    int r = archive_read_next_header2(disk, m_entry);
+    int r = disk.nextHeader2(m_entry);
     if (r == ARCHIVE_EOF)
     {
         break;
     }
 
     disk.checkError(r, true);
+    disk.descend();
 
-    archive_read_disk_descend(disk);
-
-    r = archive_write_header(m_archive, m_entry);
+    r = writeHeader(m_entry);
     checkError(r, true);
 
     writeFileData(archive_entry_sourcepath(m_entry));
