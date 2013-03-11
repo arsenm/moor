@@ -91,6 +91,14 @@ namespace moor
             return m_archive_file_name.c_str();
         }
 
+        std::system_error systemError() const
+        {
+            const char* errStr = errorString();
+            return std::system_error(errorNumber(),
+                                     std::generic_category(),
+                                     errStr ? errStr : "");
+        }
+
         // Returns a count of the number of files processed by this archive object.
         int fileCount() const;
         int filterCount() const;
@@ -99,5 +107,8 @@ namespace moor
 
         int errorNumber() const;
         const char* errorString() const;
+
+        void checkError(int errCode,
+                        bool closeBeforeThrow = false);
     };
 }

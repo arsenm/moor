@@ -54,8 +54,6 @@ namespace moor
     static const int s_defaultExtractFlags;
 
     void init();
-    void checkError(const int err_code,
-                    const bool close_before_throw = false);
     virtual void close() override;
     static int copyData(archive* ar, archive* aw);
 

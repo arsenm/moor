@@ -60,3 +60,18 @@ const char* Archive::errorString() const
     return archive_error_string(m_archive);
 }
 
+void Archive::checkError(int errCode,
+                        bool closeBeforeThrow)
+{
+  if (errCode != ARCHIVE_OK && errCode != ARCHIVE_WARN)
+  {
+    std::system_error err = systemError();
+    if (errCode == ARCHIVE_FATAL && closeBeforeThrow)
+    {
+      close();
+    }
+
+    throw err;
+  }
+}
+

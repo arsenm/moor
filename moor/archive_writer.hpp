@@ -84,8 +84,6 @@ namespace moor
     virtual void close() override;
 
   private:
-    void checkError(const int err_code,
-                    const bool close_before_throw = false);
     void addHeader(const std::string& entry_name,
                    const FileType entry_type,
                    const long long size = 0,

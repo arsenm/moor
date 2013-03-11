@@ -86,32 +86,6 @@ ArchiveIterator ArchiveReader::begin()
     return ArchiveIterator(m_archive);
 }
 
-void ArchiveReader::checkError(const int _err_code,
-                               const bool _close_before_throw)
-{
-  int archiveErrno = 0;
-  const char* errStr = nullptr;
-
-  if (_err_code == ARCHIVE_FATAL)
-  {
-    // Close might clear the archive errno, so get it first
-    archiveErrno = archive_errno(m_archive);
-    errStr = archive_error_string(m_archive);
-
-    if (_close_before_throw)
-    {
-      close();
-    }
-  }
-
-  if (_err_code != ARCHIVE_OK && _err_code != ARCHIVE_WARN)
-  {
-    throw std::system_error(archiveErrno,
-                            std::generic_category(),
-                            errStr ? errStr : "");
-  }
-}
-
 void ArchiveReader::close()
 {
   if (m_open)

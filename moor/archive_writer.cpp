@@ -40,30 +40,6 @@
 using namespace moor;
 
 
-
-void ArchiveWriter::checkError(const int err_code,
-                               const bool close_before_throw)
-{
-  int archiveErrno = 0;
-  const char* errStr = nullptr;
-  if (err_code == ARCHIVE_FATAL)
-  {
-      archiveErrno = errorNumber();
-      errStr = errorString();
-      if (close_before_throw)
-      {
-          close();
-      }
-  }
-
-  if (err_code != ARCHIVE_OK && err_code != ARCHIVE_WARN)
-  {
-    throw std::system_error(archiveErrno,
-                            std::generic_category(),
-                            errStr ? errStr : "");
-  }
-}
-
 ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
                              const Format format_,
                              const Filter filter_)
