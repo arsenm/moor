@@ -66,7 +66,9 @@ namespace moor
     #endif
     }
 
-    ~ArchiveReadDisk()
+    ~ArchiveReadDisk() = default;
+
+    virtual void close() override
     {
       archive_read_close(m_archive);
       archive_read_free(m_archive);

@@ -26,7 +26,9 @@
 
 #include "moor_build_config.hpp"
 
+#include <cassert>
 #include <string>
+#include <system_error>
 
 
 struct archive;
@@ -58,6 +60,11 @@ namespace moor
 
         }
 
+        ~Archive()
+        {
+          close();
+        }
+
         operator archive*()
         {
             return m_archive;
@@ -69,6 +76,11 @@ namespace moor
         }
 
     public:
+        virtual void close()
+        {
+            assert(false && "Close not implemented for type");
+        }
+
         const std::string& filename() const
         {
             return m_archive_file_name;

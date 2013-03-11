@@ -81,7 +81,7 @@ namespace moor
     }
 
     void addDirectory(const std::string& directory_name);
-    void close();
+    virtual void close() override;
 
   private:
     void checkError(const int err_code,

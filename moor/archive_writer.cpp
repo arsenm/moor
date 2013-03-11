@@ -118,7 +118,7 @@ ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
 
 ArchiveWriter::~ArchiveWriter()
 {
-  close();
+
 }
 
 void ArchiveWriter::addHeader(const std::string& entry_name_,

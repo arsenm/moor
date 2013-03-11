@@ -56,7 +56,7 @@ namespace moor
     void init();
     void checkError(const int err_code,
                     const bool close_before_throw = false);
-    void close();
+    virtual void close() override;
     static int copyData(archive* ar, archive* aw);
 
     std::vector<unsigned char> m_in_buffer;
