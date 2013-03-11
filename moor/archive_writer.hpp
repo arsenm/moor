@@ -54,7 +54,7 @@ namespace moor
                   size_t* size,
                   const Format format,
                   const Filter compression);
-    ~ArchiveWriter();
+    virtual ~ArchiveWriter() override;
 
     // Add the file / directories under file_path and their content to
     // the archive

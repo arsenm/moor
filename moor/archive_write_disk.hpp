@@ -42,7 +42,10 @@ namespace moor
       archive_write_disk_set_standard_lookup(m_archive);
     }
 
-    ~ArchiveWriteDisk() = default;
+    ~ArchiveWriteDisk()
+    {
+        close();
+    }
 
     virtual void close() override
     {

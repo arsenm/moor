@@ -49,7 +49,10 @@ namespace moor
     #endif
     }
 
-    ~ArchiveReadDisk() = default;
+    ~ArchiveReadDisk()
+    {
+        close();
+    }
 
     virtual void close() override
     {

@@ -60,9 +60,9 @@ namespace moor
 
         }
 
-        ~Archive()
+        virtual ~Archive()
         {
-          close();
+
         }
 
         operator archive*()
@@ -75,11 +75,10 @@ namespace moor
             return m_archive;
         }
 
+        void throwError(int errCode, bool closeBeforeThrow);
+
     public:
-        virtual void close()
-        {
-            assert(false && "Close not implemented for type");
-        }
+        virtual void close() = 0;
 
         const std::string& filename() const
         {

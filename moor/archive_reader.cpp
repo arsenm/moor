@@ -78,7 +78,7 @@ void ArchiveReader::init()
 
 ArchiveReader::~ArchiveReader()
 {
-
+  close();
 }
 
 ArchiveIterator ArchiveReader::begin()
