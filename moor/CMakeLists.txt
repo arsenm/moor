@@ -1,4 +1,4 @@
-SET (include_HEADERS
+set(include_HEADERS
   archive_writer.hpp
   archive_reader.hpp
   moor_build_config.hpp
@@ -10,37 +10,35 @@ SET (include_HEADERS
   archive_read_disk.hpp
   archive_write_disk.hpp
   )
-SET (libmoor_SOURCES
+set(libmoor_SOURCES
   archive_writer.cpp
   archive_reader.cpp
   memory_writer_callback.cpp
   types.cpp
-  archive.cpp
   archive_entry.cpp
 )
 
-IF(MSVC)
+if(MSVC)
     set(CMAKE_DEBUG_POSTFIX d)
     add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
     add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
-ENDIF()
+endif()
 
 
-ADD_LIBRARY (moor SHARED ${libmoor_SOURCES} ${INCLUDE_DIRECTORIES})
-TARGET_LINK_LIBRARIES (moor ${ADDITIONAL_LIBS})
+add_library(moor SHARED ${libmoor_SOURCES} ${INCLUDE_DIRECTORIES})
+target_link_libraries(moor ${ADDITIONAL_LIBS})
 
-ADD_LIBRARY (moor_static STATIC ${libmoor_SOURCES} ${INCLUDE_DIRECTORIES})
-SET_TARGET_PROPERTIES(moor_static PROPERTIES COMPILE_DEFINITIONS
-  MOOR_STATIC)
-TARGET_LINK_LIBRARIES (moor_static ${ADDITIONAL_LIBS})
+add_library(moor_static STATIC ${libmoor_SOURCES} ${INCLUDE_DIRECTORIES})
+set_target_properties(moor_static PROPERTIES COMPILE_DEFINITIONS MOOR_STATIC)
+target_link_libraries(moor_static ${ADDITIONAL_LIBS})
 
-IF(NOT WIN32 OR CYGWIN)
-  SET_TARGET_PROPERTIES(moor_static PROPERTIES OUTPUT_NAME moor)
-ENDIF()
+if(NOT WIN32 OR CYGWIN)
+  set_target_properties(moor_static PROPERTIES OUTPUT_NAME moor)
+endif()
 
-INSTALL(TARGETS moor moor_static
+install(TARGETS moor moor_static
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
 
-INSTALL(FILES ${include_HEADERS} DESTINATION include)
+install(FILES ${include_HEADERS} DESTINATION include)
