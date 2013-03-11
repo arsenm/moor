@@ -33,14 +33,14 @@
 
 // Select which attributes we want to restore.
 const int moor::ArchiveEntry::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
-        | ARCHIVE_EXTRACT_PERM
-        | ARCHIVE_EXTRACT_ACL
-        | ARCHIVE_EXTRACT_FFLAGS;
+                                                    | ARCHIVE_EXTRACT_PERM
+                                                    | ARCHIVE_EXTRACT_ACL
+                                                    | ARCHIVE_EXTRACT_FFLAGS;
 
 bool moor::ArchiveEntry::extractDataImpl(archive* a,
-        unsigned char* out,
-        ssize_t outSize,
-        ssize_t entrySize)
+                                         unsigned char* out,
+                                         ssize_t outSize,
+                                         ssize_t entrySize)
 {
     ssize_t readIndex = 0;
 
@@ -49,7 +49,6 @@ bool moor::ArchiveEntry::extractDataImpl(archive* a,
         ssize_t r = archive_read_data(a,
                                       &out[readIndex],
                                       outSize - readIndex);
-
         if (r == 0)
         {
             return true;
@@ -100,10 +99,9 @@ int moor::ArchiveEntry::copyData(archive* ar, archive* aw)
     {
         const void* buff;
         size_t size;
-        __LA_INT64_T offset;
+        std::int64_t offset;
 
         int r = archive_read_data_block(ar, &buff, &size, &offset);
-
         if (r == ARCHIVE_EOF)
         {
             return ARCHIVE_OK;
@@ -115,7 +113,6 @@ int moor::ArchiveEntry::copyData(archive* ar, archive* aw)
         }
 
         r = archive_write_data_block(aw, buff, size, offset);
-
         if (r != ARCHIVE_OK)
         {
             return r;
@@ -135,7 +132,6 @@ bool moor::ArchiveEntry::extractDisk(const std::string& rootPath)
     set_pathname(fullPath.c_str());
 
     int rc = disk.writeHeader(m_entry);
-
     if (rc != ARCHIVE_OK)
     {
         moor::throwArchiveError(disk);
@@ -147,14 +143,12 @@ bool moor::ArchiveEntry::extractDisk(const std::string& rootPath)
     }
 
     std::int64_t entrySize = size();
-
     if (entrySize < 0)
     {
         return false;
     }
 
     rc = copyData(m_archive, disk);
-
     if (rc != ARCHIVE_OK)
     {
         moor::throwArchiveError(disk);
