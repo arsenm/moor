@@ -127,12 +127,12 @@ moor::ArchiveWriter::ArchiveWriter(OpenCallback openCB,
       m_entry(m_archive, archive_entry_new()),
       m_format(format_),
       m_filter(filter_),
-      m_buffer(new char[bufferSize()]),
       m_callbackData(WriterCallbackData::create(*this,
                                                 openCB,
                                                 writeCB,
                                                 closeCB,
                                                 userData)),
+      m_buffer(new char[bufferSize()]),
       m_open(true)
 {
     // Set archive format
