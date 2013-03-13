@@ -67,6 +67,7 @@ moor::ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
       m_format(format_),
       m_filter(filter_),
       m_callbackData(),
+      m_buffer(new char[bufferSize()]),
       m_open(true)
 {
     // Set archive format
@@ -85,6 +86,7 @@ moor::ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
       m_format(format_),
       m_filter(filter_),
       m_callbackData(),
+      m_buffer(new char[bufferSize()]),
       m_open(true)
 {
     // Set archive format
@@ -104,6 +106,7 @@ moor::ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
       m_format(format_),
       m_filter(filter_),
       m_callbackData(nullptr),
+      m_buffer(new char[bufferSize()]),
       m_open(true)
 {
     // Set archive format
@@ -124,6 +127,7 @@ moor::ArchiveWriter::ArchiveWriter(OpenCallback openCB,
       m_entry(m_archive, archive_entry_new()),
       m_format(format_),
       m_filter(filter_),
+      m_buffer(new char[bufferSize()]),
       m_callbackData(WriterCallbackData::create(*this,
                                                 openCB,
                                                 writeCB,
@@ -216,14 +220,12 @@ ssize_t moor::ArchiveWriter::writeData(const void* buf, size_t bufSize)
 
 void moor::ArchiveWriter::writeFileData(const char* path)
 {
-    static char buf[16384];
-
     std::ifstream file(path, std::ios::in);
 
     while (file.good())
     {
-        file.read(buf, sizeof(buf));
-        writeData(buf, static_cast<size_t>(file.gcount()));
+        file.read(m_buffer.get(), bufferSize());
+        writeData(m_buffer.get(), static_cast<size_t>(file.gcount()));
     }
 
 #if 0

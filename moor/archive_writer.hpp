@@ -86,7 +86,13 @@ namespace moor
         const Format m_format;
         const Filter m_filter;
         std::unique_ptr<WriterCallbackData> m_callbackData;
+        std::unique_ptr<char[]> m_buffer;
         bool m_open;
+
+        constexpr static size_t bufferSize()
+        {
+            return 16 * 1024;
+        }
 
         static int openCallbackWrapper(archive*, void* ud);
         static ssize_t writeCallbackWrapper(archive*, void* ud, const void* buffer, size_t size);
