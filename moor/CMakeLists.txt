@@ -18,18 +18,18 @@ set(libmoor_SOURCES
 )
 
 if(MSVC)
-    set(CMAKE_DEBUG_POSTFIX d)
-    add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
-    add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
+  set(CMAKE_DEBUG_POSTFIX d)
+  add_definitions(-D_CRT_SECURE_NO_DEPRECATE)
+  add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
 endif()
 
 
-add_library(moor SHARED ${libmoor_SOURCES} ${INCLUDE_DIRECTORIES})
-target_link_libraries(moor ${ADDITIONAL_LIBS})
+add_library(moor SHARED ${libmoor_SOURCES} ${libmoor_SOURCES})
+target_link_libraries(moor ${LibArchive_LIBRARIES})
 
-add_library(moor_static STATIC ${libmoor_SOURCES} ${INCLUDE_DIRECTORIES})
+add_library(moor_static STATIC ${libmoor_SOURCES} ${libmoor_SOURCES})
 set_target_properties(moor_static PROPERTIES COMPILE_DEFINITIONS MOOR_STATIC)
-target_link_libraries(moor_static ${ADDITIONAL_LIBS})
+target_link_libraries(moor_static ${LibArchive_LIBRARIES})
 
 if(NOT WIN32 OR CYGWIN)
   set_target_properties(moor_static PROPERTIES OUTPUT_NAME moor)

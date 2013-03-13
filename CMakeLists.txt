@@ -7,13 +7,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 
-set(ADDITIONAL_LIBS "")
-
-find_package(LibArchive)
-
+find_package(LibArchive REQUIRED)
 include_directories(${LibArchive_INCLUDE_DIR})
-list(APPEND ADDITIONAL_LIBS ${LibArchive_LIBRARIES})
-
 
 add_subdirectory(moor)
 add_subdirectory(test)
