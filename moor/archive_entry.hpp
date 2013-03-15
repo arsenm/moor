@@ -101,6 +101,7 @@ namespace moor
                                    entrySize);
         }
 
+        void skip();
         bool extractData(std::vector<unsigned char>& out);
         bool extractData(void* out, size_t size);
 

@@ -36,6 +36,11 @@ const int moor::ArchiveEntry::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
                                                     | ARCHIVE_EXTRACT_ACL
                                                     | ARCHIVE_EXTRACT_FFLAGS;
 
+void moor::ArchiveEntry::skip()
+{
+    archive_read_data_skip(m_archive);
+}
+
 bool moor::ArchiveEntry::extractDataImpl(archive* a,
                                          unsigned char* out,
                                          ssize_t outSize,
