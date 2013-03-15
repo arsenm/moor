@@ -50,6 +50,17 @@ namespace moor
         // Check ArchiveIterator::isAtEnd for EOF
         ArchiveIterator begin();
 
+        int readDataBlock(const void** buf, size_t* size, std::int64_t* offset);
+
+    protected:
+        ArchiveReader(archive* a)
+            : Archive(a),
+              m_in_buffer(),
+              m_open(true)
+        {
+
+        }
+
     private:
         static const int s_defaultExtractFlags;
 

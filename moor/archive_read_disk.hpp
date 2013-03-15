@@ -26,19 +26,19 @@
 
 #include "moor_build_config.hpp"
 
-#include "archive.hpp"
 #include "archive_match.hpp"
+#include "archive_reader.hpp"
 
 #include <archive.h>
 
 
 namespace moor
 {
-    class MOOR_API ArchiveReadDisk : public Archive
+    class MOOR_API ArchiveReadDisk : public ArchiveReader
     {
     public:
         ArchiveReadDisk()
-            : Archive(archive_read_disk_new())
+            : ArchiveReader(archive_read_disk_new())
         {
 #if !defined(_WIN32) || defined(__CYGWIN__)
             int ec = archive_read_disk_set_standard_lookup(m_archive);

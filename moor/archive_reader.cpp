@@ -92,6 +92,11 @@ ArchiveIterator ArchiveReader::begin()
     return ArchiveIterator(m_archive);
 }
 
+int ArchiveReader::readDataBlock(const void** buf, size_t* size, std::int64_t* offset)
+{
+    return archive_read_data_block(m_archive, buf, size, offset);
+}
+
 void ArchiveReader::close()
 {
     if (m_open)

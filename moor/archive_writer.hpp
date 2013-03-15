@@ -98,6 +98,19 @@ namespace moor
         static ssize_t writeCallbackWrapper(archive*, void* ud, const void* buffer, size_t size);
         static int closeCallbackWrapper(archive*, void* ud);
 
+
+    protected:
+        ArchiveWriter(archive* a)
+            : Archive(a),
+              m_entry(a),
+              m_format(Format::Empty),
+              m_filter(Filter::None),
+              m_callbackData(),
+              m_buffer(),
+              m_open(true)
+        {
+        }
+
     public:
         ArchiveWriter(const std::string& archive_file_name,
                       const Format format,
