@@ -60,6 +60,7 @@ namespace moor
             return archive_write_header(m_archive, entry);
         }
 
+    private:
         int writeDataBlock(const void* buf, size_t size, std::int64_t offset)
         {
             return archive_write_data_block(m_archive, buf, size, offset);

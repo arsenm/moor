@@ -50,8 +50,6 @@ namespace moor
         // Check ArchiveIterator::isAtEnd for EOF
         ArchiveIterator begin();
 
-        int readDataBlock(const void** buf, size_t* size, std::int64_t* offset);
-
     protected:
         ArchiveReader(archive* a)
             : Archive(a),
@@ -70,6 +68,7 @@ namespace moor
 
         virtual void close() override;
         static int copyData(archive* ar, archive* aw);
+        int readDataBlock(const void** buf, size_t* size, std::int64_t* offset);
 
         std::vector<unsigned char> m_in_buffer;
 
