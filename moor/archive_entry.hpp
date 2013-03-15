@@ -49,7 +49,7 @@ namespace moor
                              unsigned char* ptr,
                              ssize_t size,
                              ssize_t entrySize);
-        int copyData(archive* ar, archive* aw);
+        static int copyData(archive* ar, archive* aw);
 
     public:
         explicit ArchiveEntry(archive* a,
