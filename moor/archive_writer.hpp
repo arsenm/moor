@@ -163,6 +163,12 @@ namespace moor
 
         ssize_t writeData(const void* buf, size_t bufSize);
         void writeFileData(const char* path);
+
+        int setBytesPerBlock(int bytesPerBlock);
+        int getBytesPerBlock() const;
+
+        int setBytesInLastBlock(int bytesInLastBlock);
+        int getBytesInLastBlock() const;
     };
 
     template <class Iter>

@@ -242,6 +242,26 @@ void moor::ArchiveWriter::writeFileData(const char* path)
 #endif
 }
 
+int moor::ArchiveWriter::setBytesPerBlock(int bytesPerBlock)
+{
+    return archive_write_set_bytes_per_block(m_archive, bytesPerBlock);
+}
+
+int moor::ArchiveWriter::getBytesPerBlock() const
+{
+    return archive_write_get_bytes_per_block(m_archive);
+}
+
+int moor::ArchiveWriter::setBytesInLastBlock(int bytesInLastBlock)
+{
+    return archive_write_set_bytes_in_last_block(m_archive, bytesInLastBlock);
+}
+
+int moor::ArchiveWriter::getBytesInLastBlock() const
+{
+    return archive_write_get_bytes_in_last_block(m_archive);
+}
+
 void moor::ArchiveWriter::addFile(const std::string& file_path)
 {
     struct stat file_stat;
