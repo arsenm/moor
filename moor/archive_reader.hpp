@@ -47,10 +47,6 @@ namespace moor
         ArchiveReaderImpl(const std::string& archive_file_name);
         ArchiveReaderImpl(void* in_buffer, const size_t size);
         ArchiveReaderImpl(std::vector<unsigned char>&& in_buffer);
-        virtual ~ArchiveReaderImpl() override
-        {
-
-        }
 
         // Check ArchiveIterator::isAtEnd for EOF
         ArchiveIterator begin();
@@ -91,10 +87,7 @@ namespace moor
             : ArchiveReaderImpl(buffer, size) { }
         ArchiveReader(std::vector<unsigned char>&& buffer)
             : ArchiveReaderImpl(std::move(buffer)) { }
-        virtual ~ArchiveReader() override
-        {
-            close();
-        }
+        virtual ~ArchiveReader() override;
     };
 }
 

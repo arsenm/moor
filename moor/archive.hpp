@@ -62,10 +62,7 @@ namespace moor
 
         }
 
-        virtual ~Archive()
-        {
-
-        }
+        virtual ~Archive();
 
         void throwError(int errCode, bool closeBeforeThrow)
         {

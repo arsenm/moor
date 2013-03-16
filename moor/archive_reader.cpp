@@ -99,3 +99,8 @@ void ArchiveReaderImpl::close()
         m_archive = nullptr;
     }
 }
+
+ArchiveReader::~ArchiveReader()
+{
+    close();
+}

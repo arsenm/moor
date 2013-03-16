@@ -124,10 +124,10 @@ moor::ArchiveWriter::ArchiveWriter(OpenCallback openCB,
       m_entry(*this),
       m_format(format_),
       m_filter(filter_),
-      m_callbackData(WriterCallbackData::create(*this,
-                                                openCB,
+      m_callbackData(WriterCallbackData::create(openCB,
                                                 writeCB,
                                                 closeCB,
+                                                *this,
                                                 userData)),
       m_buffer(new char[bufferSize()])
 {
@@ -153,7 +153,7 @@ moor::ArchiveWriter::ArchiveWriter(WriteCallback writeCB,
       m_entry(*this),
       m_format(format_),
       m_filter(filter_),
-      m_callbackData(WriterCallbackData::create(*this, writeCB, userData)),
+      m_callbackData(WriterCallbackData::create(writeCB, *this, userData)),
       m_buffer(new char[bufferSize()])
 {
     // Set archive format

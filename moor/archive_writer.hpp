@@ -52,47 +52,47 @@ namespace moor
     private:
         struct WriterCallbackData
         {
-            ArchiveWriter& m_writer;
             OpenCallback m_open;
             WriteCallback m_write;
             CloseCallback m_close;
+            ArchiveWriter& m_writer;
             void* m_userData;
 
-            static std::unique_ptr<WriterCallbackData> create(ArchiveWriter& writer,
-                                                              OpenCallback o,
+            static std::unique_ptr<WriterCallbackData> create(OpenCallback o,
                                                               WriteCallback w,
                                                               CloseCallback c,
+                                                              ArchiveWriter& writer,
                                                               void* ud)
             {
-                return std::unique_ptr<WriterCallbackData>(new WriterCallbackData(writer, o, w, c, ud));
+                return std::unique_ptr<WriterCallbackData>(new WriterCallbackData(o, w, c, writer, ud));
             }
 
-            static std::unique_ptr<WriterCallbackData> create(ArchiveWriter& writer,
-                                                              WriteCallback w,
+            static std::unique_ptr<WriterCallbackData> create(WriteCallback w,
+                                                              ArchiveWriter& writer,
                                                               void* ud)
             {
-                return std::unique_ptr<WriterCallbackData>(new WriterCallbackData(writer, w, ud));
+                return std::unique_ptr<WriterCallbackData>(new WriterCallbackData(w, writer, ud));
             }
 
         private:
-            WriterCallbackData(ArchiveWriter& writer,
-                               OpenCallback o,
+            WriterCallbackData(OpenCallback o,
                                WriteCallback w,
                                CloseCallback c,
+                               ArchiveWriter& writer,
                                void* ud)
-                : m_writer(writer),
-                  m_open(o),
+                : m_open(o),
                   m_write(w),
                   m_close(c),
+                  m_writer(writer),
                   m_userData(ud) { }
 
-            WriterCallbackData(ArchiveWriter& writer,
-                               WriteCallback w,
+            WriterCallbackData(WriteCallback w,
+                               ArchiveWriter& writer,
                                void* ud)
-                : m_writer(writer),
-                  m_open(),
+                : m_open(),
                   m_write(w),
                   m_close(),
+                  m_writer(writer),
                   m_userData(ud) { }
 
         };

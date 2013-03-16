@@ -339,10 +339,10 @@ namespace moor
 
         void set_filetype(FileType type)
         {
-            archive_entry_set_filetype(m_entry, static_cast<int>(type));
+            archive_entry_set_filetype(m_entry, static_cast<unsigned int>(type));
         }
 
-        void set_fflags(long set, long clear)
+        void set_fflags(unsigned long set, unsigned long clear)
         {
             archive_entry_set_fflags(m_entry, set, clear);
         }
