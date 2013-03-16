@@ -38,9 +38,9 @@ struct write_memory_data
     std::vector<unsigned char>* buff;
 };
 
-static int moor_memory_write_open(struct archive* a, void* /* client_data */)
+static int moor_memory_write_open(archive* a, void* /* client_data */)
 {
-    /*struct write_memory_data *mine;
+    /*write_memory_data *mine;
       mine = client_data; mine->used = 0;
       if (mine->client_size != 0)
        *mine->client_size = mine->used;*/
@@ -52,12 +52,12 @@ static int moor_memory_write_open(struct archive* a, void* /* client_data */)
 
     return ARCHIVE_OK;
 }
-static ssize_t moor_memory_write(struct archive*,
+static ssize_t moor_memory_write(archive*,
                                  void* client_data,
-                                 const void* buff ,
+                                 const void* buff,
                                  size_t length)
 {
-    struct write_memory_data* mine = static_cast<write_memory_data*>(client_data);
+    write_memory_data* mine = static_cast<write_memory_data*>(client_data);
 
     /*if (mine->used + length > mine->size)
     {
@@ -75,9 +75,9 @@ static ssize_t moor_memory_write(struct archive*,
     return static_cast<ssize_t>(length);
 }
 
-static int moor_memory_write_close(struct archive* a, void* client_data)
+static int moor_memory_write_close(archive* a, void* client_data)
 {
-    struct write_memory_data* mine = static_cast<write_memory_data*>(client_data);
+    write_memory_data* mine = static_cast<write_memory_data*>(client_data);
     (void)a; /* UNUSED */
     delete mine;
     return ARCHIVE_OK;
@@ -85,7 +85,7 @@ static int moor_memory_write_close(struct archive* a, void* client_data)
 
 int moor::write_open_memory(archive* a, std::vector<unsigned char>* buff)
 {
-    struct write_memory_data* mine = new write_memory_data();
+    write_memory_data* mine = new write_memory_data();
 
     mine->buff = buff;
     //mine->size = buffSize;
