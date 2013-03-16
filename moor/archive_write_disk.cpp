@@ -1,5 +1,4 @@
 /*
- * Copyright (c) 2013 Mohammad Mehdi Saboorian
  * Copyright (c) 2013 Matthew Arsenault
  *
  * This is part of moor, a wrapper for libarchive
@@ -23,48 +22,10 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#pragma once
-
-#include "moor_build_config.hpp"
-
-#include "archive_writer.hpp"
-
-#include <cstdint>
+#include "archive_write_disk.hpp"
 
 
-namespace moor
+moor::ArchiveWriteDisk::~ArchiveWriteDisk()
 {
-    class MOOR_API ArchiveWriteDisk : public ArchiveWriter
-    {
-    public:
-        ArchiveWriteDisk(int flags)
-            : ArchiveWriter(archive_write_disk_new())
-        {
-            archive_write_disk_set_options(m_archive, flags);
-            archive_write_disk_set_standard_lookup(m_archive);
-        }
-
-        virtual ~ArchiveWriteDisk() override;
-
-        virtual void close() override
-        {
-            if (m_archive)
-            {
-                archive_write_close(m_archive);
-                archive_write_free(m_archive);
-                m_archive = nullptr;
-            }
-        }
-
-        int writeHeader(archive_entry* entry)
-        {
-            return archive_write_header(m_archive, entry);
-        }
-
-    private:
-        int writeDataBlock(const void* buf, size_t size, std::int64_t offset)
-        {
-            return archive_write_data_block(m_archive, buf, size, offset);
-        }
-    };
+    close();
 }

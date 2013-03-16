@@ -197,7 +197,7 @@ int moor::ArchiveWriter::openMemory(void* buf, size_t* bufSize)
 
 void moor::ArchiveWriter::addHeader(const std::string& entry_name_,
                                     const FileType entry_type_,
-                                    const long long size_,
+                                    const std::int64_t size_,
                                     const int permission_)
 {
     m_entry.clear();
@@ -224,7 +224,7 @@ void moor::ArchiveWriter::addContent(const char b)
     archive_write_data(m_archive, &b, 1);
 }
 
-void moor::ArchiveWriter::addContent(const void* data, const unsigned long long size)
+void moor::ArchiveWriter::addContent(const void* data, size_t size)
 {
     archive_write_data(m_archive, data, size);
 }
@@ -305,7 +305,7 @@ void moor::ArchiveWriter::addFile(const std::string& file_path)
 
 void moor::ArchiveWriter::addFile(const std::string& entry_name,
                                   const void* data,
-                                  unsigned long long size)
+                                  std::int64_t size)
 {
     addHeader(entry_name, FileType::Regular, size);
     addContent(data, size);

@@ -165,7 +165,7 @@ namespace moor
                      long long size = -1);
         void addFile(const std::string& entry_name,
                      const void* data,
-                     const unsigned long long size);
+                     const std::int64_t size);
 
         void addFile(const std::string& entry_name,
                      const std::string& content)
@@ -183,13 +183,13 @@ namespace moor
 
         void addHeader(const std::string& entry_name,
                        const FileType entry_type,
-                       const long long size = 0,
+                       const std::int64_t size = 0,
                        const int permission = 0644);
         void addHeader(const std::string& file_path,
                        const struct stat* file_stat = nullptr);
         void addContent(const char byte);
         void addContent(const void* bytes,
-                        const unsigned long long size);
+                        const size_t size);
         void addFinish();
 
         ssize_t writeData(const void* buf, size_t bufSize);
