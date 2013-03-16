@@ -63,8 +63,8 @@ namespace moor
         static const int s_defaultExtractFlags;
 
         bool extractDataImpl(unsigned char* ptr,
-                             ssize_t size,
-                             ssize_t entrySize);
+                             size_t size,
+                             size_t entrySize);
         static int copyData(archive* ar, archive* aw);
 
         int nextHeader();

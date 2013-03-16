@@ -221,7 +221,7 @@ void moor::ArchiveWriter::addHeader(const std::string& filePath,
 
 void moor::ArchiveWriter::addContent(const char b)
 {
-    archive_write_data(m_archive, &b, 1);
+    archive_write_data(m_archive, &b, sizeof(b));
 }
 
 void moor::ArchiveWriter::addContent(const void* data, size_t size)
@@ -303,11 +303,11 @@ void moor::ArchiveWriter::addFile(const std::string& file_path)
     addFinish();
 }
 
-void moor::ArchiveWriter::addFile(const std::string& entry_name,
+void moor::ArchiveWriter::addFile(const std::string& entryName,
                                   const void* data,
-                                  std::int64_t size)
+                                  size_t size)
 {
-    addHeader(entry_name, FileType::Regular, size);
+    addHeader(entryName, FileType::Regular, static_cast<std::int64_t>(size));
     addContent(data, size);
     addFinish();
 }

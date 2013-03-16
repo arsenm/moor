@@ -72,7 +72,7 @@ static ssize_t moor_memory_write(struct archive*,
     std::copy(p,
               p + length,
               std::back_inserter(*mine->buff));
-    return length;
+    return static_cast<ssize_t>(length);
 }
 
 static int moor_memory_write_close(struct archive* a, void* client_data)

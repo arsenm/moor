@@ -42,10 +42,10 @@ void moor::ArchiveEntry::skip()
 }
 
 bool moor::ArchiveEntry::extractDataImpl(unsigned char* out,
-                                         ssize_t outSize,
-                                         ssize_t entrySize)
+                                         size_t outSize,
+                                         size_t entrySize)
 {
-    ssize_t readIndex = 0;
+    size_t readIndex = 0;
 
     while (true)
     {
@@ -62,7 +62,7 @@ bool moor::ArchiveEntry::extractDataImpl(unsigned char* out,
             throw m_archive.systemError();
         }
 
-        readIndex += r;
+        readIndex += static_cast<size_t>(r);
 
         if (readIndex == entrySize)
         {
@@ -82,14 +82,15 @@ bool moor::ArchiveEntry::extractData(void* out, size_t outSize)
 
     std::int64_t entrySize = size();
 
-    if (entrySize < 0 || entrySize >= std::numeric_limits<ssize_t>::max())
+    const size_t maxSize = std::numeric_limits<size_t>::max();
+    if (entrySize < 0 || entrySize >= static_cast<std::int64_t>(maxSize))
     {
         return false;
     }
 
     return extractDataImpl(static_cast<unsigned char*>(out),
                            outSize,
-                           static_cast<ssize_t>(entrySize));
+                           static_cast<size_t>(entrySize));
 }
 
 int moor::ArchiveEntry::copyData(archive* ar, archive* aw)

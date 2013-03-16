@@ -162,10 +162,10 @@ namespace moor
         void addFile(const std::string& entry_name,
                      const Iter entry_contents_begin,
                      const Iter entry_contents_end,
-                     long long size = -1);
+                     ssize_t size = -1);
         void addFile(const std::string& entry_name,
                      const void* data,
-                     const std::int64_t size);
+                     const size_t size);
 
         void addFile(const std::string& entry_name,
                      const std::string& content)
@@ -206,7 +206,7 @@ namespace moor
     void ArchiveWriter::addFile(const std::string& entry_name,
                                 const Iter entry_contents_begin,
                                 const Iter entry_contents_end,
-                                long long size)
+                                ssize_t size)
     {
         size = size > -1
                ? size
