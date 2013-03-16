@@ -442,11 +442,6 @@ static bool testMatch(const std::string& path, bool useCallback)
 
 int main()
 {
-    {
-        ArchiveWriter compressor("cmake_compressed.tar.gz", Format::PAX, Filter::Gzip);
-        compressor.addDiskPath("CMakeLists.txt");
-    }
-
     if (testCompressDirectory("test_data_dir.tar.gz"))
     {
         return 1;
