@@ -50,10 +50,7 @@ namespace moor
 #endif
         }
 
-        virtual ~ArchiveReadDisk() override
-        {
-            close();
-        }
+        virtual ~ArchiveReadDisk() override;
 
         virtual void close() override
         {

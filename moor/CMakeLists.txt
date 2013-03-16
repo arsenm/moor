@@ -14,6 +14,7 @@ set(libmoor_SOURCES
   archive.cpp
   archive_writer.cpp
   archive_write_disk.cpp
+  archive_read_disk.cpp
   archive_reader.cpp
   memory_writer_callback.cpp
   types.cpp
