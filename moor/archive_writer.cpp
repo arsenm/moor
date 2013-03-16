@@ -175,9 +175,9 @@ moor::ArchiveWriter::~ArchiveWriter()
     close();
 }
 
-int moor::ArchiveWriter::writeHeader(archive_entry* e)
+int moor::ArchiveWriter::writeHeader(ArchiveEntry& e)
 {
-    return archive_write_header(m_archive, e);
+    return archive_write_header(m_archive, e.raw());
 }
 
 int moor::ArchiveWriter::openFilename(const char* path)

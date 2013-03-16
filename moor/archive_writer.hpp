@@ -35,8 +35,6 @@
 #include <vector>
 
 
-struct archive;
-struct archive_entry;
 struct stat;
 
 
@@ -178,7 +176,7 @@ namespace moor
         void addDirectory(const std::string& directory_name);
         virtual void close() override;
 
-        int writeHeader(archive_entry* e);
+        int writeHeader(ArchiveEntry&);
         int openFilename(const char* path);
         int openMemory(std::vector<unsigned char>& outBuf);
         int openMemory(void* buf, size_t* bufSize);

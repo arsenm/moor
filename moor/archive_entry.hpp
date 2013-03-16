@@ -42,6 +42,8 @@ namespace moor
     class MOOR_API ArchiveEntry
     {
         friend class ArchiveIterator;
+        friend class ArchiveMatch;
+        friend class ArchiveReader;
     protected:
         archive* m_archive; // Archive the entry belongs to
         archive_entry* m_entry;
@@ -55,6 +57,12 @@ namespace moor
             e.m_entry = nullptr;
         }
 #endif
+        explicit ArchiveEntry(archive* a,
+                              archive_entry* e = nullptr)
+            : m_archive(a),
+              m_entry(e)
+        {
+        }
 
     private:
         static const int s_defaultExtractFlags;
@@ -87,27 +95,12 @@ namespace moor
         }
 
     public:
-        explicit ArchiveEntry(archive* a,
-                              archive_entry* e = nullptr)
-            : m_archive(a),
-              m_entry(e) { }
-
-        operator archive_entry*()
+        archive_entry* raw()
         {
             return m_entry;
         }
 
-        operator const archive_entry*() const
-        {
-            return m_entry;
-        }
-
-        archive_entry* entry()
-        {
-            return m_entry;
-        }
-
-        const archive_entry* entry() const
+        const archive_entry* raw() const
         {
             return m_entry;
         }

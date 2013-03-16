@@ -82,12 +82,12 @@ namespace moor
     public:
         virtual void close() = 0;
 
-        operator archive*()
+        archive* raw()
         {
             return m_archive;
         }
 
-        operator const archive*() const
+        const archive* raw() const
         {
             return m_archive;
         }

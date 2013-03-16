@@ -147,6 +147,6 @@ bool moor::ArchiveEntry::extractDisk(const std::string& rootPath)
         return false;
     }
 
-    disk.checkError(copyData(m_archive, disk));
+    disk.checkError(copyData(m_archive, disk.raw()));
     return true;
 }

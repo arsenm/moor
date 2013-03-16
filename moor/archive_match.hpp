@@ -39,6 +39,8 @@ namespace moor
 
     class ArchiveMatch
     {
+        friend class ArchiveReadDisk;
+
     private:
         struct MatchCallbackData
         {
@@ -47,7 +49,7 @@ namespace moor
             void* m_ud;
 
             static std::unique_ptr<MatchCallbackData> create(ReadDiskMatchCallback* f,
-                    void* ud)
+                                                             void* ud)
             {
                 return std::unique_ptr<MatchCallbackData>(new MatchCallbackData(f, ud));
             }
@@ -61,6 +63,12 @@ namespace moor
 
         archive* m_match;
         std::unique_ptr<MatchCallbackData> m_cb;
+
+
+        archive* raw()
+        {
+            return m_match;
+        }
 
     public:
         ArchiveMatch()
@@ -76,16 +84,6 @@ namespace moor
         ~ArchiveMatch()
         {
             archive_match_free(m_match);
-        }
-
-        operator archive*()
-        {
-            return m_match;
-        }
-
-        operator const archive*() const
-        {
-            return m_match;
         }
 
         void addCallback(ReadDiskMatchCallback f, void* ud)
@@ -113,7 +111,7 @@ namespace moor
 
         bool excluded(ArchiveEntry& e)
         {
-            return archive_match_excluded(m_match, e.entry());
+            return archive_match_excluded(m_match, e.raw());
         }
 
         int excludePattern(const char* pattern)

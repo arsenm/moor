@@ -75,14 +75,14 @@ namespace moor
             if (match.hasCallback())
             {
                 return archive_read_disk_set_matching(m_archive,
-                                                      match,
+                                                      match.raw(),
                                                       ArchiveMatch::matchCallbackWrapper,
                                                       match.callbackUserData());
             }
             else
             {
                 return archive_read_disk_set_matching(m_archive,
-                                                      match,
+                                                      match.raw(),
                                                       nullptr,
                                                       nullptr);
             }
@@ -93,17 +93,17 @@ namespace moor
             return archive_read_disk_descend(m_archive);
         }
 
-        int nextHeader2(archive_entry* e)
+        int nextHeader2(WritableArchiveEntry& e)
         {
-            return archive_read_next_header2(m_archive, e);
+            return archive_read_next_header2(m_archive, e.raw());
         }
 
-        int entryFromFile(archive_entry* e,
+        int entryFromFile(WritableArchiveEntry& e,
                           int fd = -1,
                           const struct stat* statBuf = nullptr)
         {
             return archive_read_disk_entry_from_file(m_archive,
-                                                     e,
+                                                     e.raw(),
                                                      fd,
                                                      statBuf);
         }
