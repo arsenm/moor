@@ -38,6 +38,10 @@
 
 namespace moor
 {
+    class Archive;
+    class ArchiveWriter;
+
+
     // Non-owning references to archive*, archive_entry*
     class MOOR_API ArchiveEntry
     {
@@ -45,19 +49,10 @@ namespace moor
         friend class ArchiveMatch;
         friend class ArchiveReader;
     protected:
-        archive* m_archive; // Archive the entry belongs to
+        Archive& m_archive; // Archive the entry belongs to
         archive_entry* m_entry;
 
-#if 0
-        ArchiveEntry(ArchiveEntry&& e)
-            : m_archive(e.m_archive),
-              m_entry(e.m_entry)
-        {
-            e.m_archive = nullptr;
-            e.m_entry = nullptr;
-        }
-#endif
-        explicit ArchiveEntry(archive* a,
+        explicit ArchiveEntry(Archive& a,
                               archive_entry* e = nullptr)
             : m_archive(a),
               m_entry(e)
@@ -67,32 +62,14 @@ namespace moor
     private:
         static const int s_defaultExtractFlags;
 
-        bool extractDataImpl(archive* a,
-                             unsigned char* ptr,
+        bool extractDataImpl(unsigned char* ptr,
                              ssize_t size,
                              ssize_t entrySize);
         static int copyData(archive* ar, archive* aw);
 
-        int nextHeader()
-        {
-            int r = archive_read_next_header(m_archive, &m_entry);
-            if (r == ARCHIVE_EOF)
-            {
-                m_entry = nullptr;
-                return ARCHIVE_OK;
-            }
+        int nextHeader();
 
-            return r;
-        }
-
-        void throwArchiveError()
-        {
-            const char* errStr = archive_error_string(m_archive);
-
-            throw std::system_error(archive_errno(m_archive),
-                                    std::generic_category(),
-                                    errStr ? errStr : "");
-        }
+        void throwArchiveError();
 
     public:
         archive_entry* raw()
@@ -104,7 +81,6 @@ namespace moor
         {
             return m_entry;
         }
-
 
         bool isValid() const
         {
@@ -129,8 +105,7 @@ namespace moor
             }
 
             out.resize(entrySize);
-            return extractDataImpl(m_archive,
-                                   reinterpret_cast<unsigned char*>(out.data()),
+            return extractDataImpl(reinterpret_cast<unsigned char*>(out.data()),
                                    sizeof(value_type) * out.size(),
                                    entrySize);
         }
@@ -462,22 +437,11 @@ namespace moor
     {
         friend class ArchiveWriter;
     private:
-        WritableArchiveEntry(archive* a)
-            : ArchiveEntry(a, archive_entry_new())
-        {
-
-        }
-
-        ~WritableArchiveEntry()
-        {
-            archive_entry_free(m_entry);
-        }
+        WritableArchiveEntry(ArchiveWriter& aw);
+        ~WritableArchiveEntry();
 
     public:
-        void clear()
-        {
-            m_entry = archive_entry_clear(m_entry);
-        }
+        void clear();
     };
 }
 

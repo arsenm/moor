@@ -399,7 +399,16 @@ static bool testMatch(const std::string& path, bool useCallback)
             match.addCallback(
                 [](ArchiveEntry entry, void*) -> void
             {
-                std::cout << "Callback: skipping path " << entry.pathname() << '\n';
+                const char* uname = entry.uname();
+                const char* gname = entry.gname();
+
+                std::cout << "\nCallback: skipping path " << entry.pathname() << '\n'
+                          << " entry properties:\n"
+                          << "   ctime: " << entry.ctime() << '\n'
+                          << "   mtime: " << entry.mtime() << '\n'
+                          << "   size: " << entry.size() << '\n'
+                          << "   uname: " << (uname ? uname : "") << '\n'
+                          << "   gname: " << (gname ? gname : "") << '\n';
             },
             nullptr);
         }

@@ -15,6 +15,7 @@ set(libmoor_SOURCES
   memory_writer_callback.cpp
   types.cpp
   archive_entry.cpp
+  archive_match.cpp
 )
 
 if(MSVC)

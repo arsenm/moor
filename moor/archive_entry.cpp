@@ -38,11 +38,10 @@ const int moor::ArchiveEntry::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
 
 void moor::ArchiveEntry::skip()
 {
-    archive_read_data_skip(m_archive);
+    archive_read_data_skip(m_archive.raw());
 }
 
-bool moor::ArchiveEntry::extractDataImpl(archive* a,
-                                         unsigned char* out,
+bool moor::ArchiveEntry::extractDataImpl(unsigned char* out,
                                          ssize_t outSize,
                                          ssize_t entrySize)
 {
@@ -50,7 +49,7 @@ bool moor::ArchiveEntry::extractDataImpl(archive* a,
 
     while (true)
     {
-        ssize_t r = archive_read_data(a,
+        ssize_t r = archive_read_data(m_archive.raw(),
                                       &out[readIndex],
                                       outSize - readIndex);
         if (r == 0)
@@ -60,10 +59,7 @@ bool moor::ArchiveEntry::extractDataImpl(archive* a,
 
         if (r < ARCHIVE_OK && r != ARCHIVE_WARN)
         {
-            const char* errStr = archive_error_string(a);
-            throw std::system_error(archive_errno(a),
-                                    std::generic_category(),
-                                    errStr ? errStr : "");
+            throw m_archive.systemError();
         }
 
         readIndex += r;
@@ -91,8 +87,7 @@ bool moor::ArchiveEntry::extractData(void* out, size_t outSize)
         return false;
     }
 
-    return extractDataImpl(m_archive,
-                           static_cast<unsigned char*>(out),
+    return extractDataImpl(static_cast<unsigned char*>(out),
                            outSize,
                            static_cast<ssize_t>(entrySize));
 }
@@ -126,6 +121,23 @@ int moor::ArchiveEntry::copyData(archive* ar, archive* aw)
     return ARCHIVE_OK;
 }
 
+int moor::ArchiveEntry::nextHeader()
+{
+    int r = archive_read_next_header(m_archive.raw(), &m_entry);
+    if (r == ARCHIVE_EOF)
+    {
+        m_entry = nullptr;
+        return ARCHIVE_OK;
+    }
+
+    return r;
+}
+
+void moor::ArchiveEntry::throwArchiveError()
+{
+    throw m_archive.systemError();
+}
+
 bool moor::ArchiveEntry::extractDisk(const std::string& rootPath)
 {
     ArchiveWriteDisk disk(s_defaultExtractFlags);
@@ -147,6 +159,25 @@ bool moor::ArchiveEntry::extractDisk(const std::string& rootPath)
         return false;
     }
 
-    disk.checkError(copyData(m_archive, disk.raw()));
+    disk.checkError(copyData(m_archive.raw(), disk.raw()));
     return true;
 }
+
+
+
+moor::WritableArchiveEntry::WritableArchiveEntry(moor::ArchiveWriter& aw)
+    : ArchiveEntry(aw, archive_entry_new())
+{
+
+}
+
+moor::WritableArchiveEntry::~WritableArchiveEntry()
+{
+    archive_entry_free(m_entry);
+}
+
+void moor::WritableArchiveEntry::clear()
+{
+    m_entry = archive_entry_clear(m_entry);
+}
+

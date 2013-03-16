@@ -116,7 +116,7 @@ namespace moor
     protected:
         ArchiveWriter(archive* a)
             : Archive(a),
-              m_entry(a),
+              m_entry(*this),
               m_format(Format::Empty),
               m_filter(Filter::None),
               m_callbackData(),

@@ -83,7 +83,7 @@ namespace moor
             return !m_state.isValid();
         }
 
-        explicit ArchiveIterator(archive* a = nullptr)
+        explicit ArchiveIterator(Archive& a)
             : m_state(a)
         {
             if (m_state.nextHeader() != ARCHIVE_OK)

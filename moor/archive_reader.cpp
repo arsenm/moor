@@ -33,12 +33,12 @@ using namespace moor;
 
 
 // Select which attributes we want to restore.
-const int ArchiveReader::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
-                                               | ARCHIVE_EXTRACT_PERM
-                                               | ARCHIVE_EXTRACT_ACL
-                                               | ARCHIVE_EXTRACT_FFLAGS;
+const int ArchiveReaderImpl::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
+                                                   | ARCHIVE_EXTRACT_PERM
+                                                   | ARCHIVE_EXTRACT_ACL
+                                                   | ARCHIVE_EXTRACT_FFLAGS;
 
-ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
+ArchiveReaderImpl::ArchiveReaderImpl(const std::string& archive_file_name_)
     : Archive(archive_read_new(), archive_file_name_),
       m_in_buffer()
 {
@@ -46,7 +46,7 @@ ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
     checkError(openFilename(cfilename()), true);
 }
 
-ArchiveReader::ArchiveReader(void* in_buffer_, const size_t size_)
+ArchiveReaderImpl::ArchiveReaderImpl(void* in_buffer_, const size_t size_)
     : Archive(archive_read_new()),
       m_in_buffer()
 {
@@ -54,7 +54,7 @@ ArchiveReader::ArchiveReader(void* in_buffer_, const size_t size_)
     checkError(openMemory(in_buffer_, size_), true);
 }
 
-ArchiveReader::ArchiveReader(std::vector<unsigned char>&& in_buffer_)
+ArchiveReaderImpl::ArchiveReaderImpl(std::vector<unsigned char>&& in_buffer_)
     : Archive(archive_read_new()),
       m_in_buffer(std::move(in_buffer_))
 {
@@ -63,38 +63,33 @@ ArchiveReader::ArchiveReader(std::vector<unsigned char>&& in_buffer_)
     checkError(ec, true);
 }
 
-void ArchiveReader::init()
+void ArchiveReaderImpl::init()
 {
     checkError(archive_read_support_format_all(m_archive), true);
     checkError(archive_read_support_filter_all(m_archive), true);
 }
 
-int ArchiveReader::openFilename(const char* path, size_t blockSize)
+int ArchiveReaderImpl::openFilename(const char* path, size_t blockSize)
 {
     return archive_read_open_filename(m_archive, path, blockSize);
 }
 
-int ArchiveReader::openMemory(void* buffer, size_t bufferSize)
+int ArchiveReaderImpl::openMemory(void* buffer, size_t bufferSize)
 {
     return archive_read_open_memory(m_archive, buffer, bufferSize);
 }
 
-ArchiveReader::~ArchiveReader()
+ArchiveIterator ArchiveReaderImpl::begin()
 {
-    close();
+    return ArchiveIterator(*this);
 }
 
-ArchiveIterator ArchiveReader::begin()
-{
-    return ArchiveIterator(m_archive);
-}
-
-int ArchiveReader::readDataBlock(const void** buf, size_t* size, std::int64_t* offset)
+int ArchiveReaderImpl::readDataBlock(const void** buf, size_t* size, std::int64_t* offset)
 {
     return archive_read_data_block(m_archive, buf, size, offset);
 }
 
-void ArchiveReader::close()
+void ArchiveReaderImpl::close()
 {
     if (m_archive)
     {

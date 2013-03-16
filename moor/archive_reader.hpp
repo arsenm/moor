@@ -34,29 +34,36 @@
 
 #include "archive_iterator.hpp"
 
-struct archive;
-struct archive_entry;
 
 namespace moor
 {
-    class MOOR_API ArchiveReader : public Archive
+    // The ArchiveReaderImpl is where all the functionality is.  The
+    // ArchiveReader is the owning version which will destroy the
+    // underlying archive.
+    class MOOR_API ArchiveReaderImpl : public Archive
     {
+        friend class ArchiveMatch;
     public:
-        ArchiveReader(const std::string& archive_file_name);
-        ArchiveReader(void* in_buffer, const size_t size);
-        ArchiveReader(std::vector<unsigned char>&& in_buffer);
-        virtual ~ArchiveReader() override;
+        ArchiveReaderImpl(const std::string& archive_file_name);
+        ArchiveReaderImpl(void* in_buffer, const size_t size);
+        ArchiveReaderImpl(std::vector<unsigned char>&& in_buffer);
+        virtual ~ArchiveReaderImpl() override
+        {
+
+        }
 
         // Check ArchiveIterator::isAtEnd for EOF
         ArchiveIterator begin();
 
     protected:
-        ArchiveReader(archive* a)
+        ArchiveReaderImpl(archive* a)
             : Archive(a),
               m_in_buffer()
         {
 
         }
+
+        virtual void close() override;
 
     private:
         static const int s_defaultExtractFlags;
@@ -65,11 +72,29 @@ namespace moor
         int openFilename(const char* path, size_t blockSize = 10240);
         int openMemory(void* buffer, size_t bufferSize);
 
-        virtual void close() override;
         static int copyData(archive* ar, archive* aw);
         int readDataBlock(const void** buf, size_t* size, std::int64_t* offset);
 
         std::vector<unsigned char> m_in_buffer;
+    };
+
+    class MOOR_API ArchiveReader : public ArchiveReaderImpl
+    {
+    protected:
+        ArchiveReader(archive* a)
+            : ArchiveReaderImpl(a) { }
+
+    public:
+        ArchiveReader(const std::string& archive_file_name)
+            : ArchiveReaderImpl(archive_file_name) { }
+        ArchiveReader(void* buffer, const size_t size)
+            : ArchiveReaderImpl(buffer, size) { }
+        ArchiveReader(std::vector<unsigned char>&& buffer)
+            : ArchiveReaderImpl(std::move(buffer)) { }
+        virtual ~ArchiveReader() override
+        {
+            close();
+        }
     };
 }
 

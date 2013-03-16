@@ -25,6 +25,7 @@
 #pragma once
 
 #include "archive_entry.hpp"
+#include "archive_reader.hpp"
 
 #include <archive.h>
 
@@ -35,7 +36,6 @@
 namespace moor
 {
     typedef std::function<void(ArchiveEntry, void*)> ReadDiskMatchCallback;
-
 
     class ArchiveMatch
     {
@@ -96,11 +96,7 @@ namespace moor
             return (m_cb != nullptr);
         }
 
-        static void matchCallbackWrapper(archive* a, void* ud, archive_entry* e)
-        {
-            MatchCallbackData* mcd = reinterpret_cast<MatchCallbackData*>(ud);
-            return (*mcd->m_f)(ArchiveEntry(a, e), mcd->m_ud);
-        }
+        static void matchCallbackWrapper(archive* a, void* ud, archive_entry* e);
 
         // Return the wrapper user data which will be passed as the
         // userdata to the wrapper.
