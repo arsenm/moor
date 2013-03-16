@@ -8,6 +8,7 @@ set(include_HEADERS
   archive_iterator.hpp
   archive_read_disk.hpp
   archive_write_disk.hpp
+  supported_formats.hpp
   )
 set(libmoor_SOURCES
   archive.cpp
@@ -18,6 +19,7 @@ set(libmoor_SOURCES
   types.cpp
   archive_entry.cpp
   archive_match.cpp
+  supported_formats.cpp
 )
 
 if(MSVC)

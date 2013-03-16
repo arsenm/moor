@@ -59,6 +59,9 @@ const char* moor::showFormat(moor::Format format)
         case moor::Format::Zip7:
             return "7-Zip";
 
+        case moor::Format::XAR:
+            return "xar";
+
         default:
             return "unknown";
     }

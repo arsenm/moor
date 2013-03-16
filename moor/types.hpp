@@ -41,7 +41,8 @@ namespace moor
         Ar = ARCHIVE_FORMAT_AR,
         CAB = ARCHIVE_FORMAT_CAB,
         RAR = ARCHIVE_FORMAT_RAR,
-        Zip7 = ARCHIVE_FORMAT_7ZIP
+        Zip7 = ARCHIVE_FORMAT_7ZIP,
+        XAR = ARCHIVE_FORMAT_XAR
     };
 
     enum class Filter
