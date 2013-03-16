@@ -64,6 +64,7 @@ namespace moor
 
         virtual ~Archive();
 
+        MOOR_NORETURN
         void throwError(int errCode, bool closeBeforeThrow)
         {
             std::system_error err = systemError();

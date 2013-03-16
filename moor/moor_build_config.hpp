@@ -33,3 +33,20 @@
 #else
   #define MOOR_API
 #endif
+
+#ifndef __has_feature
+  #define __has_feature(x) 0
+#endif
+#ifndef __has_extension
+  #define __has_extension __has_feature
+#endif
+
+
+#if __has_extension(cxx_attributes)
+  #define MOOR_NORETURN [[noreturn]]
+#elif __has_attribute(noreturn) || (__GNUC__ > 3)
+  #define MOOR_NORETURN __attribute__((noreturn))
+#else
+  #define MOOR_NORETURN
+#endif
+
