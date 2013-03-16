@@ -111,10 +111,10 @@ int moor::ArchiveEntry::copyData(archive* ar, archive* aw)
             return r;
         }
 
-        r = archive_write_data_block(aw, buff, size, offset);
-        if (r != ARCHIVE_OK)
+        ssize_t written = archive_write_data_block(aw, buff, size, offset);
+        if (written < 0)
         {
-            return r;
+            return ARCHIVE_FATAL;
         }
     }
 
