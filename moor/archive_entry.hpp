@@ -32,6 +32,7 @@
 #include <cstdint>
 #include <limits>
 #include <string>
+#include <system_error>
 #include <vector>
 
 
@@ -76,6 +77,15 @@ namespace moor
             return r;
         }
 
+        void throwArchiveError()
+        {
+            const char* errStr = archive_error_string(m_archive);
+
+            throw std::system_error(archive_errno(m_archive),
+                                    std::generic_category(),
+                                    errStr ? errStr : "");
+        }
+
     public:
         explicit ArchiveEntry(archive* a,
                               archive_entry* e = nullptr)
@@ -100,6 +110,12 @@ namespace moor
         const archive_entry* entry() const
         {
             return m_entry;
+        }
+
+
+        bool isValid() const
+        {
+            return (m_entry != nullptr);
         }
 
         template <class Resizeable>

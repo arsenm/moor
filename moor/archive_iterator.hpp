@@ -32,7 +32,6 @@
 #include <archive.h>
 
 #include <cassert>
-#include <system_error>
 
 
 namespace moor
@@ -40,18 +39,7 @@ namespace moor
     class MOOR_API ArchiveIterator
     {
     private:
-        archive* m_archive;
         ArchiveEntry m_state;
-
-        void throwArchiveError()
-        {
-            assert(m_archive);
-            const char* errStr = archive_error_string(m_archive);
-
-            throw std::system_error(archive_errno(m_archive),
-                                    std::generic_category(),
-                                    errStr ? errStr : "");
-        }
 
     public:
         typedef ArchiveEntry value_type;
@@ -59,8 +47,7 @@ namespace moor
         typedef value_type* pointer;
 
         ArchiveIterator(ArchiveIterator&& old)
-            : m_archive(old.m_archive),
-              m_state(std::move(old.m_state))
+            : m_state(std::move(old.m_state))
         {
 
         }
@@ -77,12 +64,11 @@ namespace moor
 
         ArchiveIterator& operator++()
         {
-            assert(m_archive && "Trying to iterate past end");
+            assert(m_state.isValid() && "Trying to iterate past end");
 
-            int r = m_state.nextHeader();
-            if (r != ARCHIVE_OK)
+            if (m_state.nextHeader() != ARCHIVE_OK)
             {
-                throwArchiveError();
+                m_state.throwArchiveError();
             }
 
             return *this;
@@ -94,22 +80,15 @@ namespace moor
         // itself, so that isn't useful either
         bool isAtEnd() const
         {
-            return (m_state.entry() == nullptr);
+            return !m_state.isValid();
         }
 
         explicit ArchiveIterator(archive* a = nullptr)
-            : m_archive(a),
-              m_state(a)
+            : m_state(a)
         {
-            if (!m_archive)
+            if (m_state.nextHeader() != ARCHIVE_OK)
             {
-                return;
-            }
-
-            int r = m_state.nextHeader();
-            if (r != ARCHIVE_OK)
-            {
-                throwArchiveError();
+                m_state.throwArchiveError();
             }
         }
     };
