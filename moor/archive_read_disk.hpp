@@ -47,19 +47,22 @@ namespace moor
             {
                 throw std::bad_alloc();
             }
-
 #endif
         }
 
-        ~ArchiveReadDisk()
+        virtual ~ArchiveReadDisk() override
         {
             close();
         }
 
         virtual void close() override
         {
-            archive_read_close(m_archive);
-            archive_read_free(m_archive);
+            if (m_archive)
+            {
+                archive_read_close(m_archive);
+                archive_read_free(m_archive);
+                m_archive = nullptr;
+            }
         }
 
         int open(const char* path)

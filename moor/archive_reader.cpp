@@ -40,8 +40,7 @@ const int ArchiveReader::s_defaultExtractFlags = ARCHIVE_EXTRACT_TIME
 
 ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
     : Archive(archive_read_new(), archive_file_name_),
-      m_in_buffer(),
-      m_open(true)
+      m_in_buffer()
 {
     init();
     checkError(openFilename(cfilename()), true);
@@ -49,8 +48,7 @@ ArchiveReader::ArchiveReader(const std::string& archive_file_name_)
 
 ArchiveReader::ArchiveReader(void* in_buffer_, const size_t size_)
     : Archive(archive_read_new()),
-      m_in_buffer(),
-      m_open(true)
+      m_in_buffer()
 {
     init();
     checkError(openMemory(in_buffer_, size_), true);
@@ -58,8 +56,7 @@ ArchiveReader::ArchiveReader(void* in_buffer_, const size_t size_)
 
 ArchiveReader::ArchiveReader(std::vector<unsigned char>&& in_buffer_)
     : Archive(archive_read_new()),
-      m_in_buffer(std::move(in_buffer_)),
-      m_open(true)
+      m_in_buffer(std::move(in_buffer_))
 {
     init();
     int ec = openMemory(m_in_buffer.data(), m_in_buffer.size());
@@ -99,14 +96,11 @@ int ArchiveReader::readDataBlock(const void** buf, size_t* size, std::int64_t* o
 
 void ArchiveReader::close()
 {
-    if (m_open)
+    if (m_archive)
     {
-        if (m_archive)
-        {
-            archive_read_close(m_archive);
-            archive_read_free(m_archive);
-        }
-
-        m_open = false;
+        // Prevent double close when subclassed
+        archive_read_close(m_archive);
+        archive_read_free(m_archive);
+        m_archive = nullptr;
     }
 }

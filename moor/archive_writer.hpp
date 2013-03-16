@@ -99,12 +99,11 @@ namespace moor
 
         };
 
-        ArchiveEntry m_entry;
+        WritableArchiveEntry m_entry;
         const Format m_format;
         const Filter m_filter;
         std::unique_ptr<WriterCallbackData> m_callbackData;
         std::unique_ptr<char[]> m_buffer;
-        bool m_open;
 
         constexpr static size_t bufferSize()
         {
@@ -123,8 +122,7 @@ namespace moor
               m_format(Format::Empty),
               m_filter(Filter::None),
               m_callbackData(),
-              m_buffer(),
-              m_open(true)
+              m_buffer()
         {
         }
 

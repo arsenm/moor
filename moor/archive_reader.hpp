@@ -53,8 +53,7 @@ namespace moor
     protected:
         ArchiveReader(archive* a)
             : Archive(a),
-              m_in_buffer(),
-              m_open(true)
+              m_in_buffer()
         {
 
         }
@@ -71,8 +70,6 @@ namespace moor
         int readDataBlock(const void** buf, size_t* size, std::int64_t* offset);
 
         std::vector<unsigned char> m_in_buffer;
-
-        bool m_open;
     };
 }
 

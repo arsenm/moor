@@ -63,12 +63,11 @@ moor::ArchiveWriter::ArchiveWriter(const std::string& archive_file_name_,
                                    const moor::Format format_,
                                    const moor::Filter filter_)
     : Archive(archive_write_new(), archive_file_name_),
-      m_entry(m_archive, archive_entry_new()),
+      m_entry(m_archive),
       m_format(format_),
       m_filter(filter_),
       m_callbackData(),
-      m_buffer(new char[bufferSize()]),
-      m_open(true)
+      m_buffer(new char[bufferSize()])
 {
     // Set archive format
     checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
@@ -82,12 +81,11 @@ moor::ArchiveWriter::ArchiveWriter(std::vector<unsigned char>& out_buffer_,
                                    const moor::Format format_,
                                    const moor::Filter filter_)
     : Archive(archive_write_new()),
-      m_entry(m_archive, archive_entry_new()),
+      m_entry(m_archive),
       m_format(format_),
       m_filter(filter_),
       m_callbackData(),
-      m_buffer(new char[bufferSize()]),
-      m_open(true)
+      m_buffer(new char[bufferSize()])
 {
     // Set archive format
     checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
@@ -102,12 +100,11 @@ moor::ArchiveWriter::ArchiveWriter(unsigned char* out_buffer_,
                                    const moor::Format format_,
                                    const moor::Filter filter_)
     : Archive(archive_write_new()),
-      m_entry(m_archive, archive_entry_new()),
+      m_entry(m_archive),
       m_format(format_),
       m_filter(filter_),
       m_callbackData(nullptr),
-      m_buffer(new char[bufferSize()]),
-      m_open(true)
+      m_buffer(new char[bufferSize()])
 {
     // Set archive format
     checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
@@ -124,7 +121,7 @@ moor::ArchiveWriter::ArchiveWriter(OpenCallback openCB,
                                    const moor::Filter filter_,
                                    void* userData)
     : Archive(archive_write_new()),
-      m_entry(m_archive, archive_entry_new()),
+      m_entry(m_archive),
       m_format(format_),
       m_filter(filter_),
       m_callbackData(WriterCallbackData::create(*this,
@@ -132,8 +129,7 @@ moor::ArchiveWriter::ArchiveWriter(OpenCallback openCB,
                                                 writeCB,
                                                 closeCB,
                                                 userData)),
-      m_buffer(new char[bufferSize()]),
-      m_open(true)
+      m_buffer(new char[bufferSize()])
 {
     // Set archive format
     checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
@@ -154,12 +150,11 @@ moor::ArchiveWriter::ArchiveWriter(WriteCallback writeCB,
                                    const moor::Filter filter_,
                                    void* userData)
     : Archive(archive_write_new()),
-      m_entry(m_archive, archive_entry_new()),
+      m_entry(m_archive),
       m_format(format_),
       m_filter(filter_),
       m_callbackData(WriterCallbackData::create(*this, writeCB, userData)),
-      m_buffer(new char[bufferSize()]),
-      m_open(true)
+      m_buffer(new char[bufferSize()])
 {
     // Set archive format
     checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
@@ -354,19 +349,10 @@ void moor::ArchiveWriter::addDirectory(const std::string& directory_name)
 
 void moor::ArchiveWriter::close()
 {
-    if (m_open)
+    if (m_archive)
     {
-        m_open = false;
-
-        if (m_archive)
-        {
-            archive_write_close(m_archive);
-            archive_write_free(m_archive);
-        }
-
-        if (m_entry)
-        {
-            archive_entry_free(m_entry);
-        }
+        archive_write_close(m_archive);
+        archive_write_free(m_archive);
+        m_archive = nullptr;
     }
 }

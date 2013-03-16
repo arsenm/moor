@@ -51,8 +51,12 @@ namespace moor
 
         virtual void close() override
         {
-            archive_write_close(m_archive);
-            archive_write_free(m_archive);
+            if (m_archive)
+            {
+                archive_write_close(m_archive);
+                archive_write_free(m_archive);
+                m_archive = nullptr;
+            }
         }
 
         int writeHeader(archive_entry* entry)

@@ -31,6 +31,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <string>
 #include <vector>
 
 
@@ -39,10 +40,22 @@ namespace moor
     // Non-owning references to archive*, archive_entry*
     class MOOR_API ArchiveEntry
     {
-    private:
+        friend class ArchiveIterator;
+    protected:
         archive* m_archive; // Archive the entry belongs to
         archive_entry* m_entry;
 
+#if 0
+        ArchiveEntry(ArchiveEntry&& e)
+            : m_archive(e.m_archive),
+              m_entry(e.m_entry)
+        {
+            e.m_archive = nullptr;
+            e.m_entry = nullptr;
+        }
+#endif
+
+    private:
         static const int s_defaultExtractFlags;
 
         bool extractDataImpl(archive* a,
@@ -50,6 +63,18 @@ namespace moor
                              ssize_t size,
                              ssize_t entrySize);
         static int copyData(archive* ar, archive* aw);
+
+        int nextHeader()
+        {
+            int r = archive_read_next_header(m_archive, &m_entry);
+            if (r == ARCHIVE_EOF)
+            {
+                m_entry = nullptr;
+                return ARCHIVE_OK;
+            }
+
+            return r;
+        }
 
     public:
         explicit ArchiveEntry(archive* a,
@@ -421,6 +446,28 @@ namespace moor
         int update_uname_utf8(const char* s)
         {
             return archive_entry_update_uname_utf8(m_entry, s);
+        }
+    };
+
+    class MOOR_API WritableArchiveEntry : public ArchiveEntry
+    {
+        friend class ArchiveWriter;
+    private:
+        WritableArchiveEntry(archive* a)
+            : ArchiveEntry(a, archive_entry_new())
+        {
+
+        }
+
+        ~WritableArchiveEntry()
+        {
+            archive_entry_free(m_entry);
+        }
+
+    public:
+        void clear()
+        {
+            m_entry = archive_entry_clear(m_entry);
         }
     };
 }

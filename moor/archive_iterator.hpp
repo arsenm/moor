@@ -58,6 +58,13 @@ namespace moor
         typedef value_type& reference;
         typedef value_type* pointer;
 
+        ArchiveIterator(ArchiveIterator&& old)
+            : m_archive(old.m_archive),
+              m_state(std::move(old.m_state))
+        {
+
+        }
+
         reference operator*()
         {
             return m_state;
@@ -72,22 +79,12 @@ namespace moor
         {
             assert(m_archive && "Trying to iterate past end");
 
-            archive_entry* e;
-            int r = archive_read_next_header(m_archive, &e);
-
-            // Check for end
-            if (r == ARCHIVE_EOF)
-            {
-                m_state = ArchiveEntry(m_archive);
-                return *this;
-            }
-
+            int r = m_state.nextHeader();
             if (r != ARCHIVE_OK)
             {
                 throwArchiveError();
             }
 
-            m_state = ArchiveEntry(m_archive, e);
             return *this;
         }
 
@@ -102,22 +99,18 @@ namespace moor
 
         explicit ArchiveIterator(archive* a = nullptr)
             : m_archive(a),
-              m_state(nullptr)
+              m_state(a)
         {
             if (!m_archive)
             {
                 return;
             }
 
-            archive_entry* e;
-            int r = archive_read_next_header(a, &e);
-
-            if (r != ARCHIVE_OK && r != ARCHIVE_EOF)
+            int r = m_state.nextHeader();
+            if (r != ARCHIVE_OK)
             {
                 throwArchiveError();
             }
-
-            m_state = ArchiveEntry(m_archive, e);
         }
     };
 }
