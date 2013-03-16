@@ -81,9 +81,7 @@ bool moor::ArchiveEntry::extractData(void* out, size_t outSize)
     }
 
     std::int64_t entrySize = size();
-
-    const size_t maxSize = std::numeric_limits<size_t>::max();
-    if (entrySize < 0 || entrySize >= static_cast<std::int64_t>(maxSize))
+    if (entrySizeCheck(entrySize))
     {
         return false;
     }

@@ -202,7 +202,7 @@ void moor::ArchiveWriter::addHeader(const std::string& entry_name_,
 {
     m_entry.clear();
     m_entry.set_pathname(entry_name_.c_str());
-    m_entry.set_perm(permission_);
+    m_entry.set_perm(static_cast<__LA_MODE_T>(permission_));
     m_entry.set_filetype(entry_type_);
     m_entry.set_size(size_);
     checkError(writeHeader(m_entry));

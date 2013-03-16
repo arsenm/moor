@@ -69,7 +69,14 @@ namespace moor
 
         int nextHeader();
 
-        void throwArchiveError();
+        [[noreturn]] void throwArchiveError();
+
+        inline bool entrySizeCheck(std::int64_t entrySize)
+        {
+            const size_t maxSize = std::numeric_limits<size_t>::max();
+            return (entrySize < 0
+                 || static_cast<std::uint64_t>(entrySize) >= static_cast<std::uint64_t>(maxSize));
+        }
 
     public:
         archive_entry* raw()
@@ -98,16 +105,15 @@ namespace moor
             }
 
             std::int64_t entrySize = size();
-
-            if (entrySize < 0 || entrySize >= std::numeric_limits<ssize_t>::max())
+            if (entrySizeCheck(entrySize))
             {
                 return false;
             }
 
-            out.resize(entrySize);
+            out.resize(static_cast<size_t>(entrySize));
             return extractDataImpl(reinterpret_cast<unsigned char*>(out.data()),
                                    sizeof(value_type) * out.size(),
-                                   entrySize);
+                                   static_cast<size_t>(entrySize));
         }
 
         void skip();

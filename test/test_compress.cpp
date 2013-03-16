@@ -34,6 +34,12 @@
 #include <system_error>
 #include <vector>
 
+#ifdef __clang__
+  #pragma clang diagnostic ignored "-Wexit-time-destructors"
+  #pragma clang diagnostic ignored "-Wglobal-constructors"
+#endif
+
+
 #define PRINT_TEST_NAME() do                            \
     {                                                   \
         std::cout << "\nStart test " << __func__ << std::endl;  \
@@ -232,7 +238,7 @@ static bool testArchiveWriteCallback()
             std::copy(p,
             p + size,
             std::back_inserter(out));
-            return size;
+            return static_cast<ssize_t>(size);
         },
         [](ArchiveWriter&, void*) -> int
         {
@@ -313,9 +319,9 @@ static bool testArchiveRead(const std::string& path)
         ArchiveReader reader1(path);
         std::ifstream iff(path, std::ios::binary);
         iff.seekg(0, std::ios::end);
-        auto size = iff.tellg();
+        std::ifstream::pos_type size = iff.tellg();
         iff.seekg(0, std::ios::beg);
-        std::vector<unsigned char> ff(size);
+        std::vector<unsigned char> ff(static_cast<size_t>(size));
 
         while (iff.good())
         {
