@@ -83,11 +83,11 @@ static int moor_memory_write_close(archive* a, void* client_data)
     return ARCHIVE_OK;
 }
 
-int moor::write_open_memory(archive* a, std::vector<unsigned char>* buff)
+int moor::write_open_memory(archive* a, std::vector<unsigned char>& buff)
 {
     write_memory_data* mine = new write_memory_data();
 
-    mine->buff = buff;
+    mine->buff = &buff;
     //mine->size = buffSize;
     //mine->client_size = used;
     return archive_write_open(a,

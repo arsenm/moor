@@ -187,7 +187,7 @@ int moor::ArchiveWriter::openFilename(const char* path)
 
 int moor::ArchiveWriter::openMemory(std::vector<unsigned char>& outBuf)
 {
-    return write_open_memory(m_archive, &outBuf);
+    return write_open_memory(m_archive, outBuf);
 }
 
 int moor::ArchiveWriter::openMemory(void* buf, size_t* bufSize)
