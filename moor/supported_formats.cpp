@@ -27,6 +27,11 @@
 #include <archive.h>
 
 
+#ifdef __clang__
+  #pragma clang diagnostic ignored "-Wcovered-switch-default"
+  #pragma clang diagnostic ignored "-Wunreachable-code"
+#endif
+
 namespace
 {
     class ScopedWriteArchive

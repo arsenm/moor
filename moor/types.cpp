@@ -25,6 +25,12 @@
 #include "types.hpp"
 
 
+#ifdef __clang__
+  #pragma clang diagnostic ignored "-Wcovered-switch-default"
+  #pragma clang diagnostic ignored "-Wunreachable-code"
+#endif
+
+
 const char* moor::showFormat(moor::Format format)
 {
     switch (format)
