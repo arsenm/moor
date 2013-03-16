@@ -167,7 +167,6 @@ static bool testArchiveDataCheck()
         return true;
     }
 
-
     return false;
 }
 

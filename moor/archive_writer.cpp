@@ -149,6 +149,32 @@ moor::ArchiveWriter::ArchiveWriter(OpenCallback openCB,
     checkError(r);
 }
 
+moor::ArchiveWriter::ArchiveWriter(WriteCallback writeCB,
+                                   const moor::Format format_,
+                                   const moor::Filter filter_,
+                                   void* userData)
+    : Archive(archive_write_new()),
+      m_entry(m_archive, archive_entry_new()),
+      m_format(format_),
+      m_filter(filter_),
+      m_callbackData(WriterCallbackData::create(*this, writeCB, userData)),
+      m_buffer(new char[bufferSize()]),
+      m_open(true)
+{
+    // Set archive format
+    checkError(archive_write_set_format(m_archive, static_cast<int>(m_format)), true);
+
+    // Set archive filter
+    checkError(archive_write_add_filter(m_archive, static_cast<int>(m_filter)), true);
+
+    int r = archive_write_open(m_archive,
+                               m_callbackData.get(),
+                               nullptr,
+                               ArchiveWriter::writeCallbackWrapper,
+                               nullptr);
+    checkError(r);
+}
+
 moor::ArchiveWriter::~ArchiveWriter()
 {
     close();

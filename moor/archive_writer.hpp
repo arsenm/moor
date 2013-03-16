@@ -69,6 +69,13 @@ namespace moor
                 return std::unique_ptr<WriterCallbackData>(new WriterCallbackData(writer, o, w, c, ud));
             }
 
+            static std::unique_ptr<WriterCallbackData> create(ArchiveWriter& writer,
+                                                              WriteCallback w,
+                                                              void* ud)
+            {
+                return std::unique_ptr<WriterCallbackData>(new WriterCallbackData(writer, w, ud));
+            }
+
         private:
             WriterCallbackData(ArchiveWriter& writer,
                                OpenCallback o,
@@ -80,6 +87,16 @@ namespace moor
                   m_write(w),
                   m_close(c),
                   m_userData(ud) { }
+
+            WriterCallbackData(ArchiveWriter& writer,
+                               WriteCallback w,
+                               void* ud)
+                : m_writer(writer),
+                  m_open(),
+                  m_write(w),
+                  m_close(),
+                  m_userData(ud) { }
+
         };
 
         ArchiveEntry m_entry;
@@ -125,6 +142,11 @@ namespace moor
         ArchiveWriter(OpenCallback,
                       WriteCallback,
                       CloseCallback,
+                      const moor::Format format_,
+                      const moor::Filter filter_,
+                      void* userData = nullptr);
+
+        ArchiveWriter(WriteCallback,
                       const moor::Format format_,
                       const moor::Filter filter_,
                       void* userData = nullptr);
